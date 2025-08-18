@@ -1,0 +1,10 @@
+{
+  "root": true,
+  "extends": ["prettier","next","next/core-web-vitals"],
+  "plugins": ["prettier"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "prettier/prettier": "error",
+    "react/display-name": "off"
+  }
+}

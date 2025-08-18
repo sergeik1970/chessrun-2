@@ -1,0 +1,26 @@
+.checkbox {
+    input {
+        display: none;
+    }
+
+    &-test {
+        background-color: red;
+    }
+
+    label {
+        display: block;
+        margin: 0;
+        width: 15px;
+        height: 15px;
+        border: 2px solid black;
+
+        &.checked {
+            background-color: green;
+            border-color: green;
+        }
+    }
+}
+
+.test {
+    color: red;
+}
