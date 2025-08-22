@@ -17,7 +17,7 @@ const Navigation: React.FC<NavigationProps> = () => {
         navList?.classList.remove(styles["open-nav-list"]);
     };
     return (
-        <nav>
+        <>
             <div className={clsx(styles["nav-header"])}>
                 <div className={clsx(styles["nav-header-content"])}>
                     <Link className={clsx(styles["nav-header-link"], styles["nav-main"])} href="/">
@@ -58,6 +58,13 @@ const Navigation: React.FC<NavigationProps> = () => {
                         href="/contacts"
                     >
                         Контакты
+                    </Link>
+                    <Link
+                        className={clsx(styles["nav-header-link"], styles["nav-section"])}
+                        href="/posts-demo"
+                        style={{ color: "#ff6b6b" }}
+                    >
+                        Демо постов
                     </Link>
                     <svg
                         className={clsx(styles["menu"])}
@@ -103,9 +110,19 @@ const Navigation: React.FC<NavigationProps> = () => {
                     <li>
                         <Link href="/contacts">Контакты</Link>
                     </li>
+                    <li>
+                        <Link href="/posts-demo" style={{ color: "#ff6b6b" }}>
+                            Демо постов
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/post-card-demo" style={{ color: "#ff6b6b" }}>
+                            Демо карточки
+                        </Link>
+                    </li>
                 </ul>
             </div>
-        </nav>
+        </>
     );
 };
 

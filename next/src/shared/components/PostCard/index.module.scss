@@ -1,0 +1,303 @@
+// Универсальный компонент поста
+.postCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    padding: 20px;
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+}
+
+// Категория
+.category {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    .categoryIcon {
+        font-size: 16px;
+    }
+
+    .categoryName {
+        font-size: 14px;
+        font-weight: 500;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+// Заголовок
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 16px 0;
+    line-height: 1.3;
+}
+
+// Контейнер изображений
+.imageContainer {
+    margin-bottom: 16px;
+
+    .imageWrapper {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f5f5f5;
+
+        .mainImage {
+            width: 100%;
+            height: auto;
+            min-height: 200px;
+            max-height: 600px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: #f8f9fa;
+
+            &:hover {
+                transform: scale(1.01);
+            }
+        }
+
+        // Кнопки навигации по изображениям
+        .navButton {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            z-index: 2;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.9);
+            }
+
+            &.prevButton {
+                left: 12px;
+            }
+
+            &.nextButton {
+                right: 12px;
+            }
+        }
+
+        // Счетчик изображений
+        .imageCounter {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    }
+}
+
+// Текстовый контент
+.textContent {
+    margin-bottom: 16px;
+
+    .text {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #444;
+        margin: 0;
+
+        &.truncated {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        // Стили для ссылок в тексте
+        a {
+            color: #007bff;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: #0056b3;
+                text-decoration: none;
+            }
+        }
+    }
+
+    .readMoreButton {
+        background: none;
+        border: none;
+        color: #007bff;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 8px;
+        padding: 0;
+        text-decoration: underline;
+
+        &:hover {
+            color: #0056b3;
+        }
+    }
+}
+
+// Футер поста
+.postFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+
+    .date {
+        font-size: 14px;
+        color: #666;
+        font-style: italic;
+    }
+
+    .adminButtons {
+        display: flex;
+        gap: 8px;
+
+        button {
+            padding: 6px 12px;
+            border: 1px solid;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .editButton {
+            background: #fff;
+            color: #007bff;
+            border-color: #007bff;
+
+            &:hover {
+                background: #007bff;
+                color: white;
+            }
+        }
+
+        .deleteButton {
+            background: #fff;
+            color: #dc3545;
+            border-color: #dc3545;
+
+            &:hover {
+                background: #dc3545;
+                color: white;
+            }
+        }
+    }
+}
+
+// Модальное окно для изображений
+.imageModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    cursor: pointer;
+
+    .modalContent {
+        position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
+        cursor: default;
+
+        .modalImage {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .closeModal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+            }
+        }
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .postCard {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .imageContainer .imageWrapper {
+        .navButton {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+
+            &.prevButton {
+                left: 8px;
+            }
+
+            &.nextButton {
+                right: 8px;
+            }
+        }
+
+        .imageCounter {
+            bottom: 8px;
+            right: 8px;
+            font-size: 11px;
+        }
+    }
+
+    .postFooter {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+
+        .adminButtons {
+            align-self: flex-end;
+        }
+    }
+}
