@@ -1,4 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    OneToMany,
+    JoinColumn,
+} from "typeorm";
+import { User } from "../User/user.entity";
+import { Files } from "../Files/files.entity";
+
+export enum PostCategory {
+    TRAVEL = "travel",
+    COMPETITION = "competition",
+    TRAINING = "training",
+}
 
 @Entity()
 export class News {
@@ -8,11 +23,28 @@ export class News {
     @Column()
     title: string;
 
-    @Column()
+    @Column({ nullable: true })
     link: string;
 
     @Column("text")
     body: string;
+
+    @Column({
+        type: "enum",
+        enum: PostCategory,
+        default: PostCategory.TRAINING,
+    })
+    category: PostCategory;
+
+    @ManyToOne(() => User, { nullable: true })
+    @JoinColumn({ name: "authorId" })
+    author: User;
+
+    @Column({ nullable: true })
+    authorId: number;
+
+    @OneToMany(() => Files, (file) => file.news)
+    images: Files[];
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;

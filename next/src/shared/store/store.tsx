@@ -8,10 +8,12 @@ import {
 } from "react-redux";
 import deals from "./slices/deals";
 import auth from "./slices/auth";
+import posts from "./slices/posts";
 
 const rootReducer = combineReducers({
     deals,
     auth,
+    posts,
 });
 
 export const makeStore = () => {

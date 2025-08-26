@@ -1,33 +1,52 @@
 import React, { ReactElement, useState, useEffect } from "react";
-import { Post, PostCategory, PostImage } from "../../types/Post";
+import { useDispatch, useSelector } from "../../store/store";
+import {
+    createPost,
+    updatePost,
+    uploadPostImages,
+    fetchCategories,
+    fetchPosts,
+    PostCategory,
+} from "../../store/slices/posts";
+import { Post } from "../../store/slices/posts";
 import styles from "./PostEditor.module.scss";
 
 interface PostEditorProps {
     post: Post | null;
-    categories: PostCategory[];
-    onSave: (post: Post) => void;
+    onSave: () => void;
     onClose: () => void;
 }
 
-const PostEditor = ({ post, categories, onSave, onClose }: PostEditorProps): ReactElement => {
+const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement => {
+    const dispatch = useDispatch();
+    const { categories, loading, error } = useSelector((state) => state.posts);
+
     const [formData, setFormData] = useState({
         title: "",
-        text: "",
-        author: "",
-        categoryId: "",
-        imageUrls: [""], // Массив URL изображений
+        body: "",
+        category: "",
+        link: "",
+        images: [] as File[], // Массив файлов изображений
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        // Загружаем категории при монтировании компонента
+        if (categories.length === 0) {
+            dispatch(fetchCategories());
+        }
+    }, [dispatch, categories.length]);
 
     useEffect(() => {
         if (post) {
             setFormData({
                 title: post.title,
-                text: post.text,
-                author: post.author || "",
-                categoryId: post.category.id,
-                imageUrls: post.images.length > 0 ? post.images.map((img) => img.url) : [""],
+                body: post.body,
+                category: post.category,
+                link: post.link || "",
+                images: [], // Для редактирования не загружаем существующие изображения как файлы
             });
         }
     }, [post]);
@@ -50,30 +69,35 @@ const PostEditor = ({ post, categories, onSave, onClose }: PostEditorProps): Rea
         }
     };
 
-    const handleImageUrlChange = (index: number, value: string) => {
-        const newImageUrls = [...formData.imageUrls];
-        newImageUrls[index] = value;
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        console.log(
+            "Selected files:",
+            files.length,
+            files.map((f) => f.name),
+        );
+
         setFormData((prev) => ({
             ...prev,
-            imageUrls: newImageUrls,
+            images: [...prev.images, ...files],
         }));
+
+        // Создаем preview URLs
+        const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+        setImagePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+
+        console.log("Total images after selection:", formData.images.length + files.length);
     };
 
-    const addImageUrl = () => {
+    const removeImage = (index: number) => {
         setFormData((prev) => ({
             ...prev,
-            imageUrls: [...prev.imageUrls, ""],
+            images: prev.images.filter((_, i) => i !== index),
         }));
-    };
 
-    const removeImageUrl = (index: number) => {
-        if (formData.imageUrls.length > 1) {
-            const newImageUrls = formData.imageUrls.filter((_, i) => i !== index);
-            setFormData((prev) => ({
-                ...prev,
-                imageUrls: newImageUrls,
-            }));
-        }
+        // Освобождаем URL и удаляем из preview
+        URL.revokeObjectURL(imagePreviewUrls[index]);
+        setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
     };
 
     const validateForm = (): boolean => {
@@ -83,54 +107,73 @@ const PostEditor = ({ post, categories, onSave, onClose }: PostEditorProps): Rea
             newErrors.title = "Заголовок обязателен";
         }
 
-        if (!formData.text.trim()) {
-            newErrors.text = "Текст поста обязателен";
+        if (!formData.body.trim()) {
+            newErrors.body = "Текст поста обязателен";
         }
 
-        if (!formData.categoryId) {
-            newErrors.categoryId = "Выберите категорию";
-        }
-
-        if (!formData.author.trim()) {
-            newErrors.author = "Укажите автора";
+        if (!formData.category) {
+            newErrors.category = "Выберите категорию";
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
             return;
         }
 
-        const selectedCategory = categories.find((cat) => cat.id === formData.categoryId);
-        if (!selectedCategory) return;
+        try {
+            const postData = {
+                title: formData.title.trim(),
+                body: formData.body.trim(),
+                category: formData.category as "travel" | "competition" | "training",
+                link: formData.link.trim() || undefined,
+            };
 
-        // Создаем изображения из URL
-        const images: PostImage[] = formData.imageUrls
-            .filter((url) => url.trim())
-            .map((url, index) => ({
-                id: `img_${Date.now()}_${index}`,
-                url: url.trim(),
-                alt: `Изображение ${index + 1}`,
-                isMain: index === 0, // Первое изображение - главное
-            }));
+            let resultAction;
+            if (post) {
+                // Обновляем существующий пост
+                resultAction = await dispatch(updatePost({ id: post.id, ...postData }));
+            } else {
+                // Создаем новый пост
+                resultAction = await dispatch(createPost(postData));
+            }
 
-        const savedPost: Post = {
-            id: post?.id || "",
-            title: formData.title.trim(),
-            text: formData.text.trim(),
-            author: formData.author.trim(),
-            category: selectedCategory,
-            images,
-            createdAt: post?.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+            if (
+                createPost.fulfilled.match(resultAction) ||
+                updatePost.fulfilled.match(resultAction)
+            ) {
+                // Если есть изображения, загружаем их
+                if (formData.images.length > 0) {
+                    const postId = post?.id || resultAction.payload.id;
+                    console.log(
+                        "About to upload images:",
+                        formData.images.length,
+                        "files for post",
+                        postId,
+                    );
+                    const uploadResult = await dispatch(
+                        uploadPostImages({ postId, files: formData.images }),
+                    );
 
-        onSave(savedPost);
+                    if (uploadPostImages.fulfilled.match(uploadResult)) {
+                        console.log("Images uploaded successfully:", uploadResult.payload);
+                        // После успешной загрузки изображений обновляем список постов
+                        await dispatch(fetchPosts());
+                    } else {
+                        console.error("Failed to upload images:", uploadResult);
+                    }
+                }
+
+                onSave();
+            }
+        } catch (error) {
+            console.error("Ошибка при сохранении поста:", error);
+        }
     };
 
     const handleBackdropClick = (e: React.MouseEvent) => {
@@ -169,31 +212,15 @@ const PostEditor = ({ post, categories, onSave, onClose }: PostEditorProps): Rea
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="author" className={styles.label}>
-                            Автор *
-                        </label>
-                        <input
-                            type="text"
-                            id="author"
-                            name="author"
-                            value={formData.author}
-                            onChange={handleInputChange}
-                            className={`${styles.input} ${errors.author ? styles.error : ""}`}
-                            placeholder="Укажите автора поста"
-                        />
-                        {errors.author && <span className={styles.errorText}>{errors.author}</span>}
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label htmlFor="categoryId" className={styles.label}>
+                        <label htmlFor="category" className={styles.label}>
                             Категория *
                         </label>
                         <select
-                            id="categoryId"
-                            name="categoryId"
-                            value={formData.categoryId}
+                            id="category"
+                            name="category"
+                            value={formData.category}
                             onChange={handleInputChange}
-                            className={`${styles.select} ${errors.categoryId ? styles.error : ""}`}
+                            className={`${styles.select} ${errors.category ? styles.error : ""}`}
                         >
                             <option value="">Выберите категорию</option>
                             {categories.map((category) => (
@@ -202,25 +229,40 @@ const PostEditor = ({ post, categories, onSave, onClose }: PostEditorProps): Rea
                                 </option>
                             ))}
                         </select>
-                        {errors.categoryId && (
-                            <span className={styles.errorText}>{errors.categoryId}</span>
+                        {errors.category && (
+                            <span className={styles.errorText}>{errors.category}</span>
                         )}
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="text" className={styles.label}>
+                        <label htmlFor="link" className={styles.label}>
+                            Ссылка (необязательно)
+                        </label>
+                        <input
+                            type="url"
+                            id="link"
+                            name="link"
+                            value={formData.link}
+                            onChange={handleInputChange}
+                            className={styles.input}
+                            placeholder="https://example.com"
+                        />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="body" className={styles.label}>
                             Текст поста *
                         </label>
                         <textarea
-                            id="text"
-                            name="text"
-                            value={formData.text}
+                            id="body"
+                            name="body"
+                            value={formData.body}
                             onChange={handleInputChange}
                             rows={8}
-                            className={`${styles.textarea} ${errors.text ? styles.error : ""}`}
+                            className={`${styles.textarea} ${errors.body ? styles.error : ""}`}
                             placeholder="Введите текст поста. Можно использовать HTML теги для форматирования."
                         />
-                        {errors.text && <span className={styles.errorText}>{errors.text}</span>}
+                        {errors.body && <span className={styles.errorText}>{errors.body}</span>}
                         <small className={styles.hint}>
                             Поддерживается HTML разметка: &lt;br&gt;, &lt;a&gt;, &lt;strong&gt;,
                             &lt;em&gt;
@@ -229,44 +271,58 @@ const PostEditor = ({ post, categories, onSave, onClose }: PostEditorProps): Rea
 
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Изображения</label>
-                        {formData.imageUrls.map((url, index) => (
-                            <div key={index} className={styles.imageUrlGroup}>
-                                <input
-                                    type="url"
-                                    value={url}
-                                    onChange={(e) => handleImageUrlChange(index, e.target.value)}
-                                    className={styles.input}
-                                    placeholder="https://example.com/image.jpg"
-                                />
-                                {formData.imageUrls.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeImageUrl(index)}
-                                        className={styles.removeImageButton}
-                                    >
-                                        ×
-                                    </button>
-                                )}
-                                {index === 0 && (
-                                    <small className={styles.hint}>Главное изображение</small>
-                                )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageChange}
+                            className={styles.fileInput}
+                        />
+
+                        {formData.images.length > 0 && (
+                            <div className={styles.imagePreview}>
+                                {formData.images.map((file, index) => (
+                                    <div key={index} className={styles.imagePreviewItem}>
+                                        <img
+                                            src={imagePreviewUrls[index]}
+                                            alt={`Preview ${index + 1}`}
+                                            className={styles.previewImage}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className={styles.removeImageButton}
+                                        >
+                                            ×
+                                        </button>
+                                        <small className={styles.fileName}>{file.name}</small>
+                                        {index === 0 && (
+                                            <small className={styles.hint}>
+                                                Главное изображение
+                                            </small>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                        <button
-                            type="button"
-                            onClick={addImageUrl}
-                            className={styles.addImageButton}
-                        >
-                            + Добавить изображение
-                        </button>
+                        )}
+
+                        <small className={styles.hint}>
+                            Поддерживаются форматы: JPG, PNG, GIF. Первое изображение будет главным.
+                        </small>
                     </div>
+
+                    {error && <div className={styles.error}>{error}</div>}
 
                     <div className={styles.actions}>
                         <button type="button" onClick={onClose} className={styles.cancelButton}>
                             Отмена
                         </button>
-                        <button type="submit" className={styles.saveButton}>
-                            {post ? "Сохранить изменения" : "Создать пост"}
+                        <button type="submit" disabled={loading} className={styles.saveButton}>
+                            {loading
+                                ? "Сохранение..."
+                                : post
+                                  ? "Сохранить изменения"
+                                  : "Создать пост"}
                         </button>
                     </div>
                 </form>

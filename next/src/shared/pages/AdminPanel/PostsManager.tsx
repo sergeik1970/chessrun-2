@@ -1,75 +1,24 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "../../store/store";
+import { fetchPosts, deletePost, Post } from "../../store/slices/posts";
 import PostCard from "../../components/PostCard";
-import { Post, PostCategory } from "../../types/Post";
 import PostEditor from "./PostEditor";
+import { getImageUrlFromPost } from "../../utils/imageUtils";
 import styles from "./PostsManager.module.scss";
 
-// Временные данные для демонстрации
-const mockCategories: PostCategory[] = [
-    {
-        id: "travel",
-        name: "Путешествия",
-        icon: "🎿",
-        color: "#17a2b8",
-    },
-    {
-        id: "news",
-        name: "Новости",
-        icon: "📰",
-        color: "#ffc107",
-    },
-    {
-        id: "training",
-        name: "Тренировки",
-        icon: "💪",
-        color: "#6f42c1",
-    },
-];
-
-const mockPosts: Post[] = [
-    {
-        id: "1",
-        title: "Слёт ориентировщиков в Москве",
-        text: `В Москве в Битцевском парке с 23 по 26 мая проходили Всероссийские соревнования по спортивному ориентированию "Слёт ориентировщиков". Наш маленький состав (так как старшие ребята сдают экзамены) активно принял в них участие.<br>
-Все большие молодцы, все старались. Одни впервые пробовали свои силы, другие рисковали, бежали быстро и старались хорошо ориентироваться.`,
-        createdAt: "2025-05-26T10:00:00Z",
-        updatedAt: "2025-05-26T10:30:00Z",
-        author: "Тренер команды",
-        images: [
-            {
-                id: "1",
-                url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&auto=format",
-                alt: "Участники соревнований",
-                isMain: true,
-            },
-        ],
-        category: mockCategories[0],
-    },
-    {
-        id: "2",
-        title: "Новогодние старты в Москве 2022",
-        text: `Команда "Шахматы на бегу" официально открыла зимний сезон. В Битцевском парке Москвы в эти выходные 23 - 25 декабря 2022 года проходили традиционные Всероссийские соревнования по спортивному ориентированию на лыжах "НОВОГОДНИЕ СТАРТЫ".`,
-        createdAt: "2022-12-25T14:00:00Z",
-        updatedAt: "2022-12-25T14:15:00Z",
-        author: "Тренер команды",
-        images: [
-            {
-                id: "2",
-                url: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=600&fit=crop&auto=format",
-                alt: "Команда на соревнованиях",
-                isMain: true,
-            },
-        ],
-        category: mockCategories[1],
-    },
-];
-
 const PostsManager = (): ReactElement => {
-    const [posts, setPosts] = useState<Post[]>(mockPosts);
+    const dispatch = useDispatch();
+    const { posts, categories, loading, error } = useSelector((state) => state.posts);
+
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editingPost, setEditingPost] = useState<Post | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+    useEffect(() => {
+        // Загружаем посты при монтировании компонента
+        dispatch(fetchPosts());
+    }, [dispatch]);
 
     const handleCreatePost = () => {
         setEditingPost(null);
@@ -77,35 +26,24 @@ const PostsManager = (): ReactElement => {
     };
 
     const handleEditPost = (postId: string) => {
-        const post = posts.find((p) => p.id === postId);
+        const post = posts.find((p) => p.id === parseInt(postId));
         if (post) {
             setEditingPost(post);
             setIsEditorOpen(true);
         }
     };
 
-    const handleDeletePost = (postId: string) => {
+    const handleDeletePost = async (postId: string) => {
         if (window.confirm("Вы уверены, что хотите удалить этот пост?")) {
-            setPosts(posts.filter((p) => p.id !== postId));
+            await dispatch(deletePost(parseInt(postId)));
         }
     };
 
-    const handleSavePost = (post: Post) => {
-        if (editingPost) {
-            // Редактирование существующего поста
-            setPosts(posts.map((p) => (p.id === post.id ? post : p)));
-        } else {
-            // Создание нового поста
-            const newPost = {
-                ...post,
-                id: Date.now().toString(),
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
-            setPosts([newPost, ...posts]);
-        }
+    const handleSavePost = () => {
         setIsEditorOpen(false);
         setEditingPost(null);
+        // Перезагружаем посты после сохранения
+        dispatch(fetchPosts());
     };
 
     const handleCloseEditor = () => {
@@ -113,14 +51,53 @@ const PostsManager = (): ReactElement => {
         setEditingPost(null);
     };
 
-    // Фильтрация постов
+    const handleCategoryFilter = (category: string) => {
+        setSelectedCategory(category);
+        if (category !== "all") {
+            dispatch(fetchPosts(category));
+        } else {
+            dispatch(fetchPosts());
+        }
+    };
+
+    // Фильтрация постов по поиску (категории уже фильтруются на сервере)
     const filteredPosts = posts.filter((post) => {
-        const matchesSearch =
+        if (!searchTerm) return true;
+        return (
             post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.text.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === "all" || post.category.id === selectedCategory;
-        return matchesSearch && matchesCategory;
+            post.body.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     });
+
+    // Преобразуем посты для PostCard (адаптируем типы)
+    const adaptedPosts = filteredPosts.map((post) => ({
+        id: post.id.toString(),
+        title: post.title,
+        text: post.body,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        author: post.author?.name || "Неизвестный автор",
+        images: (post.images || []).map((img) => ({
+            id: img.id.toString(),
+            url: getImageUrlFromPost(post.id, img),
+            alt: img.alt || "",
+            isMain: img.isMain,
+        })),
+        category: {
+            id: post.category,
+            name: categories.find((cat) => cat.id === post.category)?.name || post.category,
+            icon: categories.find((cat) => cat.id === post.category)?.icon || "📝",
+            color: categories.find((cat) => cat.id === post.category)?.color || "#666",
+        },
+    }));
+
+    if (loading && posts.length === 0) {
+        return (
+            <div className={styles.postsManager}>
+                <div className={styles.loading}>Загрузка постов...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.postsManager}>
@@ -130,6 +107,8 @@ const PostsManager = (): ReactElement => {
                     + Создать пост
                 </button>
             </div>
+
+            {error && <div className={styles.error}>Ошибка: {error}</div>}
 
             <div className={styles.filters}>
                 <div className={styles.searchBox}>
@@ -145,11 +124,11 @@ const PostsManager = (): ReactElement => {
                 <div className={styles.categoryFilter}>
                     <select
                         value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        onChange={(e) => handleCategoryFilter(e.target.value)}
                         className={styles.categorySelect}
                     >
                         <option value="all">Все категории</option>
-                        {mockCategories.map((category) => (
+                        {categories.map((category) => (
                             <option key={category.id} value={category.id}>
                                 {category.icon} {category.name}
                             </option>
@@ -178,6 +157,7 @@ const PostsManager = (): ReactElement => {
                                 onClick={() => {
                                     setSearchTerm("");
                                     setSelectedCategory("all");
+                                    dispatch(fetchPosts());
                                 }}
                                 className={styles.clearFiltersButton}
                             >
@@ -193,7 +173,7 @@ const PostsManager = (): ReactElement => {
                         )}
                     </div>
                 ) : (
-                    filteredPosts.map((post) => (
+                    adaptedPosts.map((post) => (
                         <div key={post.id} className={styles.postItem}>
                             <PostCard
                                 post={post}
@@ -210,7 +190,6 @@ const PostsManager = (): ReactElement => {
             {isEditorOpen && (
                 <PostEditor
                     post={editingPost}
-                    categories={mockCategories}
                     onSave={handleSavePost}
                     onClose={handleCloseEditor}
                 />

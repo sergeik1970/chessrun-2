@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import ApiImage from "../ApiImage";
 import { PostComponentProps } from "../../types/Post";
 import { sanitizeAndFormatText, truncateText } from "../../utils/textUtils";
 import styles from "./index.module.scss";
@@ -19,8 +20,10 @@ const PostCard: React.FC<PostComponentProps> = ({
     const [selectedImageModal, setSelectedImageModal] = useState<string | null>(null);
 
     // Находим главное изображение или берем первое
-    const mainImage = post.images.find((img) => img.isMain) || post.images[0];
-    const hasMultipleImages = post.images.length > 1;
+    const images = post.images || [];
+    console.log('PostCard images:', images);
+    const mainImage = images.find((img) => img.isMain) || images[0];
+    const hasMultipleImages = images.length > 1;
 
     // Обрезка текста с использованием утилит
     const { text: truncatedText, isTruncated } = truncateText(post.text, 300);
@@ -36,11 +39,11 @@ const PostCard: React.FC<PostComponentProps> = ({
     };
 
     const handlePrevImage = () => {
-        setCurrentImageIndex((prev) => (prev === 0 ? post.images.length - 1 : prev - 1));
+        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prev) => (prev === post.images.length - 1 ? 0 : prev + 1));
+        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
 
     const handleImageClick = (imageUrl: string) => {
@@ -83,17 +86,28 @@ const PostCard: React.FC<PostComponentProps> = ({
                 <h2 className={styles.title}>{post.title}</h2>
 
                 {/* Изображения */}
-                {post.images.length > 0 && (
+                {images.length > 0 && (
                     <div className={styles.imageContainer}>
                         <div className={styles.imageWrapper}>
-                            <Image
-                                src={post.images[currentImageIndex].url}
-                                alt={post.images[currentImageIndex].alt || post.title}
-                                width={800}
-                                height={600}
-                                className={styles.mainImage}
-                                onClick={() => handleImageClick(post.images[currentImageIndex].url)}
-                            />
+                            {images[currentImageIndex].url.includes('localhost:3001') ? (
+                                <ApiImage
+                                    src={images[currentImageIndex].url}
+                                    alt={images[currentImageIndex].alt || post.title}
+                                    width={800}
+                                    height={600}
+                                    className={styles.mainImage}
+                                    onClick={() => handleImageClick(images[currentImageIndex].url)}
+                                />
+                            ) : (
+                                <Image
+                                    src={images[currentImageIndex].url}
+                                    alt={images[currentImageIndex].alt || post.title}
+                                    width={800}
+                                    height={600}
+                                    className={styles.mainImage}
+                                    onClick={() => handleImageClick(images[currentImageIndex].url)}
+                                />
+                            )}
 
                             {/* Стрелки навигации */}
                             {hasMultipleImages && (
@@ -115,7 +129,7 @@ const PostCard: React.FC<PostComponentProps> = ({
 
                                     {/* Счетчик */}
                                     <div className={styles.imageCounter}>
-                                        {currentImageIndex + 1} / {post.images.length}
+                                        {currentImageIndex + 1} / {images.length}
                                     </div>
                                 </>
                             )}
@@ -169,13 +183,23 @@ const PostCard: React.FC<PostComponentProps> = ({
             {selectedImageModal && (
                 <div className={styles.imageModal} onClick={() => setSelectedImageModal(null)}>
                     <div className={styles.modalContent}>
-                        <Image
-                            src={selectedImageModal}
-                            alt="Изображение в полном размере"
-                            width={1200}
-                            height={900}
-                            className={styles.modalImage}
-                        />
+                        {selectedImageModal.includes('localhost:3001') ? (
+                            <ApiImage
+                                src={selectedImageModal}
+                                alt="Изображение в полном размере"
+                                width={1200}
+                                height={900}
+                                className={styles.modalImage}
+                            />
+                        ) : (
+                            <Image
+                                src={selectedImageModal}
+                                alt="Изображение в полном размере"
+                                width={1200}
+                                height={900}
+                                className={styles.modalImage}
+                            />
+                        )}
                         <button
                             className={styles.closeModal}
                             onClick={() => setSelectedImageModal(null)}

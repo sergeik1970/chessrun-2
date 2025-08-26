@@ -23,7 +23,7 @@ export interface Post {
     createdAt: string; // дата события
     updatedAt: string; // дата публикации (для админа)
     author?: string; // автор (не показываем пользователям)
-    images: PostImage[];
+    images?: PostImage[];
     category: PostCategory;
 }
 

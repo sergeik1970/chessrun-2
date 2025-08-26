@@ -6,6 +6,7 @@ import {
     HttpStatus, /// Для установки статуса ответа
     Get, // Для обработки GET запросов
     Req, // Для получения запроса
+    UseGuards, // Для использования guards
 } from "@nestjs/common";
 import { Response, Request } from "express"; // Типы Express для подсказок типов
 import {
@@ -13,6 +14,7 @@ import {
     RegisterDto, // Данные для регистрации
     LoginDto, /// Данные для входа
 } from "src/services/AuthService/auth.service";
+import { JwtAuthGuard } from "src/modules/AuthModule/jwt-auth.guard";
 
 @Controller("auth") // Префикс для всех маршрутов авторизации
 export class AuthController {
@@ -55,6 +57,9 @@ export class AuthController {
             // Входим в систему как админ
             const user = await this.authService.loginAdmin(loginDto);
 
+            // Генерируем JWT токен
+            const token = this.authService.generateToken(user);
+
             // Устанавливаем cookie с ID пользователя
             res.cookie("userId", user.id.toString(), {
                 httpOnly: true,
@@ -70,6 +75,7 @@ export class AuthController {
                 // Отправляем ответ с пользователем и сообщением если всё хорошо
                 message: "Успешный вход в систему",
                 user: userWithoutPassword,
+                token: token, // Добавляем токен в ответ
             });
         } catch (error) {
             // Если ошибка
@@ -90,10 +96,10 @@ export class AuthController {
     }
 
     @Get("me") // Обработчик GET запроса для получения текущего пользователя (проверка авторизации при входе на страницу)
-    // Получение запроса и ответа
-    async getCurrentUser(@Req() req: Request, @Res() res: Response) {
+    @UseGuards(JwtAuthGuard)
+    async getCurrentUser(@Req() req: any, @Res() res: Response) {
         try {
-            const userId = req.cookies?.userId; // Получение ID пользователя из куки
+            const userId = req.user?.sub; // Получение ID пользователя из JWT токена
 
             if (!userId) {
                 // Если ID не найден, то пользователь не авторизован
@@ -102,13 +108,12 @@ export class AuthController {
                 });
             }
 
-            const user = await this.authService.findById(parseInt(userId)); // Ищем пользователя по ID
+            const user = await this.authService.findById(userId); // Ищем пользователя по ID
 
-            if (!user || !user.isAdmin) {
-                // Если пользователь не найден или не админ
+            if (!user) {
+                // Если пользователь не найден
                 return res.status(HttpStatus.UNAUTHORIZED).json({
-                    message:
-                        "Доступ запрещен. Только для администраторов. Обратитесь в техподдержку.",
+                    message: "Пользователь не найден",
                 });
             }
 

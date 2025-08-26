@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm"; // Чтобы использовать репозиторий для работы с базой данных
 import { Repository } from "typeorm"; // Репозиторий для работы с базой данных
+import { JwtService } from "@nestjs/jwt"; // Для работы с JWT токенами
 import { User } from "src/entities/User/user.entity"; // Сущность пользователя
 import * as bcrypt from "bcrypt"; // Для хеширования пароля
 
@@ -28,6 +29,7 @@ export class AuthService {
     constructor(
         @InjectRepository(User) // Внедряем репозиторий для работы с базой данных
         private readonly userRepository: Repository<User>, // Репозиторий для работы с базой данных
+        private readonly jwtService: JwtService, // Сервис для работы с JWT токенами
     ) {}
 
     // Обычная регистрация пользователя (потом админ статус ставится вручную)
@@ -88,5 +90,15 @@ export class AuthService {
     // Получаем пользователя по id
     async findById(id: number): Promise<User | null> {
         return this.userRepository.findOne({ where: { id } });
+    }
+
+    // Генерируем JWT токен для пользователя
+    generateToken(user: User): string {
+        const payload = { 
+            sub: user.id, 
+            email: user.email, 
+            isAdmin: user.isAdmin 
+        };
+        return this.jwtService.sign(payload);
     }
 }

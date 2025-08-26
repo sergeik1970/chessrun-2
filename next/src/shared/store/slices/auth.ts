@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createApiUrl, API_ENDPOINTS } from "../../config/api";
 
 // Интерфейс пользователя
 export interface User {
     id: number;
     email: string;
     name: string;
+    isAdmin?: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -30,7 +32,7 @@ export const registerUser = createAsyncThunk(
     // Передаем данные пользователя
     async (userData: { email: string; password: string; name: string }, { rejectWithValue }) => {
         try {
-            const response = await fetch("http://localhost:3001/api/auth/register", {
+            const response = await fetch(createApiUrl(API_ENDPOINTS.auth.register), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -61,7 +63,7 @@ export const loginUser = createAsyncThunk(
     async (userData: { email: string; password: string }, { rejectWithValue }) => {
         try {
             // Отправляем POST запрос на логин
-            const response = await fetch("http://localhost:3001/api/auth/login", {
+            const response = await fetch(createApiUrl(API_ENDPOINTS.auth.login), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -79,6 +81,11 @@ export const loginUser = createAsyncThunk(
                 return rejectWithValue(data.message || "Ошибка входа");
             }
 
+            // Сохраняем токен в localStorage
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+
             return data.user;
         } catch (error) {
             return rejectWithValue("Ошибка соединения с сервером");
@@ -89,7 +96,7 @@ export const loginUser = createAsyncThunk(
 // Асинхронный thunk для выхода
 export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
     try {
-        const response = await fetch("http://localhost:3001/api/auth/logout", {
+        const response = await fetch(createApiUrl(API_ENDPOINTS.auth.logout), {
             method: "POST",
             credentials: "include",
         });
@@ -98,6 +105,9 @@ export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWith
         if (!response.ok) {
             return rejectWithValue("Ошибка выхода");
         }
+
+        // Удаляем токен из localStorage
+        localStorage.removeItem('token');
 
         return null;
     } catch (error) {
@@ -110,9 +120,19 @@ export const getCurrentUser = createAsyncThunk(
     "auth/getCurrentUser",
     async (_, { rejectWithValue }) => {
         try {
+            // Получаем токен из localStorage
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                return rejectWithValue("Токен не найден");
+            }
+
             // Отправляем GET запрос на получение текущего пользователя
-            const response = await fetch("http://localhost:3001/api/auth/me", {
+            const response = await fetch(createApiUrl(API_ENDPOINTS.auth.me), {
                 method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
                 credentials: "include",
             });
 

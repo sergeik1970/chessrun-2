@@ -32,7 +32,7 @@ const AdminAuth = (): ReactElement => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Очищаем предыдущие сообщения при отправке формы
         setSuccess("");
 
