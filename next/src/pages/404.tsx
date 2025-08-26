@@ -2,6 +2,8 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@mantine/core";
+import { Input } from "@mantine/core";
 
 const Custom404: React.FC = () => {
     return (
@@ -147,7 +149,7 @@ const Custom404: React.FC = () => {
                             📰 Новости
                         </Link>
 
-                        <button
+                        <Button
                             onClick={() => window.history.back()}
                             style={{
                                 padding: "12px 24px",
@@ -170,7 +172,8 @@ const Custom404: React.FC = () => {
                             }}
                         >
                             ⬅️ Назад
-                        </button>
+                        </Button>
+                        <Input placeholder="Input component" />
                     </div>
 
                     {/* Дополнительная информация */}

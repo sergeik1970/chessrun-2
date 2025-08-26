@@ -1,6 +1,9 @@
 import { Module } from "@nestjs/common";
 import { DealsModule } from "./modules/DealsModule/deal.module";
 import { AuthModule } from "./modules/AuthModule/auth.module";
+import { NewsModule } from "./modules/NewsModule/news.module";
+import { SliderModule } from "./modules/SliderModule/slider.module";
+import { FilesModule } from "./modules/FilesModule/files.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
@@ -13,10 +16,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             password: "postgres",
             database: "postgres",
             autoLoadEntities: true,
-            synchronize: true, // Временно включаем для создания таблиц
+            synchronize: false, // Временно включаем для создания таблиц
         }),
         DealsModule,
         AuthModule,
+        NewsModule,
+        SliderModule,
+        FilesModule,
     ],
     controllers: [],
     providers: [],

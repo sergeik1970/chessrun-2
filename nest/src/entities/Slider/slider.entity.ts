@@ -1,17 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { News } from "../News/news.entity";
 
 @Entity()
-export class User {
+export class Slider {
     @PrimaryGeneratedColumn("increment")
     id: number;
 
-    @Column({ unique: true })
-    email: string;
+    @Column()
+    newsId: number;
 
     @Column()
-    name: string;
-
-    @Column()
-    password: string;
+    url: string;
 }
