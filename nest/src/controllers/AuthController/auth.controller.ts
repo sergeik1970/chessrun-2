@@ -14,11 +14,11 @@ import {
     LoginDto, /// Данные для входа
 } from "src/services/AuthService/auth.service";
 
-@Controller("auth") // Префикс для всех маршрутов
+@Controller("auth") // Префикс для всех маршрутов авторизации
 export class AuthController {
     constructor(private readonly authService: AuthService) {} // Инициализация сервиса
 
-    @Post("register") // Обработчик POST запроса для регистрации
+    @Post("register") // Обработчик POST запроса для регистрации пользователя
     // Получение данных из тела запроса
     async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
         try {
@@ -52,8 +52,8 @@ export class AuthController {
     // Получение данных из тела запроса
     async login(@Body() loginDto: LoginDto, @Res() res: Response) {
         try {
-            // Входим в систему
-            const user = await this.authService.login(loginDto);
+            // Входим в систему как админ
+            const user = await this.authService.loginAdmin(loginDto);
 
             // Устанавливаем cookie с ID пользователя
             res.cookie("userId", user.id.toString(), {
@@ -104,10 +104,11 @@ export class AuthController {
 
             const user = await this.authService.findById(parseInt(userId)); // Ищем пользователя по ID
 
-            if (!user) {
-                // Если пользователь не найден
+            if (!user || !user.isAdmin) {
+                // Если пользователь не найден или не админ
                 return res.status(HttpStatus.UNAUTHORIZED).json({
-                    message: "Пользователь не найден",
+                    message:
+                        "Доступ запрещен. Только для администраторов. Обратитесь в техподдержку.",
                 });
             }
 

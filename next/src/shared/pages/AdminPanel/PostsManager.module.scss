@@ -1,0 +1,163 @@
+.postsManager {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.title {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.createButton {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background: #218838;
+    }
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.searchBox {
+    flex: 1;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    &::placeholder {
+        color: #6c757d;
+    }
+}
+
+.categoryFilter {
+    min-width: 200px;
+}
+
+.categorySelect {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+}
+
+.stats {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.statNumber {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.postsList {
+    padding: 2rem;
+}
+
+.postItem {
+    margin-bottom: 2rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.emptyState {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6c757d;
+
+    p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.clearFiltersButton,
+.createFirstPostButton {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background: #5a67d8;
+    }
+}
+
+.createFirstPostButton {
+    background: #28a745;
+
+    &:hover {
+        background: #218838;
+    }
+}

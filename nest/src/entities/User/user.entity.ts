@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { News } from "../News/news.entity";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -14,4 +13,13 @@ export class User {
 
     @Column()
     password: string;
+
+    @Column("boolean", { default: false })
+    isAdmin: boolean = false;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

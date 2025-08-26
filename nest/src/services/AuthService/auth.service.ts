@@ -30,7 +30,7 @@ export class AuthService {
         private readonly userRepository: Repository<User>, // Репозиторий для работы с базой данных
     ) {}
 
-    // Получаем данные регистрации из DTO
+    // Обычная регистрация пользователя (потом админ статус ставится вручную)
     async register(registerDto: RegisterDto): Promise<User> {
         const { email, password, name } = registerDto;
 
@@ -49,17 +49,18 @@ export class AuthService {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Создаем нового пользователя
+        // Создаем нового пользователя (по умолчанию не админ)
         const user = this.userRepository.create({
             email,
             password: hashedPassword,
             name,
+            isAdmin: false, // По умолчанию не админ
         });
 
         return this.userRepository.save(user); // Сохраняем пользователя в базе данных
     }
 
-    async login(loginDto: LoginDto): Promise<User> {
+    async loginAdmin(loginDto: LoginDto): Promise<User> {
         const { email, password } = loginDto; // Получаем email и пароль из DTO
 
         // Находим пользователя по email
@@ -67,6 +68,11 @@ export class AuthService {
         if (!user) {
             // Если пользователь не найден, выбрасываем ошибку 401
             throw new UnauthorizedException("Неверный email или пароль");
+        }
+
+        // Проверяем, что пользователь - админ
+        if (!user.isAdmin) {
+            throw new UnauthorizedException("Доступ запрещен. Только для администраторов");
         }
 
         // Проверяем пароль
