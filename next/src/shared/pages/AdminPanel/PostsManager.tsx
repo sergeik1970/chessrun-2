@@ -21,8 +21,6 @@ const PostsManager = (): ReactElement => {
         dispatch(fetchCategories());
     }, [dispatch]);
 
-
-
     const handleCreatePost = () => {
         setEditingPost(null);
         setIsEditorOpen(true);
@@ -64,7 +62,7 @@ const PostsManager = (): ReactElement => {
         if (selectedCategory !== "all" && post.category !== selectedCategory) {
             return false;
         }
-        
+
         // Фильтр по поиску
         if (searchTerm) {
             return (
@@ -72,7 +70,7 @@ const PostsManager = (): ReactElement => {
                 post.body.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
-        
+
         return true;
     });
 
@@ -89,6 +87,14 @@ const PostsManager = (): ReactElement => {
             url: getImageUrlFromPost(post.id, img),
             alt: img.alt || "",
             isMain: img.isMain,
+        })),
+        files: (post.files || []).map((file) => ({
+            id: file.id.toString(),
+            file: file.file,
+            mimeType: file.mimeType,
+            originalName: file.originalName,
+            title: file.title || file.originalName,
+            size: file.size,
         })),
         category: {
             id: post.category,

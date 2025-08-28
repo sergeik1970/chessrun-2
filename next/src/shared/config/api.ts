@@ -17,6 +17,9 @@ export const API_ENDPOINTS = {
         delete: (id: number) => `/api/news/${id}`,
         uploadImages: (id: number) => `/api/news/${id}/images`,
         deleteImage: (imageId: number) => `/api/news/images/${imageId}`,
+        reorderImages: (id: number) => `/api/news/${id}/images/reorder`,
+        uploadFiles: (id: number) => `/api/news/${id}/files`,
+        deleteFile: (fileId: number) => `/api/news/files/${fileId}`,
         categories: "/api/news/categories",
     },
 };

@@ -9,6 +9,15 @@ export interface PostImage {
     isMain?: boolean; // главное изображение для превью
 }
 
+export interface PostFile {
+    id: string;
+    file: string; // base64 данные
+    mimeType: string;
+    originalName: string;
+    title?: string; // Название файла для отображения
+    size: number;
+}
+
 export interface PostCategory {
     id: string;
     name: string;
@@ -24,6 +33,7 @@ export interface Post {
     updatedAt: string; // дата публикации (для админа)
     author?: string; // автор (не показываем пользователям)
     images?: PostImage[];
+    files?: PostFile[];
     category: PostCategory;
 }
 

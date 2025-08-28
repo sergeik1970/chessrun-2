@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+} from "typeorm";
 import { News } from "../News/news.entity";
 
 @Entity()
@@ -23,6 +29,18 @@ export class Files {
 
     @Column({ default: false })
     isMain: boolean;
+
+    @Column({ default: 0 })
+    order: number;
+
+    @Column({ default: "image", length: 50 })
+    type: string; // 'image' или 'file'
+
+    @Column({ nullable: true, length: 255 })
+    title: string; // Заголовок файла
+
+    @Column({ nullable: true })
+    size: number; // Размер файла в байтах
 
     @ManyToOne(() => News, (news) => news.images, { onDelete: "CASCADE" })
     @JoinColumn({ name: "newsId" })

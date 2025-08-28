@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import ApiImage from "../ApiImage";
-import { PostComponentProps } from "../../types/Post";
+import ImageSwiper from "../ImageSwiper";
+import ImageModal from "../ImageModal";
+import FilesList from "../FilesList";
+import PDFViewer from "../PDFViewer";
+import { PostComponentProps, PostFile } from "../../types/Post";
 import { sanitizeAndFormatText, truncateText } from "../../utils/textUtils";
 import styles from "./index.module.scss";
 import clsx from "clsx";
@@ -15,16 +17,15 @@ const PostCard: React.FC<PostComponentProps> = ({
     maxTextLines = 4,
     showFullText = false,
 }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isTextExpanded, setIsTextExpanded] = useState(showFullText);
-    const [selectedImageModal, setSelectedImageModal] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalImageIndex, setModalImageIndex] = useState(0);
+    const [pdfViewerFile, setPdfViewerFile] = useState<PostFile | null>(null);
+    const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
 
-    // Находим главное изображение или берем первое
+    // Получаем изображения и файлы поста
     const images = post.images || [];
-    console.log("PostCard images:", images);
-    const mainImage = images.find((img) => img.isMain) || images[0];
-    const hasMultipleImages = images.length > 1;
+    const files = post.files || [];
 
     // Обрезка текста с использованием утилит
     const { text: truncatedText, isTruncated } = truncateText(post.text, 300);
@@ -39,76 +40,26 @@ const PostCard: React.FC<PostComponentProps> = ({
         }
     };
 
-    const handlePrevImage = () => {
-        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    const handleImageClick = (imageUrl: string, index: number) => {
+        setModalImageIndex(index);
+        setIsModalOpen(true);
     };
 
-    const handleNextImage = () => {
-        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    const handleFileClick = (file: PostFile) => {
+        setPdfViewerFile(file);
+        setIsPdfViewerOpen(true);
     };
 
-    const handleImageClick = (imageUrl: string) => {
-        const clickedIndex = images.findIndex(img => img.url === imageUrl);
-        setModalImageIndex(clickedIndex >= 0 ? clickedIndex : 0);
-        setSelectedImageModal(imageUrl);
+    const closePdfViewer = () => {
+        setIsPdfViewerOpen(false);
+        setPdfViewerFile(null);
     };
 
-    const handleModalPrevImage = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        const newIndex = modalImageIndex === 0 ? images.length - 1 : modalImageIndex - 1;
-        setModalImageIndex(newIndex);
-        setSelectedImageModal(images[newIndex].url);
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
     };
 
-    const handleModalNextImage = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        const newIndex = modalImageIndex === images.length - 1 ? 0 : modalImageIndex + 1;
-        setModalImageIndex(newIndex);
-        setSelectedImageModal(images[newIndex].url);
-    };
 
-    const handleCloseModal = (e?: React.MouseEvent) => {
-        if (e) e.stopPropagation();
-        setSelectedImageModal(null);
-    };
-
-    // Обработка клавиш для навигации в модальном окне и блокировка прокрутки
-    useEffect(() => {
-        if (!selectedImageModal) return;
-
-        // Блокируем прокрутку страницы
-        document.body.style.overflow = 'hidden';
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            switch (e.key) {
-                case 'Escape':
-                    handleCloseModal();
-                    break;
-                case 'ArrowLeft':
-                    if (images.length > 1) {
-                        const newIndex = modalImageIndex === 0 ? images.length - 1 : modalImageIndex - 1;
-                        setModalImageIndex(newIndex);
-                        setSelectedImageModal(images[newIndex].url);
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (images.length > 1) {
-                        const newIndex = modalImageIndex === images.length - 1 ? 0 : modalImageIndex + 1;
-                        setModalImageIndex(newIndex);
-                        setSelectedImageModal(images[newIndex].url);
-                    }
-                    break;
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            // Восстанавливаем прокрутку страницы
-            document.body.style.overflow = 'unset';
-        };
-    }, [selectedImageModal, modalImageIndex, images]);
 
     const formatDate = (dateString: string) => {
         // Используем более стабильный способ форматирования для SSR
@@ -147,56 +98,12 @@ const PostCard: React.FC<PostComponentProps> = ({
 
                 {/* Изображения */}
                 {images.length > 0 && (
-                    <div className={styles.imageContainer}>
-                        <div className={styles.imageWrapper}>
-                            {images[currentImageIndex].url.includes("localhost:3001") ? (
-                                <ApiImage
-                                    src={images[currentImageIndex].url}
-                                    alt={images[currentImageIndex].alt || post.title}
-                                    width={0}
-                                    height={0}
-                                    sizes="(max-width: 768px) 100vw, 800px"
-                                    className={styles.mainImage}
-                                    onClick={() => handleImageClick(images[currentImageIndex].url)}
-                                />
-                            ) : (
-                                <Image
-                                    src={images[currentImageIndex].url}
-                                    alt={images[currentImageIndex].alt || post.title}
-                                    width={0}
-                                    height={0}
-                                    sizes="(max-width: 768px) 100vw, 800px"
-                                    className={styles.mainImage}
-                                    onClick={() => handleImageClick(images[currentImageIndex].url)}
-                                />
-                            )}
-
-                            {/* Стрелки навигации */}
-                            {hasMultipleImages && (
-                                <>
-                                    <button
-                                        className={clsx(styles.navButton, styles.prevButton)}
-                                        onClick={handlePrevImage}
-                                        aria-label="Предыдущее изображение"
-                                    >
-                                        ←
-                                    </button>
-                                    <button
-                                        className={clsx(styles.navButton, styles.nextButton)}
-                                        onClick={handleNextImage}
-                                        aria-label="Следующее изображение"
-                                    >
-                                        →
-                                    </button>
-
-                                    {/* Счетчик */}
-                                    <div className={styles.imageCounter}>
-                                        {currentImageIndex + 1} / {images.length}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
+                    <ImageSwiper
+                        images={images}
+                        postTitle={post.title}
+                        onImageClick={handleImageClick}
+                        className={styles.imageContainer}
+                    />
                 )}
 
                 {/* Текст */}
@@ -212,6 +119,14 @@ const PostCard: React.FC<PostComponentProps> = ({
                         </button>
                     )}
                 </div>
+
+                {/* Файлы */}
+                {files.length > 0 && (
+                    <FilesList
+                        files={files}
+                        onFileClick={handleFileClick}
+                    />
+                )}
 
                 {/* Футер поста */}
                 <footer className={styles.postFooter}>
@@ -241,87 +156,20 @@ const PostCard: React.FC<PostComponentProps> = ({
                 </footer>
             </article>
 
-            {/* Модальное окно для просмотра изображения в оригинальном размере */}
-            {selectedImageModal && (
-                <div className={styles.imageModal} onClick={handleCloseModal}>
-                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                        {selectedImageModal.includes("localhost:3001") ? (
-                            <ApiImage
-                                src={selectedImageModal}
-                                alt={`Изображение ${modalImageIndex + 1} из ${images.length}`}
-                                width={0}
-                                height={0}
-                                sizes="100vw"
-                                className={styles.modalImage}
-                            />
-                        ) : (
-                            <Image
-                                src={selectedImageModal}
-                                alt={`Изображение ${modalImageIndex + 1} из ${images.length}`}
-                                width={0}
-                                height={0}
-                                sizes="100vw"
-                                className={styles.modalImage}
-                            />
-                        )}
-                        
-                        {/* Кнопка закрытия */}
-                        <button
-                            className={styles.closeModal}
-                            onClick={handleCloseModal}
-                        >
-                            ×
-                        </button>
+            {/* Модальное окно для просмотра изображений */}
+            <ImageModal
+                images={images}
+                initialIndex={modalImageIndex}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+            />
 
-                        {/* Навигация по изображениям в модальном окне */}
-                        {images.length > 1 && (
-                            <>
-                                {/* Обычные стрелки для больших экранов */}
-                                <button
-                                    className={clsx(styles.modalNavButton, styles.modalPrevButton)}
-                                    onClick={handleModalPrevImage}
-                                    aria-label="Предыдущее изображение"
-                                >
-                                    ←
-                                </button>
-                                <button
-                                    className={clsx(styles.modalNavButton, styles.modalNextButton)}
-                                    onClick={handleModalNextImage}
-                                    aria-label="Следующее изображение"
-                                >
-                                    →
-                                </button>
-
-                                {/* Счетчик изображений для больших экранов */}
-                                <div className={styles.modalImageCounter}>
-                                    {modalImageIndex + 1} / {images.length}
-                                </div>
-
-                                {/* Навигационная панель для маленьких экранов */}
-                                <div className={styles.modalNavPanel}>
-                                    <button
-                                        className={styles.modalNavPanelButton}
-                                        onClick={handleModalPrevImage}
-                                        aria-label="Предыдущее изображение"
-                                    >
-                                        ←
-                                    </button>
-                                    <div className={styles.modalNavPanelCounter}>
-                                        {modalImageIndex + 1} / {images.length}
-                                    </div>
-                                    <button
-                                        className={styles.modalNavPanelButton}
-                                        onClick={handleModalNextImage}
-                                        aria-label="Следующее изображение"
-                                    >
-                                        →
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
+            {/* PDF Viewer Modal */}
+            <PDFViewer
+                file={pdfViewerFile}
+                isOpen={isPdfViewerOpen}
+                onClose={closePdfViewer}
+            />
         </>
     );
 };

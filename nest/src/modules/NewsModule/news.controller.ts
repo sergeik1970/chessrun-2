@@ -13,6 +13,7 @@ import {
     UploadedFiles,
     UseInterceptors,
     Response,
+    Put,
 } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { NewsService } from "./news.service";
@@ -153,5 +154,87 @@ export class NewsController {
     @UseGuards(JwtAuthGuard, AdminGuard)
     removeImage(@Param("imageId", ParseIntPipe) imageId: number) {
         return this.newsService.removeImage(imageId);
+    }
+
+    @Put(":id/images/reorder")
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    reorderImages(
+        @Param("id", ParseIntPipe) postId: number,
+        @Body() body: { imageIds: number[] },
+    ) {
+        return this.newsService.reorderImages(postId, body.imageIds);
+    }
+
+    // Endpoints для файлов
+    @Post(":id/files")
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    async addFiles(
+        @Param("id", ParseIntPipe) id: number,
+        @Body() body: { files: Array<{ file: string; mimeType: string; originalName: string; title: string; size: number }> },
+    ) {
+        console.log(`Received ${body.files?.length || 0} files for post ${id}`);
+        
+        const results = [];
+        for (let i = 0; i < body.files.length; i++) {
+            const fileData = body.files[i];
+            console.log(`Processing file ${i + 1}/${body.files.length}: ${fileData.originalName}`);
+
+            // Извлекаем base64 данные (убираем data:application/pdf;base64, префикс)
+            const base64Data = fileData.file.split(',')[1] || fileData.file;
+            
+            const result = await this.newsService.addFile(
+                id,
+                base64Data,
+                fileData.mimeType,
+                fileData.originalName,
+                fileData.title,
+                fileData.size,
+            );
+            results.push(result);
+            console.log(`Saved file ${i + 1} with ID:`, result.id);
+        }
+
+        console.log(`Successfully saved ${results.length} files`);
+        return results;
+    }
+
+    @Get(":id/files")
+    getPostFiles(@Param("id", ParseIntPipe) postId: number) {
+        return this.newsService.getPostFiles(postId);
+    }
+
+    @Get(":id/files/:fileId")
+    async getFile(
+        @Param("id", ParseIntPipe) postId: number,
+        @Param("fileId", ParseIntPipe) fileId: number,
+        @Response() res,
+    ) {
+        const file = await this.newsService.getFile(postId, fileId);
+
+        if (!file) {
+            return res.status(404).json({ message: "File not found" });
+        }
+
+        // Конвертируем base64 обратно в Buffer
+        const fileBuffer = Buffer.from(file.file, "base64");
+
+        // Устанавливаем правильные заголовки для PDF
+        res.set({
+            "Content-Type": file.mimeType || "application/pdf",
+            "Content-Length": fileBuffer.length,
+            "Content-Disposition": `inline; filename="${file.originalName}"`,
+            "Cache-Control": "public, max-age=31536000",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET",
+            "Access-Control-Allow-Headers": "Content-Type",
+        });
+
+        return res.send(fileBuffer);
+    }
+
+    @Delete("files/:fileId")
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    removeFile(@Param("fileId", ParseIntPipe) fileId: number) {
+        return this.newsService.removeFile(fileId);
     }
 }

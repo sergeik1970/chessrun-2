@@ -1,17 +1,24 @@
-import React, { ReactElement, useState, useEffect } from "react";
+import React, { ReactElement, useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "../../store/store";
 import {
     createPost,
     updatePost,
     uploadPostImages,
     deletePostImage,
+    reorderPostImages,
+    uploadPostFiles,
+    deletePostFile,
     fetchCategories,
     fetchPosts,
     PostCategory,
     PostImage,
+    PostFile,
 } from "../../store/slices/posts";
 import { Post } from "../../store/slices/posts";
 import { getImageUrlFromPost } from "../../utils/imageUtils";
+import DraggableImageList from "../../components/DraggableImageList";
+import FileUploader from "../../components/FileUploader";
+import PDFViewer from "../../components/PDFViewer";
 import styles from "./PostEditor.module.scss";
 
 interface PostEditorProps {
@@ -28,14 +35,29 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         title: "",
         body: "",
         category: "",
-        link: "",
         images: [] as File[], // Массив новых файлов изображений
+        files: [] as File[], // Массив новых PDF файлов
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
     const [existingImages, setExistingImages] = useState<PostImage[]>([]); // Существующие изображения
     const [imagesToDelete, setImagesToDelete] = useState<number[]>([]); // ID изображений для удаления
+    const [existingFiles, setExistingFiles] = useState<PostFile[]>([]); // Существующие файлы
+    const [filesToDelete, setFilesToDelete] = useState<number[]>([]); // ID файлов для удаления
+    const [showFileInput, setShowFileInput] = useState(false);
+    const [pdfViewerFile, setPdfViewerFile] = useState<File | PostFile | null>(null);
+    const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Блокируем скролл страницы при открытии модального окна
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, []);
 
     useEffect(() => {
         // Загружаем категории при монтировании компонента
@@ -50,16 +72,29 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 title: post.title,
                 body: post.body,
                 category: post.category,
-                link: post.link || "",
                 images: [], // Новые изображения
+                files: [], // Новые файлы
             });
-            // Загружаем существующие изображения
+            // Загружаем существующие изображения и файлы
             setExistingImages(post.images || []);
+            setExistingFiles(post.files || []);
             setImagesToDelete([]); // Сбрасываем список изображений для удаления
+            setFilesToDelete([]); // Сбрасываем список файлов для удаления
+
+            // Автоматически расширяем textarea для существующего контента
+            setTimeout(() => {
+                const textarea = document.getElementById("body") as HTMLTextAreaElement;
+                if (textarea) {
+                    textarea.style.height = "auto";
+                    textarea.style.height = Math.max(120, textarea.scrollHeight) + "px";
+                }
+            }, 0);
         } else {
             // Сбрасываем состояние для создания нового поста
             setExistingImages([]);
+            setExistingFiles([]);
             setImagesToDelete([]);
+            setFilesToDelete([]);
         }
     }, [post]);
 
@@ -119,6 +154,54 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
     };
 
+    const handleReorderExistingImages = (newOrder: PostImage[]) => {
+        setExistingImages(newOrder);
+    };
+
+    const handleReorderNewImages = (newOrder: File[], newPreviews: string[]) => {
+        setFormData((prev) => ({
+            ...prev,
+            images: newOrder,
+        }));
+        setImagePreviewUrls(newPreviews);
+    };
+
+    const handleAddImagesClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    // Обработчики файлов
+    const handleFilesChange = (newFiles: File[]) => {
+        setFormData((prev) => ({
+            ...prev,
+            files: newFiles,
+        }));
+    };
+
+    const removeNewFile = (index: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            files: prev.files.filter((_, i) => i !== index),
+        }));
+    };
+
+    const removeExistingFile = (fileId: number) => {
+        // Добавляем ID файла в список для удаления
+        setFilesToDelete((prev) => [...prev, fileId]);
+        // Удаляем файл из списка существующих
+        setExistingFiles((prev) => prev.filter((file) => file.id !== fileId));
+    };
+
+    const handlePreviewFile = (file: File | PostFile) => {
+        setPdfViewerFile(file);
+        setIsPdfViewerOpen(true);
+    };
+
+    const closePdfViewer = () => {
+        setIsPdfViewerOpen(false);
+        setPdfViewerFile(null);
+    };
+
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
@@ -149,8 +232,12 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             const postData = {
                 title: formData.title.trim(),
                 body: formData.body.trim(),
-                category: formData.category as "travel" | "competition" | "training" | "news" | "events",
-                link: formData.link.trim() || undefined,
+                category: formData.category as
+                    | "travel"
+                    | "competition"
+                    | "training"
+                    | "news"
+                    | "events",
             };
 
             let resultAction;
@@ -176,6 +263,14 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                     }
                 }
 
+                // Удаляем файлы, которые были помечены для удаления
+                if (filesToDelete.length > 0 && post) {
+                    console.log("Deleting files:", filesToDelete);
+                    for (const fileId of filesToDelete) {
+                        await dispatch(deletePostFile({ postId: post.id, fileId }));
+                    }
+                }
+
                 // Если есть новые изображения, загружаем их
                 if (formData.images.length > 0) {
                     console.log(
@@ -193,6 +288,31 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                     } else {
                         console.error("Failed to upload images:", uploadResult);
                     }
+                }
+
+                // Если есть новые файлы, загружаем их
+                if (formData.files.length > 0) {
+                    console.log(
+                        "About to upload files:",
+                        formData.files.length,
+                        "files for post",
+                        postId,
+                    );
+                    const uploadResult = await dispatch(
+                        uploadPostFiles({ postId, files: formData.files }),
+                    );
+
+                    if (uploadPostFiles.fulfilled.match(uploadResult)) {
+                        console.log("Files uploaded successfully:", uploadResult.payload);
+                    } else {
+                        console.error("Failed to upload files:", uploadResult);
+                    }
+                }
+
+                // Если есть существующие изображения и их порядок мог измениться, обновляем порядок
+                if (existingImages.length > 0 && post) {
+                    const imageIds = existingImages.map((img) => img.id);
+                    await dispatch(reorderPostImages({ postId: post.id, imageIds }));
                 }
 
                 // После всех операций обновляем список постов
@@ -225,7 +345,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>
                         <label htmlFor="title" className={styles.label}>
-                            Заголовок *
+                            Заголовок
                         </label>
                         <input
                             type="text"
@@ -241,7 +361,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
 
                     <div className={styles.formGroup}>
                         <label htmlFor="category" className={styles.label}>
-                            Категория *
+                            Категория
                         </label>
                         <select
                             id="category"
@@ -263,112 +383,108 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="link" className={styles.label}>
-                            Ссылка (необязательно)
-                        </label>
-                        <input
-                            type="url"
-                            id="link"
-                            name="link"
-                            value={formData.link}
-                            onChange={handleInputChange}
-                            className={styles.input}
-                            placeholder="https://example.com"
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
                         <label htmlFor="body" className={styles.label}>
-                            Текст поста *
+                            Текст поста
                         </label>
                         <textarea
                             id="body"
                             name="body"
                             value={formData.body}
                             onChange={handleInputChange}
-                            rows={8}
-                            className={`${styles.textarea} ${errors.body ? styles.error : ""}`}
-                            placeholder="Введите текст поста. Можно использовать HTML теги для форматирования."
+                            className={`${styles.autoExpandTextarea} ${errors.body ? styles.error : ""}`}
+                            placeholder="Введите текст поста"
+                            style={{
+                                minHeight: "120px",
+                                height: "auto",
+                                resize: "vertical",
+                            }}
+                            onInput={(e) => {
+                                const target = e.target as HTMLTextAreaElement;
+                                target.style.height = "auto";
+                                target.style.height = Math.max(120, target.scrollHeight) + "px";
+                            }}
                         />
                         {errors.body && <span className={styles.errorText}>{errors.body}</span>}
-                        <small className={styles.hint}>
-                            Поддерживается HTML разметка: &lt;br&gt;, &lt;a&gt;, &lt;strong&gt;,
-                            &lt;em&gt;
-                        </small>
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>Изображения</label>
+                        <div className={styles.imagesHeader}>
+                            <label className={styles.label}>Изображения</label>
+                            <button
+                                type="button"
+                                onClick={handleAddImagesClick}
+                                className={styles.addImagesButton}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M12 5V19M5 12H19"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                                Добавить изображения
+                            </button>
+                        </div>
+
                         <input
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
                             multiple
                             onChange={handleImageChange}
-                            className={styles.fileInput}
+                            className={styles.hiddenFileInput}
                         />
 
-                        {/* Существующие изображения */}
-                        {existingImages.length > 0 && (
-                            <div className={styles.imagePreview}>
-                                <h4 className={styles.sectionTitle}>Текущие изображения:</h4>
-                                {existingImages.map((image, index) => (
-                                    <div key={`existing-${image.id}`} className={styles.imagePreviewItem}>
-                                        <img
-                                            src={post ? getImageUrlFromPost(post.id, image) : ''}
-                                            alt={image.alt || `Изображение ${index + 1}`}
-                                            className={styles.previewImage}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeExistingImage(image.id)}
-                                            className={styles.removeImageButton}
-                                        >
-                                            ×
-                                        </button>
-                                        <small className={styles.fileName}>
-                                            {image.originalName || `Изображение ${index + 1}`}
-                                        </small>
-                                        {image.isMain && (
-                                            <small className={styles.hint}>
-                                                Главное изображение
-                                            </small>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Новые изображения */}
-                        {formData.images.length > 0 && (
-                            <div className={styles.imagePreview}>
-                                <h4 className={styles.sectionTitle}>Новые изображения:</h4>
-                                {formData.images.map((file, index) => (
-                                    <div key={`new-${index}`} className={styles.imagePreviewItem}>
-                                        <img
-                                            src={imagePreviewUrls[index]}
-                                            alt={`Preview ${index + 1}`}
-                                            className={styles.previewImage}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeNewImage(index)}
-                                            className={styles.removeImageButton}
-                                        >
-                                            ×
-                                        </button>
-                                        <small className={styles.fileName}>{file.name}</small>
-                                        {existingImages.length === 0 && index === 0 && (
-                                            <small className={styles.hint}>
-                                                Главное изображение
-                                            </small>
-                                        )}
-                                    </div>
-                                ))}
+                        {/* Компонент для перетаскивания изображений */}
+                        {existingImages.length > 0 || formData.images.length > 0 ? (
+                            <DraggableImageList
+                                existingImages={existingImages}
+                                newImages={formData.images}
+                                newImagePreviews={imagePreviewUrls}
+                                postId={post?.id}
+                                onReorderExisting={handleReorderExistingImages}
+                                onReorderNew={handleReorderNewImages}
+                                onRemoveExisting={removeExistingImage}
+                                onRemoveNew={removeNewImage}
+                            />
+                        ) : (
+                            <div className={styles.noImagesPlaceholder}>
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z"
+                                        fill="currentColor"
+                                    />
+                                </svg>
+                                <p>Изображения не добавлены</p>
+                                <button
+                                    type="button"
+                                    onClick={handleAddImagesClick}
+                                    className={styles.placeholderButton}
+                                >
+                                    Выбрать файлы
+                                </button>
                             </div>
                         )}
 
                         <small className={styles.hint}>
-                            Поддерживаются форматы: JPG, PNG, GIF. Первое изображение будет главным.
+                            Поддерживаются форматы: JPG, PNG, GIF.
+                        </small>
+                    </div>
+
+                    {/* Секция файлов */}
+                    <div className={styles.formGroup}>
+                        <FileUploader
+                            files={formData.files}
+                            existingFiles={existingFiles}
+                            onFilesChange={handleFilesChange}
+                            onRemoveFile={removeNewFile}
+                            onRemoveExistingFile={removeExistingFile}
+                            onPreviewFile={handlePreviewFile}
+                        />
+                        <small className={styles.hint}>
+                            Поддерживаются PDF файлы размером до 10MB.
                         </small>
                     </div>
 
@@ -388,6 +504,13 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                     </div>
                 </form>
             </div>
+
+            {/* PDF Viewer Modal */}
+            <PDFViewer
+                file={pdfViewerFile}
+                isOpen={isPdfViewerOpen}
+                onClose={closePdfViewer}
+            />
         </div>
     );
 };

@@ -1,0 +1,189 @@
+.fileUploader {
+    margin-top: 20px;
+}
+
+.uploadSection {
+    margin-bottom: 20px;
+}
+
+.label {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+    margin: 0 0 1rem 0;
+    display: block;
+}
+
+.addFilesButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.hiddenFileInput {
+    display: none;
+}
+
+.filesSection {
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    margin-top: 0;
+}
+
+.filesList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fileItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #e9ecef;
+        border-color: #dee2e6;
+    }
+}
+
+.fileInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    cursor: pointer;
+    min-width: 0; // Для правильного обрезания текста
+}
+
+.fileIcon {
+    flex-shrink: 0;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fileDetails {
+    flex: 1;
+    min-width: 0;
+}
+
+.fileName {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fileSize {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.removeButton {
+    flex-shrink: 0;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+
+    &:hover {
+        background: rgba(220, 53, 69, 1);
+        transform: scale(1.1);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .fileItem {
+        padding: 10px;
+    }
+
+    .fileName {
+        font-size: 14px;
+    }
+
+    .fileSize {
+        font-size: 11px;
+    }
+
+    .removeButton {
+        width: 28px;
+        height: 28px;
+        
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .addFilesButton {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+    }
+
+    .fileItem {
+        padding: 8px;
+    }
+
+    .removeButton {
+        width: 24px;
+        height: 24px;
+        
+        svg {
+            width: 12px;
+            height: 12px;
+        }
+    }
+}

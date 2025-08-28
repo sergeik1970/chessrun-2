@@ -96,7 +96,9 @@ const Navigation: React.FC<NavigationProps> = () => {
                 </svg>
                 <ul>
                     <li>
-                        <Link href="/">Шахматы на бегу</Link>
+                        <Link onClick={closeNavList} href="/">
+                            Шахматы на бегу
+                        </Link>
                     </li>
                     <li>
                         <Link href="/federation">Федерация</Link>

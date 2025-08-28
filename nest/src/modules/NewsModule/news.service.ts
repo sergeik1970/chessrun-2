@@ -15,20 +15,42 @@ export class NewsService {
 
     async findAll(): Promise<any[]> {
         const posts = await this.newsRepository.find({
-            relations: ["author", "images"],
+            relations: ["author"],
             order: { createdAt: "DESC" },
         });
 
-        // Добавляем URL для изображений
+        // Загружаем изображения и файлы отдельно
+        for (const post of posts) {
+            post.images = await this.filesRepository.find({
+                where: { newsId: post.id, type: 'image' },
+                order: { order: 'ASC' },
+            });
+            post.files = await this.filesRepository.find({
+                where: { newsId: post.id, type: 'file' },
+                order: { id: 'ASC' },
+            });
+        }
+
+        // Добавляем URL для изображений и файлов, сортируем по порядку
         return posts.map((post) => ({
             ...post,
-            images: post.images.map((image) => ({
-                id: image.id,
-                alt: image.alt,
-                isMain: image.isMain,
-                mimeType: image.mimeType,
-                originalName: image.originalName,
-                url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+            images: post.images
+                .sort((a, b) => a.order - b.order)
+                .map((image) => ({
+                    id: image.id,
+                    alt: image.alt,
+                    isMain: image.isMain,
+                    mimeType: image.mimeType,
+                    originalName: image.originalName,
+                    url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+                })),
+            files: (post.files || []).map((file) => ({
+                id: file.id,
+                title: file.title,
+                originalName: file.originalName,
+                mimeType: file.mimeType,
+                size: file.size,
+                file: file.file, // base64 данные для фронтенда
             })),
         }));
     }
@@ -36,21 +58,41 @@ export class NewsService {
     async findOne(id: number): Promise<any> {
         const post = await this.newsRepository.findOne({
             where: { id },
-            relations: ["author", "images"],
+            relations: ["author"],
         });
 
         if (!post) return null;
 
-        // Добавляем URL для изображений
+        // Загружаем изображения и файлы отдельно
+        post.images = await this.filesRepository.find({
+            where: { newsId: post.id, type: 'image' },
+            order: { order: 'ASC' },
+        });
+        post.files = await this.filesRepository.find({
+            where: { newsId: post.id, type: 'file' },
+            order: { id: 'ASC' },
+        });
+
+        // Добавляем URL для изображений и файлов, сортируем по порядку
         return {
             ...post,
-            images: post.images.map((image) => ({
-                id: image.id,
-                alt: image.alt,
-                isMain: image.isMain,
-                mimeType: image.mimeType,
-                originalName: image.originalName,
-                url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+            images: post.images
+                .sort((a, b) => a.order - b.order)
+                .map((image) => ({
+                    id: image.id,
+                    alt: image.alt,
+                    isMain: image.isMain,
+                    mimeType: image.mimeType,
+                    originalName: image.originalName,
+                    url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+                })),
+            files: (post.files || []).map((file) => ({
+                id: file.id,
+                title: file.title,
+                originalName: file.originalName,
+                mimeType: file.mimeType,
+                size: file.size,
+                file: file.file, // base64 данные для фронтенда
             })),
         };
     }
@@ -58,20 +100,42 @@ export class NewsService {
     async findByCategory(category: PostCategory): Promise<any[]> {
         const posts = await this.newsRepository.find({
             where: { category },
-            relations: ["author", "images"],
+            relations: ["author"],
             order: { createdAt: "DESC" },
         });
 
-        // Добавляем URL для изображений
+        // Загружаем изображения и файлы отдельно
+        for (const post of posts) {
+            post.images = await this.filesRepository.find({
+                where: { newsId: post.id, type: 'image' },
+                order: { order: 'ASC' },
+            });
+            post.files = await this.filesRepository.find({
+                where: { newsId: post.id, type: 'file' },
+                order: { id: 'ASC' },
+            });
+        }
+
+        // Добавляем URL для изображений и файлов, сортируем по порядку
         return posts.map((post) => ({
             ...post,
-            images: post.images.map((image) => ({
-                id: image.id,
-                alt: image.alt,
-                isMain: image.isMain,
-                mimeType: image.mimeType,
-                originalName: image.originalName,
-                url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+            images: post.images
+                .sort((a, b) => a.order - b.order)
+                .map((image) => ({
+                    id: image.id,
+                    alt: image.alt,
+                    isMain: image.isMain,
+                    mimeType: image.mimeType,
+                    originalName: image.originalName,
+                    url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+                })),
+            files: (post.files || []).map((file) => ({
+                id: file.id,
+                title: file.title,
+                originalName: file.originalName,
+                mimeType: file.mimeType,
+                size: file.size,
+                file: file.file, // base64 данные для фронтенда
             })),
         }));
     }
@@ -101,6 +165,11 @@ export class NewsService {
         alt?: string,
         isMain?: boolean,
     ): Promise<Files> {
+        // Получаем текущее количество изображений для определения порядка
+        const existingImagesCount = await this.filesRepository.count({
+            where: { newsId },
+        });
+
         const image = this.filesRepository.create({
             newsId,
             file: base64Data,
@@ -108,6 +177,7 @@ export class NewsService {
             originalName,
             alt,
             isMain: isMain || false,
+            order: existingImagesCount, // Новое изображение добавляется в конец
         });
         return this.filesRepository.save(image);
     }
@@ -136,6 +206,75 @@ export class NewsService {
 
     async removeImage(imageId: number): Promise<void> {
         await this.filesRepository.delete(imageId);
+    }
+
+    async reorderImages(postId: number, imageIds: number[]): Promise<void> {
+        // Получаем все изображения поста
+        const images = await this.filesRepository.find({
+            where: { newsId: postId },
+        });
+
+        // Проверяем, что все переданные ID принадлежат этому посту
+        const validImageIds = images.map(img => img.id);
+        const invalidIds = imageIds.filter(id => !validImageIds.includes(id));
+        
+        if (invalidIds.length > 0) {
+            throw new Error(`Invalid image IDs: ${invalidIds.join(', ')}`);
+        }
+
+        // Сначала сбрасываем isMain для всех изображений
+        await this.filesRepository.update(
+            { newsId: postId },
+            { isMain: false }
+        );
+
+        // Обновляем порядок и isMain флаг
+        for (let i = 0; i < imageIds.length; i++) {
+            const imageId = imageIds[i];
+            await this.filesRepository.update(imageId, {
+                isMain: i === 0, // Первое изображение становится главным
+                order: i, // Устанавливаем новый порядок
+            });
+        }
+    }
+
+    // Методы для работы с файлами
+    async addFile(
+        newsId: number,
+        fileData: string,
+        mimeType: string,
+        originalName: string,
+        title: string,
+        size: number,
+    ): Promise<Files> {
+        const file = this.filesRepository.create({
+            newsId,
+            file: fileData,
+            mimeType,
+            originalName,
+            title,
+            size,
+            type: 'file', // Указываем тип как файл
+        });
+
+        return this.filesRepository.save(file);
+    }
+
+    async getPostFiles(postId: number): Promise<Files[]> {
+        return this.filesRepository.find({
+            where: { newsId: postId, type: 'file' },
+            order: { id: 'ASC' },
+        });
+    }
+
+    async getFile(postId: number, fileId: number): Promise<Files | null> {
+        return this.filesRepository.findOne({
+            where: { id: fileId, newsId: postId, type: 'file' },
+        });
+    }
+
+    async removeFile(fileId: number): Promise<void> {
+        await this.filesRepository.delete(fileId);
     }
 
     getCategories() {

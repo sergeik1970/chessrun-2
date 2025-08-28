@@ -10,6 +10,15 @@ export interface PostImage {
     isMain: boolean;
 }
 
+export interface PostFile {
+    id: number;
+    file: string; // base64 данные
+    mimeType: string;
+    originalName: string;
+    title?: string; // Название файла для отображения
+    size: number;
+}
+
 export interface PostAuthor {
     id: number;
     name: string;
@@ -21,9 +30,9 @@ export interface Post {
     title: string;
     body: string;
     category: 'travel' | 'competition' | 'training' | 'news' | 'events';
-    link?: string;
     author?: PostAuthor;
     images?: PostImage[];
+    files?: PostFile[];
     createdAt: string;
     updatedAt: string;
 }
@@ -208,6 +217,105 @@ export const deletePostImage = createAsyncThunk(
     }
 );
 
+export const reorderPostImages = createAsyncThunk(
+    "posts/reorderImages",
+    async ({ postId, imageIds }: { postId: number; imageIds: number[] }, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(createApiUrl(API_ENDPOINTS.news.reorderImages(postId)), {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ imageIds }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                return rejectWithValue(error.message || "Ошибка при изменении порядка изображений");
+            }
+
+            return { postId, imageIds };
+        } catch (error) {
+            return rejectWithValue("Ошибка сети");
+        }
+    }
+);
+
+// Функции для работы с файлами
+export const uploadPostFiles = createAsyncThunk(
+    "posts/uploadFiles",
+    async ({ postId, files }: { postId: number; files: File[] }, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            
+            // Конвертируем файлы в base64
+            const filePromises = files.map(async (file) => {
+                return new Promise<PostFile>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        resolve({
+                            id: Date.now() + Math.random(), // Временный ID
+                            file: reader.result as string,
+                            mimeType: file.type,
+                            originalName: file.name,
+                            title: file.name,
+                            size: file.size,
+                        });
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            const fileData = await Promise.all(filePromises);
+
+            const response = await fetch(createApiUrl(API_ENDPOINTS.news.uploadFiles(postId)), {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ files: fileData }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                return rejectWithValue(error.message || "Ошибка при загрузке файлов");
+            }
+
+            return response.json();
+        } catch (error) {
+            return rejectWithValue("Ошибка сети");
+        }
+    }
+);
+
+export const deletePostFile = createAsyncThunk(
+    "posts/deleteFile",
+    async ({ postId, fileId }: { postId: number; fileId: number }, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(createApiUrl(API_ENDPOINTS.news.deleteFile(fileId)), {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                return rejectWithValue(error.message || "Ошибка при удалении файла");
+            }
+
+            return { postId, fileId };
+        } catch (error) {
+            return rejectWithValue("Ошибка сети");
+        }
+    }
+);
+
 const postsSlice = createSlice({
     name: "posts",
     initialState,
@@ -282,6 +390,52 @@ const postsSlice = createSlice({
                 }
             })
             .addCase(deletePostImage.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            // Reorder images
+            .addCase(reorderPostImages.fulfilled, (state, action) => {
+                const { postId, imageIds } = action.payload;
+                const post = state.posts.find(p => p.id === postId);
+                if (post && post.images) {
+                    // Переупорядочиваем изображения согласно новому порядку
+                    const reorderedImages = imageIds.map(id => 
+                        post.images!.find(img => img.id === id)
+                    ).filter(Boolean) as PostImage[];
+                    
+                    // Обновляем isMain флаг - первое изображение становится главным
+                    reorderedImages.forEach((img, index) => {
+                        img.isMain = index === 0;
+                    });
+                    
+                    post.images = reorderedImages;
+                }
+            })
+            .addCase(reorderPostImages.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            // Upload files
+            .addCase(uploadPostFiles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(uploadPostFiles.fulfilled, (state, action) => {
+                state.loading = false;
+                // После загрузки файлов нужно обновить список постов
+                // Это будет сделано в компоненте через fetchPosts
+            })
+            .addCase(uploadPostFiles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            // Delete file
+            .addCase(deletePostFile.fulfilled, (state, action) => {
+                const { postId, fileId } = action.payload;
+                const post = state.posts.find(p => p.id === postId);
+                if (post && post.files) {
+                    post.files = post.files.filter(file => file.id !== fileId);
+                }
+            })
+            .addCase(deletePostFile.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
     },
