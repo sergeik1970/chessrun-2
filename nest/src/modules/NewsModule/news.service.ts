@@ -158,6 +158,18 @@ export class NewsService {
                 icon: "💪",
                 color: "#2196F3",
             },
+            {
+                id: PostCategory.NEWS,
+                name: "Новости",
+                icon: "📰",
+                color: "#6f42c1",
+            },
+            {
+                id: PostCategory.EVENTS,
+                name: "События",
+                icon: "🎉",
+                color: "#28a745",
+            },
         ];
     }
 }

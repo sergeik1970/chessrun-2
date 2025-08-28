@@ -4,11 +4,14 @@ import {
     createPost,
     updatePost,
     uploadPostImages,
+    deletePostImage,
     fetchCategories,
     fetchPosts,
     PostCategory,
+    PostImage,
 } from "../../store/slices/posts";
 import { Post } from "../../store/slices/posts";
+import { getImageUrlFromPost } from "../../utils/imageUtils";
 import styles from "./PostEditor.module.scss";
 
 interface PostEditorProps {
@@ -26,11 +29,13 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         body: "",
         category: "",
         link: "",
-        images: [] as File[], // Массив файлов изображений
+        images: [] as File[], // Массив новых файлов изображений
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+    const [existingImages, setExistingImages] = useState<PostImage[]>([]); // Существующие изображения
+    const [imagesToDelete, setImagesToDelete] = useState<number[]>([]); // ID изображений для удаления
 
     useEffect(() => {
         // Загружаем категории при монтировании компонента
@@ -46,8 +51,15 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 body: post.body,
                 category: post.category,
                 link: post.link || "",
-                images: [], // Для редактирования не загружаем существующие изображения как файлы
+                images: [], // Новые изображения
             });
+            // Загружаем существующие изображения
+            setExistingImages(post.images || []);
+            setImagesToDelete([]); // Сбрасываем список изображений для удаления
+        } else {
+            // Сбрасываем состояние для создания нового поста
+            setExistingImages([]);
+            setImagesToDelete([]);
         }
     }, [post]);
 
@@ -89,7 +101,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         console.log("Total images after selection:", formData.images.length + files.length);
     };
 
-    const removeImage = (index: number) => {
+    const removeNewImage = (index: number) => {
         setFormData((prev) => ({
             ...prev,
             images: prev.images.filter((_, i) => i !== index),
@@ -98,6 +110,13 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         // Освобождаем URL и удаляем из preview
         URL.revokeObjectURL(imagePreviewUrls[index]);
         setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const removeExistingImage = (imageId: number) => {
+        // Добавляем ID изображения в список для удаления
+        setImagesToDelete((prev) => [...prev, imageId]);
+        // Удаляем изображение из списка существующих
+        setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
     };
 
     const validateForm = (): boolean => {
@@ -130,7 +149,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             const postData = {
                 title: formData.title.trim(),
                 body: formData.body.trim(),
-                category: formData.category as "travel" | "competition" | "training",
+                category: formData.category as "travel" | "competition" | "training" | "news" | "events",
                 link: formData.link.trim() || undefined,
             };
 
@@ -147,9 +166,18 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 createPost.fulfilled.match(resultAction) ||
                 updatePost.fulfilled.match(resultAction)
             ) {
-                // Если есть изображения, загружаем их
+                const postId = post?.id || resultAction.payload.id;
+
+                // Удаляем изображения, которые были помечены для удаления
+                if (imagesToDelete.length > 0 && post) {
+                    console.log("Deleting images:", imagesToDelete);
+                    for (const imageId of imagesToDelete) {
+                        await dispatch(deletePostImage({ postId: post.id, imageId }));
+                    }
+                }
+
+                // Если есть новые изображения, загружаем их
                 if (formData.images.length > 0) {
-                    const postId = post?.id || resultAction.payload.id;
                     console.log(
                         "About to upload images:",
                         formData.images.length,
@@ -162,13 +190,13 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
 
                     if (uploadPostImages.fulfilled.match(uploadResult)) {
                         console.log("Images uploaded successfully:", uploadResult.payload);
-                        // После успешной загрузки изображений обновляем список постов
-                        await dispatch(fetchPosts());
                     } else {
                         console.error("Failed to upload images:", uploadResult);
                     }
                 }
 
+                // После всех операций обновляем список постов
+                await dispatch(fetchPosts());
                 onSave();
             }
         } catch (error) {
@@ -279,10 +307,43 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                             className={styles.fileInput}
                         />
 
+                        {/* Существующие изображения */}
+                        {existingImages.length > 0 && (
+                            <div className={styles.imagePreview}>
+                                <h4 className={styles.sectionTitle}>Текущие изображения:</h4>
+                                {existingImages.map((image, index) => (
+                                    <div key={`existing-${image.id}`} className={styles.imagePreviewItem}>
+                                        <img
+                                            src={post ? getImageUrlFromPost(post.id, image) : ''}
+                                            alt={image.alt || `Изображение ${index + 1}`}
+                                            className={styles.previewImage}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeExistingImage(image.id)}
+                                            className={styles.removeImageButton}
+                                        >
+                                            ×
+                                        </button>
+                                        <small className={styles.fileName}>
+                                            {image.originalName || `Изображение ${index + 1}`}
+                                        </small>
+                                        {image.isMain && (
+                                            <small className={styles.hint}>
+                                                Главное изображение
+                                            </small>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Новые изображения */}
                         {formData.images.length > 0 && (
                             <div className={styles.imagePreview}>
+                                <h4 className={styles.sectionTitle}>Новые изображения:</h4>
                                 {formData.images.map((file, index) => (
-                                    <div key={index} className={styles.imagePreviewItem}>
+                                    <div key={`new-${index}`} className={styles.imagePreviewItem}>
                                         <img
                                             src={imagePreviewUrls[index]}
                                             alt={`Preview ${index + 1}`}
@@ -290,13 +351,13 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => removeImage(index)}
+                                            onClick={() => removeNewImage(index)}
                                             className={styles.removeImageButton}
                                         >
                                             ×
                                         </button>
                                         <small className={styles.fileName}>{file.name}</small>
-                                        {index === 0 && (
+                                        {existingImages.length === 0 && index === 0 && (
                                             <small className={styles.hint}>
                                                 Главное изображение
                                             </small>

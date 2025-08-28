@@ -1,10 +1,28 @@
 @import '~normalize.css';
 @import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Titillium+Web:wght@300;400;600;700&display=swap');
+
+html,
 body {
 	font-family: 'Titillium Web', sans-serif;
+	background-color: #ffffff !important;
+	color: #333333;
+	margin: 0;
+	padding: 0;
 }
 
 *,
 body {
 	box-sizing: border-box;
+}
+
+// Переопределяем фоны Mantine
+.mantine-AppShell-root,
+.mantine-Container-root,
+.mantine-Paper-root {
+	background-color: #ffffff !important;
+}
+
+// Убираем любые градиенты
+* {
+	background-image: none !important;
 }

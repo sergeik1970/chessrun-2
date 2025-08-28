@@ -1,6 +1,6 @@
 import React, { ReactElement, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "../../store/store";
-import { fetchPosts, deletePost, Post } from "../../store/slices/posts";
+import { fetchPosts, fetchCategories, deletePost, Post } from "../../store/slices/posts";
 import PostCard from "../../components/PostCard";
 import PostEditor from "./PostEditor";
 import { getImageUrlFromPost } from "../../utils/imageUtils";
@@ -16,9 +16,12 @@ const PostsManager = (): ReactElement => {
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
     useEffect(() => {
-        // Загружаем посты при монтировании компонента
+        // Загружаем все посты и категории при монтировании компонента
         dispatch(fetchPosts());
+        dispatch(fetchCategories());
     }, [dispatch]);
+
+
 
     const handleCreatePost = () => {
         setEditingPost(null);
@@ -53,20 +56,24 @@ const PostsManager = (): ReactElement => {
 
     const handleCategoryFilter = (category: string) => {
         setSelectedCategory(category);
-        if (category !== "all") {
-            dispatch(fetchPosts(category));
-        } else {
-            dispatch(fetchPosts());
-        }
     };
 
-    // Фильтрация постов по поиску (категории уже фильтруются на сервере)
+    // Фильтрация постов по поиску и категории на клиентской стороне
     const filteredPosts = posts.filter((post) => {
-        if (!searchTerm) return true;
-        return (
-            post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.body.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        // Фильтр по категории
+        if (selectedCategory !== "all" && post.category !== selectedCategory) {
+            return false;
+        }
+        
+        // Фильтр по поиску
+        if (searchTerm) {
+            return (
+                post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post.body.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        
+        return true;
     });
 
     // Преобразуем посты для PostCard (адаптируем типы)
@@ -103,6 +110,9 @@ const PostsManager = (): ReactElement => {
         <div className={styles.postsManager}>
             <div className={styles.header}>
                 <h2 className={styles.title}>Управление постами</h2>
+            </div>
+
+            <div className={styles.createSection}>
                 <button onClick={handleCreatePost} className={styles.createButton}>
                     + Создать пост
                 </button>
@@ -157,7 +167,6 @@ const PostsManager = (): ReactElement => {
                                 onClick={() => {
                                     setSearchTerm("");
                                     setSelectedCategory("all");
-                                    dispatch(fetchPosts());
                                 }}
                                 className={styles.clearFiltersButton}
                             >

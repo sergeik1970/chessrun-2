@@ -85,10 +85,11 @@ const getImagesForPost = (id: number, index: number, categoryId: string) => {
 // Генератор тестовых постов
 const generateMockPosts = (startId: number, count: number): Post[] => {
     const categories = [
-        { id: "competitions", name: "Соревнования", icon: "🏃‍♂️", color: "#28a745" },
+        { id: "competitions", name: "Соревнования", icon: "🏃‍♂️", color: "#007bff" },
         { id: "travel", name: "Путешествия", icon: "🎿", color: "#17a2b8" },
         { id: "training", name: "Тренировки", icon: "💪", color: "#ffc107" },
         { id: "news", name: "Новости", icon: "📰", color: "#6f42c1" },
+        { id: "events", name: "События", icon: "🎉", color: "#28a745" },
     ];
 
     return Array.from({ length: count }, (_, index) => {

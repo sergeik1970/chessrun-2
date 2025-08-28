@@ -25,7 +25,7 @@ const examplePosts: Post[] = [
             id: "competitions",
             name: "Соревнования",
             icon: "🏃‍♂️",
-            color: "#28a745",
+            color: "#007bff",
         },
     },
     {

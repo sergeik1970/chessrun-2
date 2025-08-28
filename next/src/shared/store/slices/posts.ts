@@ -20,7 +20,7 @@ export interface Post {
     id: number;
     title: string;
     body: string;
-    category: 'travel' | 'competition' | 'training';
+    category: 'travel' | 'competition' | 'training' | 'news' | 'events';
     link?: string;
     author?: PostAuthor;
     images?: PostImage[];
@@ -184,6 +184,30 @@ export const uploadPostImages = createAsyncThunk(
     }
 );
 
+export const deletePostImage = createAsyncThunk(
+    "posts/deleteImage",
+    async ({ postId, imageId }: { postId: number; imageId: number }, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(createApiUrl(API_ENDPOINTS.news.deleteImage(imageId)), {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                return rejectWithValue(error.message || "Ошибка при удалении изображения");
+            }
+
+            return { postId, imageId };
+        } catch (error) {
+            return rejectWithValue("Ошибка сети");
+        }
+    }
+);
+
 const postsSlice = createSlice({
     name: "posts",
     initialState,
@@ -247,6 +271,17 @@ const postsSlice = createSlice({
             })
             .addCase(uploadPostImages.rejected, (state, action) => {
                 state.loading = false;
+                state.error = action.payload as string;
+            })
+            // Delete image
+            .addCase(deletePostImage.fulfilled, (state, action) => {
+                const { postId, imageId } = action.payload;
+                const post = state.posts.find(p => p.id === postId);
+                if (post && post.images) {
+                    post.images = post.images.filter(img => img.id !== imageId);
+                }
+            })
+            .addCase(deletePostImage.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
     },

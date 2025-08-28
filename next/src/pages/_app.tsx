@@ -9,6 +9,23 @@ import { createTheme, MantineProvider } from "@mantine/core";
 
 const theme = createTheme({
     /** Put your mantine theme override here */
+    colors: {
+        // Переопределяем цвета Mantine на белые/серые
+        gray: [
+            '#ffffff',
+            '#f8f9fa',
+            '#e9ecef',
+            '#dee2e6',
+            '#ced4da',
+            '#adb5bd',
+            '#6c757d',
+            '#495057',
+            '#343a40',
+            '#212529'
+        ]
+    },
+    primaryColor: 'blue',
+    defaultRadius: 'md'
 });
 
 const App: FC<AppProps> = ({ Component, ...rest }) => {

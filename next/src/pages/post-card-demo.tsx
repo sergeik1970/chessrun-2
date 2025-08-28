@@ -13,7 +13,7 @@ const PostCardDemoPage: React.FC = () => {
             <main
                 style={{
                     minHeight: "100vh",
-                    backgroundColor: "#f8f9fa",
+                    backgroundColor: "#ffffff",
                     paddingTop: "60px", // отступ для навигации
                 }}
             >

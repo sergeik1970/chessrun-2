@@ -37,7 +37,13 @@ const Navigation: React.FC<NavigationProps> = () => {
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
-                        href="/local"
+                        href="/training"
+                    >
+                        Тренировки
+                    </Link>
+                    <Link
+                        className={clsx(styles["nav-header-link"], styles["nav-section"])}
+                        href="/competitions"
                     >
                         Соревнования
                     </Link>
@@ -47,25 +53,25 @@ const Navigation: React.FC<NavigationProps> = () => {
                     >
                         Путешествия
                     </Link>
-                    <Link
+                    {/* <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/camping"
                     >
                         Походы
-                    </Link>
+                    </Link> */}
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/contacts"
                     >
                         Контакты
                     </Link>
-                    <Link
+                    {/* <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/posts-demo"
                         style={{ color: "#ff6b6b" }}
                     >
                         Демо постов
-                    </Link>
+                    </Link> */}
                     <svg
                         className={clsx(styles["menu"])}
                         onClick={openNavList}
@@ -99,27 +105,27 @@ const Navigation: React.FC<NavigationProps> = () => {
                         <Link href="/news">Новости</Link>
                     </li>
                     <li>
-                        <Link href="/local">Соревнования</Link>
+                        <Link href="/training">Тренировки</Link>
+                    </li>
+                    <li>
+                        <Link href="/competitions">Соревнования</Link>
                     </li>
                     <li>
                         <Link href="/travel">Путешествия</Link>
                     </li>
                     <li>
-                        <Link href="/camping">Походы</Link>
-                    </li>
-                    <li>
                         <Link href="/contacts">Контакты</Link>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link href="/posts-demo" style={{ color: "#ff6b6b" }}>
                             Демо постов
                         </Link>
-                    </li>
-                    <li>
+                    </li> */}
+                    {/* <li>
                         <Link href="/post-card-demo" style={{ color: "#ff6b6b" }}>
                             Демо карточки
                         </Link>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
         </>

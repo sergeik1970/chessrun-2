@@ -16,7 +16,7 @@ const Custom404: React.FC = () => {
             <main
                 style={{
                     minHeight: "100vh",
-                    backgroundColor: "#f8f9fa",
+                    backgroundColor: "#ffffff",
                     paddingTop: "60px",
                     display: "flex",
                     alignItems: "center",
@@ -124,11 +124,11 @@ const Custom404: React.FC = () => {
                         </Link>
 
                         <Link
-                            href="/posts-demo"
+                            href="/news"
                             style={{
                                 display: "inline-block",
                                 padding: "12px 24px",
-                                backgroundColor: "#28a745",
+                                backgroundColor: "#007bff",
                                 color: "white",
                                 textDecoration: "none",
                                 borderRadius: "8px",
@@ -138,18 +138,18 @@ const Custom404: React.FC = () => {
                                 cursor: "pointer",
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = "#1e7e34";
+                                e.currentTarget.style.backgroundColor = "#0056b3";
                                 e.currentTarget.style.transform = "translateY(-2px)";
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = "#28a745";
+                                e.currentTarget.style.backgroundColor = "#007bff";
                                 e.currentTarget.style.transform = "translateY(0)";
                             }}
                         >
                             📰 Новости
                         </Link>
 
-                        <Button
+                        <button
                             onClick={() => window.history.back()}
                             style={{
                                 padding: "12px 24px",
@@ -172,8 +172,7 @@ const Custom404: React.FC = () => {
                             }}
                         >
                             ⬅️ Назад
-                        </Button>
-                        <Input placeholder="Input component" />
+                        </button>
                     </div>
 
                     {/* Дополнительная информация */}
@@ -181,7 +180,7 @@ const Custom404: React.FC = () => {
                         style={{
                             marginTop: "40px",
                             padding: "20px",
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: "#ffffff",
                             borderRadius: "8px",
                             border: "1px solid #e9ecef",
                         }}

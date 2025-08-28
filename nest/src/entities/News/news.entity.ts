@@ -13,6 +13,8 @@ export enum PostCategory {
     TRAVEL = "travel",
     COMPETITION = "competition",
     TRAINING = "training",
+    NEWS = "news",
+    EVENTS = "events",
 }
 
 @Entity()
