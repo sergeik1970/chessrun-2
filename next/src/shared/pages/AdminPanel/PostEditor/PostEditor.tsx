@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "../../store/store";
+import { useDispatch, useSelector } from "../../../store/store";
 import {
     createPost,
     updatePost,
@@ -13,12 +13,12 @@ import {
     PostCategory,
     PostImage,
     PostFile,
-} from "../../store/slices/posts";
-import { Post } from "../../store/slices/posts";
-import { getImageUrlFromPost } from "../../utils/imageUtils";
-import DraggableImageList from "../../components/DraggableImageList";
-import FileUploader from "../../components/FileUploader";
-import PDFViewer from "../../components/PDFViewer";
+} from "../../../store/slices/posts";
+import { Post } from "../../../store/slices/posts";
+import { getImageUrlFromPost } from "../../../utils/imageUtils";
+import DraggableImageList from "../../../components/DraggableImageList";
+import FileUploader from "../../../components/FileUploader";
+import PDFViewer from "../../../components/PDFViewer";
 import styles from "./PostEditor.module.scss";
 
 interface PostEditorProps {
@@ -506,11 +506,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             </div>
 
             {/* PDF Viewer Modal */}
-            <PDFViewer
-                file={pdfViewerFile}
-                isOpen={isPdfViewerOpen}
-                onClose={closePdfViewer}
-            />
+            <PDFViewer file={pdfViewerFile} isOpen={isPdfViewerOpen} onClose={closePdfViewer} />
         </div>
     );
 };

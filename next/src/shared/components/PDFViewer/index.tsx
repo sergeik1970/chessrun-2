@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { PostFile } from '../../types/Post';
-import styles from './index.module.scss';
+import React, { useEffect, useState } from "react";
+import { PostFile } from "../../types/Post";
+import styles from "./index.module.scss";
 
 interface PDFViewerProps {
     file: File | PostFile | null;
@@ -9,19 +9,19 @@ interface PDFViewerProps {
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
-    const [pdfUrl, setPdfUrl] = useState<string>('');
+    const [pdfUrl, setPdfUrl] = useState<string>("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string>('');
+    const [error, setError] = useState<string>("");
 
     useEffect(() => {
         if (!file || !isOpen) {
-            setPdfUrl('');
-            setError('');
+            setPdfUrl("");
+            setError("");
             return;
         }
 
         setLoading(true);
-        setError('');
+        setError("");
 
         try {
             if (file instanceof File) {
@@ -31,7 +31,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                 setLoading(false);
             } else {
                 // Существующий файл (PostFile)
-                if (file.file.startsWith('data:')) {
+                if (file.file.startsWith("data:")) {
                     // Уже готовый data URL
                     setPdfUrl(file.file);
                 } else {
@@ -47,7 +47,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                         const blobUrl = URL.createObjectURL(blob);
                         setPdfUrl(blobUrl);
                     } catch (error) {
-                        console.error('Ошибка при создании blob URL:', error);
+                        console.error("Ошибка при создании blob URL:", error);
                         // Fallback к data URL
                         const dataUrl = `data:${file.mimeType};base64,${file.file}`;
                         setPdfUrl(dataUrl);
@@ -56,13 +56,13 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                 setLoading(false);
             }
         } catch (err) {
-            setError('Ошибка при загрузке файла');
+            setError("Ошибка при загрузке файла");
             setLoading(false);
         }
 
         return () => {
             // Очищаем URL для новых файлов и blob URL
-            if (pdfUrl && (file instanceof File || pdfUrl.startsWith('blob:'))) {
+            if (pdfUrl && (file instanceof File || pdfUrl.startsWith("blob:"))) {
                 URL.revokeObjectURL(pdfUrl);
             }
         };
@@ -71,19 +71,19 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
     // Обработка клавиши Escape
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape' && isOpen) {
+            if (event.key === "Escape" && isOpen) {
                 onClose();
             }
         };
 
         if (isOpen) {
-            document.addEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = 'hidden';
+            document.addEventListener("keydown", handleKeyDown);
+            document.body.style.overflow = "hidden";
         }
 
         return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = 'unset';
+            document.removeEventListener("keydown", handleKeyDown);
+            document.body.style.overflow = "unset";
         };
     }, [isOpen, onClose]);
 
@@ -101,7 +101,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
     const handleDownload = () => {
         if (file instanceof File) {
             const url = URL.createObjectURL(file);
-            const a = document.createElement('a');
+            const a = document.createElement("a");
             a.href = url;
             a.download = file.name;
             document.body.appendChild(a);
@@ -110,8 +110,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
             URL.revokeObjectURL(url);
         } else {
             // Для существующих файлов
-            const a = document.createElement('a');
-            if (file.file.startsWith('data:')) {
+            const a = document.createElement("a");
+            if (file.file.startsWith("data:")) {
                 a.href = file.file;
             } else {
                 a.href = `data:${file.mimeType};base64,${file.file}`;
@@ -158,11 +158,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                                 />
                             </svg>
                         </button>
-                        <button
-                            onClick={onClose}
-                            className={styles.closeButton}
-                            title="Закрыть"
-                        >
+                        <button onClick={onClose} className={styles.closeButton} title="Закрыть">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                 <path
                                     d="M18 6L6 18M6 6L18 18"
@@ -187,8 +183,18 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                     {error && (
                         <div className={styles.error}>
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                                <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2"/>
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                />
+                                <path
+                                    d="M15 9L9 15M9 9L15 15"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                />
                             </svg>
                             <p>{error}</p>
                             <button onClick={onClose} className={styles.errorButton}>
@@ -198,22 +204,18 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                     )}
 
                     {!loading && !error && pdfUrl && (
-                        <object
-                            data={pdfUrl}
-                            type="application/pdf"
-                            className={styles.pdfFrame}
-                        >
-                            <div style={{padding: '20px', textAlign: 'center'}}>
+                        <object data={pdfUrl} type="application/pdf" className={styles.pdfFrame}>
+                            <div style={{ padding: "20px", textAlign: "center" }}>
                                 <p>Ваш браузер не поддерживает отображение PDF файлов.</p>
-                                <button 
+                                <button
                                     onClick={handleDownload}
                                     style={{
-                                        padding: '10px 20px',
-                                        background: '#007bff',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer'
+                                        padding: "10px 20px",
+                                        background: "#007bff",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
                                     }}
                                 >
                                     Скачать PDF

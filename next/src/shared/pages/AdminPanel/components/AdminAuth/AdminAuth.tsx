@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from "react";
-import { useDispatch, useSelector } from "../../store/store";
-import { registerUser, loginUser, clearError } from "../../store/slices/auth";
+import { useDispatch, useSelector } from "../../../../store/store";
+import { registerUser, loginUser, clearError } from "../../../../store/slices/auth";
 import styles from "./AdminAuth.module.scss";
 
 interface AuthFormData {

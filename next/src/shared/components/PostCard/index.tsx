@@ -59,8 +59,6 @@ const PostCard: React.FC<PostComponentProps> = ({
         setIsModalOpen(false);
     };
 
-
-
     const formatDate = (dateString: string) => {
         // Используем более стабильный способ форматирования для SSR
         const date = new Date(dateString);
@@ -121,12 +119,7 @@ const PostCard: React.FC<PostComponentProps> = ({
                 </div>
 
                 {/* Файлы */}
-                {files.length > 0 && (
-                    <FilesList
-                        files={files}
-                        onFileClick={handleFileClick}
-                    />
-                )}
+                {files.length > 0 && <FilesList files={files} onFileClick={handleFileClick} />}
 
                 {/* Футер поста */}
                 <footer className={styles.postFooter}>
@@ -165,11 +158,7 @@ const PostCard: React.FC<PostComponentProps> = ({
             />
 
             {/* PDF Viewer Modal */}
-            <PDFViewer
-                file={pdfViewerFile}
-                isOpen={isPdfViewerOpen}
-                onClose={closePdfViewer}
-            />
+            <PDFViewer file={pdfViewerFile} isOpen={isPdfViewerOpen} onClose={closePdfViewer} />
         </>
     );
 };

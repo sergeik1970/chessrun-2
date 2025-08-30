@@ -2,8 +2,8 @@ import React, { ReactElement, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "../../store/store";
 import { getCurrentUser } from "../../store/slices/auth";
-import AdminAuth from "./AdminAuth";
-import AdminDashboard from "./AdminDashboard";
+import AdminAuth from "./components/AdminAuth";
+import AdminDashboard from "./components/AdminDashboard";
 import styles from "./index.module.scss";
 
 const AdminPanel = (): ReactElement => {

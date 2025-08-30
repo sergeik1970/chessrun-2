@@ -1,9 +1,9 @@
 import React, { ReactElement, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "../../store/store";
-import { fetchPosts, fetchCategories, deletePost, Post } from "../../store/slices/posts";
-import PostCard from "../../components/PostCard";
-import PostEditor from "./PostEditor";
-import { getImageUrlFromPost } from "../../utils/imageUtils";
+import { useDispatch, useSelector } from "../../../store/store";
+import { fetchPosts, fetchCategories, deletePost, Post } from "../../../store/slices/posts";
+import PostCard from "../../../components/PostCard";
+import PostEditor from "../PostEditor";
+import { getImageUrlFromPost } from "../../../utils/imageUtils";
 import styles from "./PostsManager.module.scss";
 
 const PostsManager = (): ReactElement => {

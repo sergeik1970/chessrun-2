@@ -5,24 +5,20 @@ interface ApiImageProps {
     alt: string;
     width?: number;
     height?: number;
+    sizes?: string;
     className?: string;
     onClick?: () => void;
 }
 
-const ApiImage: React.FC<ApiImageProps> = ({ src, alt, width, height, className, onClick }) => {
+const ApiImage: React.FC<ApiImageProps> = ({ src, alt, width, height, sizes, className, onClick }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
-    console.log("ApiImage rendering with src:", src);
-
     const handleLoad = () => {
-        console.log("ApiImage loaded successfully:", src);
         setIsLoading(false);
     };
 
     const handleError = (e: any) => {
-        console.error("ApiImage error:", e);
-        console.error("Failed to load image:", src);
         setIsLoading(false);
         setHasError(true);
     };
@@ -76,6 +72,7 @@ const ApiImage: React.FC<ApiImageProps> = ({ src, alt, width, height, className,
                 onLoad={handleLoad}
                 onError={handleError}
                 style={{ display: isLoading ? "none" : "block" }}
+                {...(sizes && { 'data-sizes': sizes })}
             />
         </>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { PostFile } from "../../types/Post";
+import { PostFile } from "../../store/slices/posts";
 import styles from "./index.module.scss";
 
 interface FileUploaderProps {
