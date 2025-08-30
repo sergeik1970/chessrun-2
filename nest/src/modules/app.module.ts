@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { DealsModule } from "./modules/DealsModule/deal.module";
-import { AuthModule } from "./modules/AuthModule/auth.module";
-import { NewsModule } from "./modules/NewsModule/news.module";
-import { SliderModule } from "./modules/SliderModule/slider.module";
-import { FilesModule } from "./modules/FilesModule/files.module";
+import { DealsModule } from "./DealsModule/deal.module";
+import { AuthModule } from "./AuthModule/auth.module";
+import { NewsModule } from "./NewsModule/news.module";
+import { SliderModule } from "./SliderModule/slider.module";
+import { FilesModule } from "./FilesModule/files.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({

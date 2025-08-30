@@ -8,7 +8,7 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import { FilesService } from './files.service';
+import { FilesService } from '../../services/FilesService/files.service';
 import { Files } from '../../entities/Files/files.entity';
 
 @Controller('files')

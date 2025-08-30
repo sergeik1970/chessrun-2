@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Slider } from '../../entities/Slider/slider.entity';
 import { SliderController } from './slider.controller';
-import { SliderService } from './slider.service';
+import { SliderService } from '../../services/SliderService/slider.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Slider])],
