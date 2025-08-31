@@ -45,4 +45,6 @@ export interface PostComponentProps {
     onReadMore?: (postId: string) => void;
     maxTextLines?: number; // количество строк для обрезки (по умолчанию 3-4)
     showFullText?: boolean; // развернут ли текст
+    onImageClick?: (images: PostImage[], index: number) => void; // обработчик клика по изображению
+    onPdfClick?: (pdf: PostFile) => void; // обработчик клика по PDF
 }

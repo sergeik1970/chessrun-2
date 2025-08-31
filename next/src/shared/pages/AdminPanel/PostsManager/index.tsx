@@ -1,1 +1,1 @@
-export { default } from './PostsManager';
+export { default } from "./PostsManager";

@@ -6,21 +6,34 @@
     margin-bottom: 24px;
     padding: 20px;
     transition: box-shadow 0.3s ease;
+    width: 100%;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+    word-wrap: break-word;
 
     &:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
 
-    // Увеличиваем ширину на больших экранах
-    @media (min-width: 768px) {
-        max-width: 800px;
+    // Маленькие экраны
+    @media (max-width: 480px) {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
     }
 
+    // Средние экраны
+    @media (min-width: 768px) {
+        max-width: 700px;
+        padding: 24px;
+    }
+
+    // Большие экраны
     @media (min-width: 1200px) {
-        max-width: 900px;
+        max-width: 800px;
     }
 }
 
@@ -51,12 +64,44 @@
     color: #333;
     margin: 0 0 16px 0;
     line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    @media (max-width: 480px) {
+        font-size: 20px;
+        margin: 0 0 12px 0;
+    }
 }
 
 // Контейнер изображений (теперь используется для Swiper)
 .imageContainer {
     margin-bottom: 16px;
     z-index: 1;
+    width: 100%;
+    overflow: hidden;
+
+    // Обеспечиваем правильное отображение на всех экранах
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    // Для Swiper контейнера
+    .swiper {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .swiper-slide {
+        width: 100%;
+
+        img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+    }
 }
 
 // Текстовый контент
@@ -68,12 +113,19 @@
         line-height: 1.6;
         color: #444;
         margin: 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
 
         &.truncated {
             display: -webkit-box;
             -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        @media (max-width: 480px) {
+            font-size: 14px;
         }
 
         // Стили для ссылок в тексте
@@ -441,7 +493,7 @@
 @media (max-width: 480px) {
     .imageModal {
         padding: 20px;
-        
+
         .modalContent {
             max-width: calc(100vw - 40px);
             max-height: calc(100vh - 40px);
@@ -450,7 +502,7 @@
                 max-width: calc(100vw - 40px);
                 max-height: calc(100vh - 40px);
             }
-            
+
             // Скрываем обычные стрелки навигации
             .modalNavButton {
                 display: none;

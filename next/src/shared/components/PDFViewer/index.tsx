@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { PostFile } from "../../types/Post";
 import styles from "./index.module.scss";
+import postsStyles from "../../styles/posts.module.scss";
+
+// Универсальный интерфейс для файла
+interface FileData {
+    id: string | number;
+    file: string;
+    mimeType: string;
+    originalName: string;
+    title?: string;
+    size: number;
+}
 
 interface PDFViewerProps {
-    file: File | PostFile | null;
+    file: File | FileData | null;
     isOpen: boolean;
     onClose: () => void;
 }

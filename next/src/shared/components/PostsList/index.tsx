@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import PostCard from "../PostCard";
 import { Post } from "../../types/Post";
 import styles from "./index.module.scss";
+import postsStyles from "../../styles/posts.module.scss";
 
 interface PostsListProps {
     posts: Post[];
@@ -55,22 +56,23 @@ const PostsList: React.FC<PostsListProps> = ({
     }, [hasMore, loading, onLoadMore]);
 
     return (
-        <div className={styles.postsList}>
+        <div className={postsStyles.postsList}>
             {posts.map((post) => (
-                <PostCard
-                    key={post.id}
-                    post={post}
-                    isAdmin={isAdmin}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onReadMore={handleReadMore}
-                    showFullText={expandedPosts.has(post.id)}
-                />
+                <div key={post.id} className={postsStyles.postItem}>
+                    <PostCard
+                        post={post}
+                        isAdmin={isAdmin}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        onReadMore={handleReadMore}
+                        showFullText={expandedPosts.has(post.id)}
+                    />
+                </div>
             ))}
 
             {loading && (
-                <div className={styles.loading}>
-                    <div className={styles.spinner}></div>
+                <div className={postsStyles.loading}>
+                    <div className={postsStyles.spinner}></div>
                     <p>Загрузка постов...</p>
                 </div>
             )}
@@ -82,8 +84,10 @@ const PostsList: React.FC<PostsListProps> = ({
             )}
 
             {posts.length === 0 && !loading && (
-                <div className={styles.emptyState}>
-                    <p>Пока нет постов</p>
+                <div className={postsStyles.emptyState}>
+                    <div className={postsStyles.emptyIcon}>📝</div>
+                    <h3>Пока нет постов</h3>
+                    <p>Скоро здесь появятся интересные посты!</p>
                 </div>
             )}
         </div>

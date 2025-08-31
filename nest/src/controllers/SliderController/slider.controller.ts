@@ -8,7 +8,7 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import { SliderService } from './slider.service';
+import { SliderService } from '../../services/SliderService/slider.service';
 import { Slider } from '../../entities/Slider/slider.entity';
 
 @Controller('slider')

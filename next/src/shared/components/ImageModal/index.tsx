@@ -12,6 +12,7 @@ import "swiper/css/pagination";
 import "swiper/css/zoom";
 
 import styles from "./index.module.scss";
+import postsStyles from "../../styles/posts.module.scss";
 
 interface ImageModalProps {
     images: PostImage[];
@@ -72,14 +73,22 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, o
                     spaceBetween={20}
                     slidesPerView={1}
                     initialSlide={initialIndex}
-                    navigation={{
-                        nextEl: `.${styles.modalButtonNext}`,
-                        prevEl: `.${styles.modalButtonPrev}`,
-                    }}
-                    pagination={{
-                        clickable: true,
-                        dynamicBullets: true,
-                    }}
+                    navigation={
+                        images.length > 1
+                            ? {
+                                  nextEl: `.${styles.modalButtonNext}`,
+                                  prevEl: `.${styles.modalButtonPrev}`,
+                              }
+                            : false
+                    }
+                    pagination={
+                        images.length > 1
+                            ? {
+                                  clickable: true,
+                                  dynamicBullets: true,
+                              }
+                            : false
+                    }
                     zoom={{
                         maxRatio: 3,
                         minRatio: 1,
@@ -156,9 +165,12 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, o
 
                 {/* Информационная панель */}
                 <div className={styles.infoPanel}>
-                    <div className={styles.imageCounter}>
-                        {initialIndex + 1} / {images.length}
-                    </div>
+                    {/* Показываем счетчик только если изображений больше одного */}
+                    {images.length > 1 && (
+                        <div className={styles.imageCounter}>
+                            {initialIndex + 1} / {images.length}
+                        </div>
+                    )}
                     <div className={styles.zoomHint}>Двойной клик для увеличения</div>
                 </div>
             </div>

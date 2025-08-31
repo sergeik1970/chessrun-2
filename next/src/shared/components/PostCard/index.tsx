@@ -16,6 +16,8 @@ const PostCard: React.FC<PostComponentProps> = ({
     onReadMore,
     maxTextLines = 4,
     showFullText = false,
+    onImageClick,
+    onPdfClick,
 }) => {
     const [isTextExpanded, setIsTextExpanded] = useState(showFullText);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,13 +43,25 @@ const PostCard: React.FC<PostComponentProps> = ({
     };
 
     const handleImageClick = (imageUrl: string, index: number) => {
-        setModalImageIndex(index);
-        setIsModalOpen(true);
+        if (onImageClick) {
+            // Используем внешний обработчик, если он передан
+            onImageClick(images, index);
+        } else {
+            // Используем внутренний модальный режим
+            setModalImageIndex(index);
+            setIsModalOpen(true);
+        }
     };
 
     const handleFileClick = (file: PostFile) => {
-        setPdfViewerFile(file);
-        setIsPdfViewerOpen(true);
+        if (onPdfClick && file.mimeType === "application/pdf") {
+            // Используем внешний обработчик для PDF, если он передан
+            onPdfClick(file);
+        } else {
+            // Используем внутренний PDF viewer
+            setPdfViewerFile(file);
+            setIsPdfViewerOpen(true);
+        }
     };
 
     const closePdfViewer = () => {

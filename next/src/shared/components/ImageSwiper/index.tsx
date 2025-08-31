@@ -13,6 +13,7 @@ import "swiper/css/thumbs";
 import "swiper/css/free-mode";
 
 import styles from "./index.module.scss";
+import postsStyles from "../../styles/posts.module.scss";
 
 interface ImageSwiperProps {
     images: PostImage[];
@@ -48,14 +49,22 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
                 modules={[Navigation, Pagination, Thumbs, FreeMode]}
                 spaceBetween={10}
                 slidesPerView={1}
-                navigation={{
-                    nextEl: `.${styles.swiperButtonNext}`,
-                    prevEl: `.${styles.swiperButtonPrev}`,
-                }}
-                pagination={{
-                    clickable: true,
-                    dynamicBullets: true,
-                }}
+                navigation={
+                    images.length > 1
+                        ? {
+                              nextEl: `.${styles.swiperButtonNext}`,
+                              prevEl: `.${styles.swiperButtonPrev}`,
+                          }
+                        : false
+                }
+                pagination={
+                    images.length > 1
+                        ? {
+                              clickable: true,
+                              dynamicBullets: true,
+                          }
+                        : false
+                }
                 thumbs={showThumbs ? { swiper: thumbsSwiper } : undefined}
                 className={styles.mainSwiper}
                 loop={images.length > 1}

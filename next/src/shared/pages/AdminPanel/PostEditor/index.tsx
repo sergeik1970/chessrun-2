@@ -1,1 +1,1 @@
-export { default } from './PostEditor';
+export { default } from "./PostEditor";
