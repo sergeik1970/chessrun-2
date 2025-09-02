@@ -51,25 +51,12 @@ const Navigation: React.FC<NavigationProps> = ({ currentPath, isAdmin }) => {
                     >
                         Путешествия
                     </Link>
-                    {/* <Link
-                        className={clsx(styles["nav-header-link"], styles["nav-section"])}
-                        href="/camping"
-                    >
-                        Походы
-                    </Link> */}
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/contacts"
                     >
                         Контакты
                     </Link>
-                    {/* <Link
-                        className={clsx(styles["nav-header-link"], styles["nav-section"])}
-                        href="/posts-demo"
-                        style={{ color: "#ff6b6b" }}
-                    >
-                        Демо постов
-                    </Link> */}
                     <svg
                         className={clsx(styles["menu"])}
                         onClick={openNavList}
@@ -99,33 +86,40 @@ const Navigation: React.FC<NavigationProps> = ({ currentPath, isAdmin }) => {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/federation">Федерация</Link>
-                    </li>
-                    <li>
-                        <Link href="/news">Новости</Link>
-                    </li>
-                    <li>
-                        <Link href="/training">Тренировки</Link>
-                    </li>
-                    <li>
-                        <Link href="/competitions">Соревнования</Link>
-                    </li>
-                    <li>
-                        <Link href="/travel">Путешествия</Link>
-                    </li>
-                    <li>
-                        <Link href="/contacts">Контакты</Link>
-                    </li>
-                    {/* <li>
-                        <Link href="/posts-demo" style={{ color: "#ff6b6b" }}>
-                            Демо постов
+                        <Link onClick={closeNavList} href="/federation">
+                            Федерация
                         </Link>
-                    </li> */}
-                    {/* <li>
-                        <Link href="/post-card-demo" style={{ color: "#ff6b6b" }}>
-                            Демо карточки
+                    </li>
+                    <li>
+                        <Link onClick={closeNavList} href="/news">
+                            Новости
                         </Link>
-                    </li> */}
+                    </li>
+                    <li>
+                        <Link onClick={closeNavList} href="/training">
+                            Тренировки
+                        </Link>
+                    </li>
+                    <li>
+                        <Link onClick={closeNavList} href="/competitions">
+                            Соревнования
+                        </Link>
+                    </li>
+                    <li>
+                        <Link onClick={closeNavList} href="/travel">
+                            Путешествия
+                        </Link>
+                    </li>
+                    <li>
+                        <Link onClick={closeNavList} href="/contacts">
+                            Контакты
+                        </Link>
+                    </li>
+                    <li>
+                        <Link onClick={closeNavList} href="/admin">
+                            Для администраторов
+                        </Link>
+                    </li>
                 </ul>
             </div>
         </>
