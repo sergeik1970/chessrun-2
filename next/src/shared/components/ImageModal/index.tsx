@@ -19,9 +19,10 @@ interface ImageModalProps {
     initialIndex: number;
     isOpen: boolean;
     onClose: () => void;
+    postId: string;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, onClose }) => {
+const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, onClose, postId }) => {
     useEffect(() => {
         if (isOpen) {
             // Блокируем прокрутку страницы
@@ -104,31 +105,17 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, o
                         <SwiperSlide key={image.id || index} className={styles.modalSlide}>
                             <div className="swiper-zoom-container">
                                 <div className={styles.modalImageWrapper}>
-                                    {image.url.includes("localhost:3001") ? (
-                                        <ApiImage
-                                            src={image.url}
-                                            alt={
-                                                image.alt ||
-                                                `Изображение ${index + 1} из ${images.length}`
-                                            }
-                                            width={0}
-                                            height={0}
-                                            sizes="100vw"
-                                            className={styles.modalImage}
-                                        />
-                                    ) : (
-                                        <Image
-                                            src={image.url}
-                                            alt={
-                                                image.alt ||
-                                                `Изображение ${index + 1} из ${images.length}`
-                                            }
-                                            width={0}
-                                            height={0}
-                                            sizes="100vw"
-                                            className={styles.modalImage}
-                                        />
-                                    )}
+                                    <ApiImage
+                                        src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/images/${image.id}`}
+                                        alt={
+                                            image.alt ||
+                                            `Изображение ${index + 1} из ${images.length}`
+                                        }
+                                        width={0}
+                                        height={0}
+                                        sizes="100vw"
+                                        className={styles.modalImage}
+                                    />
                                 </div>
                             </div>
                         </SwiperSlide>

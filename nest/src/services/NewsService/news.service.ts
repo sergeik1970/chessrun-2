@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { News, PostCategory } from "../../entities/News/news.entity";
 import { Files } from "../../entities/Files/files.entity";
+import { S3Service } from "../S3Service/s3.service";
 
 @Injectable()
 export class NewsService {
@@ -11,6 +12,7 @@ export class NewsService {
         private newsRepository: Repository<News>,
         @InjectRepository(Files)
         private filesRepository: Repository<Files>,
+        private s3Service: S3Service,
     ) {}
 
     async findAll(): Promise<any[]> {
@@ -42,7 +44,8 @@ export class NewsService {
                     isMain: image.isMain,
                     mimeType: image.mimeType,
                     originalName: image.originalName,
-                    url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+                    // Приоритет S3 URL, fallback на локальный endpoint
+                    url: image.s3Url || `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
                 })),
             files: (post.files || []).map((file) => ({
                 id: file.id,
@@ -50,7 +53,9 @@ export class NewsService {
                 originalName: file.originalName,
                 mimeType: file.mimeType,
                 size: file.size,
-                file: file.file, // base64 данные для фронтенда
+                // Приоритет S3 URL, fallback на локальный endpoint для файлов
+                url: file.s3Url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+                file: file.s3Url ? null : file.file, // base64 данные только если нет S3
             })),
         }));
     }
@@ -84,7 +89,8 @@ export class NewsService {
                     isMain: image.isMain,
                     mimeType: image.mimeType,
                     originalName: image.originalName,
-                    url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+                    // Приоритет S3 URL, fallback на локальный endpoint
+                    url: image.s3Url || `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
                 })),
             files: (post.files || []).map((file) => ({
                 id: file.id,
@@ -92,7 +98,9 @@ export class NewsService {
                 originalName: file.originalName,
                 mimeType: file.mimeType,
                 size: file.size,
-                file: file.file, // base64 данные для фронтенда
+                // Приоритет S3 URL, fallback на локальный endpoint для файлов
+                url: file.s3Url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+                file: file.s3Url ? null : file.file, // base64 данные только если нет S3
             })),
         };
     }
@@ -127,7 +135,8 @@ export class NewsService {
                     isMain: image.isMain,
                     mimeType: image.mimeType,
                     originalName: image.originalName,
-                    url: `http://localhost:3001/api/news/${post.id}/images/${image.id}?t=${Date.now()}`,
+                    // Приоритет S3 URL, fallback на локальный endpoint
+                    url: image.s3Url || `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
                 })),
             files: (post.files || []).map((file) => ({
                 id: file.id,
@@ -135,7 +144,9 @@ export class NewsService {
                 originalName: file.originalName,
                 mimeType: file.mimeType,
                 size: file.size,
-                file: file.file, // base64 данные для фронтенда
+                // Приоритет S3 URL, fallback на локальный endpoint для файлов
+                url: file.s3Url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+                file: file.s3Url ? null : file.file, // base64 данные только если нет S3
             })),
         }));
     }
@@ -151,15 +162,19 @@ export class NewsService {
     }
 
     async remove(id: number): Promise<void> {
-        // Сначала удаляем связанные файлы
+        // Сначала удаляем файлы из S3
+        await this.s3Service.deletePostImages(id);
+        
+        // Затем удаляем связанные записи в БД
         await this.filesRepository.delete({ newsId: id });
-        // Затем удаляем новость
+        
+        // И наконец удаляем новость
         await this.newsRepository.delete(id);
     }
 
     async addImage(
         newsId: number,
-        base64Data: string,
+        fileBuffer: Buffer,
         mimeType: string,
         originalName: string,
         alt?: string,
@@ -167,31 +182,47 @@ export class NewsService {
     ): Promise<Files> {
         // Получаем текущее количество изображений для определения порядка
         const existingImagesCount = await this.filesRepository.count({
-            where: { newsId },
+            where: { newsId, type: 'image' },
         });
 
+        // Создаем объект файла для S3
+        const fileObj = {
+            buffer: fileBuffer,
+            mimetype: mimeType,
+            originalname: originalName,
+        };
+
+        // Загружаем в S3
+        const s3Result = await this.s3Service.uploadPostImage(fileObj, newsId);
+
+        // Сохраняем информацию в БД
         const image = this.filesRepository.create({
             newsId,
-            file: base64Data,
+            s3Key: s3Result.key,
+            s3Url: s3Result.url,
             mimeType,
             originalName,
             alt,
             isMain: isMain || false,
-            order: existingImagesCount, // Новое изображение добавляется в конец
+            order: existingImagesCount,
+            type: 'image',
         });
+        
         return this.filesRepository.save(image);
     }
 
     async getPostImages(postId: number): Promise<any[]> {
         const images = await this.filesRepository.find({
-            where: { newsId: postId },
-            select: ["id", "alt", "isMain", "mimeType", "originalName"], // Не возвращаем base64 данные
+            where: { newsId: postId, type: 'image' },
+            select: ["id", "alt", "isMain", "mimeType", "originalName", "s3Url"],
+            order: { order: 'ASC' },
         });
 
         // Добавляем URL для каждого изображения
         return images.map((image) => ({
             ...image,
-            url: `http://localhost:3001/api/news/${postId}/images/${image.id}?t=${Date.now()}`,
+            // Приоритет S3 URL, fallback на локальный endpoint
+            url: image.s3Url || `http://localhost:3001/api/news/${postId}/images/${image.id}`,
         }));
     }
 
@@ -205,6 +236,17 @@ export class NewsService {
     }
 
     async removeImage(imageId: number): Promise<void> {
+        // Получаем информацию о файле перед удалением
+        const image = await this.filesRepository.findOne({
+            where: { id: imageId },
+        });
+
+        if (image && image.s3Key) {
+            // Удаляем из S3
+            await this.s3Service.deleteFile(image.s3Key);
+        }
+
+        // Удаляем из БД
         await this.filesRepository.delete(imageId);
     }
 
@@ -241,23 +283,42 @@ export class NewsService {
     // Методы для работы с файлами
     async addFile(
         newsId: number,
-        fileData: string,
+        fileBuffer: Buffer,
         mimeType: string,
         originalName: string,
         title: string,
         size: number,
     ): Promise<Files> {
+        console.log(`Adding file: ${originalName}, size: ${size}, mimeType: ${mimeType}`);
+        
+        // Создаем объект файла для S3
+        const fileObj = {
+            buffer: fileBuffer,
+            mimetype: mimeType,
+            originalname: originalName,
+        };
+
+        console.log('Uploading to S3...');
+        // Загружаем в S3
+        const s3Result = await this.s3Service.uploadPostPdf(fileObj, newsId);
+        console.log('S3 upload result:', s3Result);
+
+        // Сохраняем информацию в БД
         const file = this.filesRepository.create({
             newsId,
-            file: fileData,
+            s3Key: s3Result.key,
+            s3Url: s3Result.url,
             mimeType,
             originalName,
             title,
             size,
-            type: 'file', // Указываем тип как файл
+            type: 'file',
         });
 
-        return this.filesRepository.save(file);
+        const savedFile = await this.filesRepository.save(file);
+        console.log('File saved to DB with ID:', savedFile.id);
+        
+        return savedFile;
     }
 
     async getPostFiles(postId: number): Promise<Files[]> {
@@ -274,6 +335,17 @@ export class NewsService {
     }
 
     async removeFile(fileId: number): Promise<void> {
+        // Получаем информацию о файле перед удалением
+        const file = await this.filesRepository.findOne({
+            where: { id: fileId },
+        });
+
+        if (file && file.s3Key) {
+            // Удаляем из S3
+            await this.s3Service.deleteFile(file.s3Key);
+        }
+
+        // Удаляем из БД
         await this.filesRepository.delete(fileId);
     }
 

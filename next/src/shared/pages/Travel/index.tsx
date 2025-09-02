@@ -8,6 +8,7 @@ import PostCard from "../../components/PostCard";
 import { getImageUrlFromPost } from "../../utils/imageUtils";
 import ApiImage from "../../components/ApiImage";
 import Footer from "../../components/Footer";
+import PDFViewer from "../../components/PDFViewer";
 import { PostImage, PostFile } from "../../types/Post";
 
 // Import Swiper styles
@@ -32,6 +33,7 @@ const TravelPage = (): ReactElement => {
     const [selectedImages, setSelectedImages] = useState<PostImage[]>([]);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedPdf, setSelectedPdf] = useState<PostFile | null>(null);
+    const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
     // Состояние для Swiper
     const [heroSwiper, setHeroSwiper] = useState<any>(null);
@@ -87,8 +89,9 @@ const TravelPage = (): ReactElement => {
         setImageModalOpen(true);
     };
 
-    const handlePdfClick = (pdf: PostFile) => {
+    const handlePdfClick = (pdf: PostFile, postId: string) => {
         setSelectedPdf(pdf);
+        setSelectedPostId(parseInt(postId));
         setPdfModalOpen(true);
     };
 
@@ -101,6 +104,7 @@ const TravelPage = (): ReactElement => {
     const closePdfModal = () => {
         setPdfModalOpen(false);
         setSelectedPdf(null);
+        setSelectedPostId(null);
     };
 
     // Блокировка скролла при открытии модальных окон
@@ -340,45 +344,13 @@ const TravelPage = (): ReactElement => {
             )}
 
             {/* Модальное окно для PDF */}
-            {pdfModalOpen && selectedPdf && (
-                <div className={postsStyles.pdfModal} onClick={closePdfModal}>
-                    <div
-                        className={postsStyles.pdfModalContent}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className={postsStyles.pdfModalHeader}>
-                            <h3 className={postsStyles.pdfModalTitle}>
-                                {selectedPdf.title || selectedPdf.originalName || "Документ"}
-                            </h3>
-                            <div className={postsStyles.pdfModalActions}>
-                                <a
-                                    href={`data:${selectedPdf.mimeType};base64,${selectedPdf.file}`}
-                                    download={selectedPdf.originalName}
-                                    className={postsStyles.pdfDownloadButton}
-                                    title="Скачать"
-                                >
-                                    ↓
-                                </a>
-                                <button
-                                    className={postsStyles.pdfCloseButton}
-                                    onClick={closePdfModal}
-                                    title="Закрыть"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        </div>
-                        <div className={postsStyles.pdfModalBody}>
-                            <iframe
-                                src={`data:${selectedPdf.mimeType};base64,${selectedPdf.file}`}
-                                className={postsStyles.pdfFrame}
-                                title={
-                                    selectedPdf.title || selectedPdf.originalName || "PDF документ"
-                                }
-                            />
-                        </div>
-                    </div>
-                </div>
+            {pdfModalOpen && selectedPdf && selectedPostId && (
+                <PDFViewer
+                    isOpen={pdfModalOpen}
+                    onClose={closePdfModal}
+                    file={selectedPdf}
+                    postId={selectedPostId}
+                />
             )}
 
             {/* Футер */}

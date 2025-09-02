@@ -5,7 +5,8 @@ import postsStyles from "../../styles/posts.module.scss";
 // Универсальный интерфейс для файла
 interface FileData {
     id: string | number;
-    file: string;
+    file?: string | null; // Может быть null для файлов из S3
+    url?: string; // URL для файлов из S3
     mimeType: string;
     originalName: string;
     title?: string;
@@ -16,9 +17,10 @@ interface PDFViewerProps {
     file: File | FileData | null;
     isOpen: boolean;
     onClose: () => void;
+    postId?: string | number; // ID поста для формирования API URL
 }
 
-const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
+const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose, postId }) => {
     const [pdfUrl, setPdfUrl] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>("");
@@ -40,30 +42,33 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                 setPdfUrl(url);
                 setLoading(false);
             } else {
-                // Существующий файл (PostFile)
-                if (file.file.startsWith("data:")) {
-                    // Уже готовый data URL
-                    setPdfUrl(file.file);
-                } else {
-                    // Base64 данные без префикса - создаем blob URL
-                    try {
-                        const byteCharacters = atob(file.file);
-                        const byteNumbers = new Array(byteCharacters.length);
-                        for (let i = 0; i < byteCharacters.length; i++) {
-                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                // Существующий файл (PostFile) - только через S3/API
+                if (!postId || !file.id) {
+                    setError("Не удалось определить файл");
+                    setLoading(false);
+                    return;
+                }
+
+                const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/files/${file.id}`;
+                
+                // Загружаем файл как blob для обхода CORS
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
                         }
-                        const byteArray = new Uint8Array(byteNumbers);
-                        const blob = new Blob([byteArray], { type: file.mimeType });
+                        return response.blob();
+                    })
+                    .then(blob => {
                         const blobUrl = URL.createObjectURL(blob);
                         setPdfUrl(blobUrl);
-                    } catch (error) {
-                        console.error("Ошибка при создании blob URL:", error);
-                        // Fallback к data URL
-                        const dataUrl = `data:${file.mimeType};base64,${file.file}`;
-                        setPdfUrl(dataUrl);
-                    }
-                }
-                setLoading(false);
+                        setLoading(false);
+                    })
+                    .catch(error => {
+                        console.error('Error loading file:', error);
+                        setError("Ошибка при загрузке файла");
+                        setLoading(false);
+                    });
             }
         } catch (err) {
             setError("Ошибка при загрузке файла");
@@ -71,8 +76,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
         }
 
         return () => {
-            // Очищаем URL для новых файлов и blob URL
-            if (pdfUrl && (file instanceof File || pdfUrl.startsWith("blob:"))) {
+            // Очищаем blob URLs
+            if (pdfUrl && pdfUrl.startsWith("blob:")) {
                 URL.revokeObjectURL(pdfUrl);
             }
         };
@@ -119,14 +124,15 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } else {
-            // Для существующих файлов
-            const a = document.createElement("a");
-            if (file.file.startsWith("data:")) {
-                a.href = file.file;
-            } else {
-                a.href = `data:${file.mimeType};base64,${file.file}`;
+            // Для существующих файлов - только через API
+            if (!postId || !file.id) {
+                console.error('Cannot download: missing postId or file.id');
+                return;
             }
-            a.download = file.originalName;
+
+            const a = document.createElement("a");
+            a.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/files/${file.id}?download=true`;
+            a.download = file.originalName || file.title || 'document.pdf';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -139,6 +145,24 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                 <div className={styles.modalHeader}>
                     <h3 className={styles.modalTitle}>{getFileName()}</h3>
                     <div className={styles.modalActions}>
+                        <button 
+                            onClick={() => {
+                                const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/files/${file.id}`;
+                                window.open(apiUrl, '_blank');
+                            }} 
+                            className={styles.openButton} 
+                            title="Открыть в новой вкладке"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
                         <button
                             onClick={handleDownload}
                             className={styles.downloadButton}
@@ -214,24 +238,13 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose }) => {
                     )}
 
                     {!loading && !error && pdfUrl && (
-                        <object data={pdfUrl} type="application/pdf" className={styles.pdfFrame}>
-                            <div style={{ padding: "20px", textAlign: "center" }}>
-                                <p>Ваш браузер не поддерживает отображение PDF файлов.</p>
-                                <button
-                                    onClick={handleDownload}
-                                    style={{
-                                        padding: "10px 20px",
-                                        background: "#007bff",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "5px",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    Скачать PDF
-                                </button>
-                            </div>
-                        </object>
+                        <div className={styles.pdfContainer}>
+                            <iframe
+                                src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1&page=1&view=FitH&zoom=page-fit`}
+                                className={styles.pdfFrame}
+                                title="PDF Viewer"
+                            />
+                        </div>
                     )}
                 </div>
             </div>

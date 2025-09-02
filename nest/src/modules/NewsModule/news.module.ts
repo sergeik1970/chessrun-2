@@ -5,6 +5,7 @@ import { News } from "../../entities/News/news.entity";
 import { Files } from "../../entities/Files/files.entity";
 import { NewsController } from "../../controllers/NewsController/news.controller";
 import { NewsService } from "../../services/NewsService/news.service";
+import { S3Service } from "../../services/S3Service/s3.service";
 import { AuthModule } from "../AuthModule/auth.module";
 import { multerConfig } from "../../config/multer.config";
 
@@ -15,7 +16,7 @@ import { multerConfig } from "../../config/multer.config";
         AuthModule,
     ],
     controllers: [NewsController],
-    providers: [NewsService],
+    providers: [NewsService, S3Service],
     exports: [NewsService],
 })
 export class NewsModule {}

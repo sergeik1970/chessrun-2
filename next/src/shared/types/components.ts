@@ -81,9 +81,11 @@ export interface ImageModalProps {
 // Типы для свайпера изображений
 export interface ImageSwiperProps {
     images: PostImage[];
-    onImageClick?: (index: number) => void;
-    showThumbnails?: boolean;
-    autoplay?: boolean;
+    postTitle: string;
+    postId: string;
+    onImageClick?: (imageUrl: string, index: number) => void;
+    showThumbs?: boolean;
+    className?: string;
 }
 
 // Типы для перетаскиваемого списка изображений

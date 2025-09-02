@@ -506,7 +506,12 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             </div>
 
             {/* PDF Viewer Modal */}
-            <PDFViewer file={pdfViewerFile} isOpen={isPdfViewerOpen} onClose={closePdfViewer} />
+            <PDFViewer 
+                file={pdfViewerFile} 
+                isOpen={isPdfViewerOpen} 
+                onClose={closePdfViewer} 
+                postId={post?.id}
+            />
         </div>
     );
 };

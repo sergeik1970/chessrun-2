@@ -18,6 +18,7 @@ import postsStyles from "../../styles/posts.module.scss";
 interface ImageSwiperProps {
     images: PostImage[];
     postTitle: string;
+    postId: string;
     onImageClick?: (imageUrl: string, index: number) => void;
     showThumbs?: boolean;
     className?: string;
@@ -26,6 +27,7 @@ interface ImageSwiperProps {
 const ImageSwiper: React.FC<ImageSwiperProps> = ({
     images,
     postTitle,
+    postId,
     onImageClick,
     showThumbs = false,
     className = "",
@@ -75,25 +77,14 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
                             className={styles.imageWrapper}
                             onClick={() => handleSlideClick(image.url, index)}
                         >
-                            {image.url.includes("localhost:3001") ? (
-                                <ApiImage
-                                    src={image.url}
-                                    alt={image.alt || `${postTitle} - изображение ${index + 1}`}
-                                    width={0}
-                                    height={0}
-                                    sizes="(max-width: 768px) 100vw, 800px"
-                                    className={styles.image}
-                                />
-                            ) : (
-                                <Image
-                                    src={image.url}
-                                    alt={image.alt || `${postTitle} - изображение ${index + 1}`}
-                                    width={0}
-                                    height={0}
-                                    sizes="(max-width: 768px) 100vw, 800px"
-                                    className={styles.image}
-                                />
-                            )}
+                            <ApiImage
+                                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/images/${image.id}`}
+                                alt={image.alt || `${postTitle} - изображение ${index + 1}`}
+                                width={0}
+                                height={0}
+                                sizes="(max-width: 768px) 100vw, 800px"
+                                className={styles.image}
+                            />
                         </div>
                     </SwiperSlide>
                 ))}
@@ -154,25 +145,14 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
                             key={`thumb-${image.id || index}`}
                             className={styles.thumbSlide}
                         >
-                            {image.url.includes("localhost:3001") ? (
-                                <ApiImage
-                                    src={image.url}
-                                    alt={`Миниатюра ${index + 1}`}
-                                    width={0}
-                                    height={0}
-                                    sizes="80px"
-                                    className={styles.thumbImage}
-                                />
-                            ) : (
-                                <Image
-                                    src={image.url}
-                                    alt={`Миниатюра ${index + 1}`}
-                                    width={0}
-                                    height={0}
-                                    sizes="80px"
-                                    className={styles.thumbImage}
-                                />
-                            )}
+                            <ApiImage
+                                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/images/${image.id}`}
+                                alt={`Миниатюра ${index + 1}`}
+                                width={0}
+                                height={0}
+                                sizes="80px"
+                                className={styles.thumbImage}
+                            />
                         </SwiperSlide>
                     ))}
                 </Swiper>

@@ -66,7 +66,7 @@ const PostCard: React.FC<PostComponentProps> = ({
     const handleFileClick = (file: PostFile) => {
         if (onPdfClick && file.mimeType === "application/pdf") {
             // Используем внешний обработчик для PDF, если он передан
-            onPdfClick(file);
+            onPdfClick(file, post.id);
         } else {
             // Используем внутренний PDF viewer
             setPdfViewerFile(file);
@@ -123,6 +123,7 @@ const PostCard: React.FC<PostComponentProps> = ({
                     <ImageSwiper
                         images={images}
                         postTitle={post.title}
+                        postId={post.id}
                         onImageClick={handleImageClick}
                         className={styles.imageContainer}
                     />
@@ -179,10 +180,16 @@ const PostCard: React.FC<PostComponentProps> = ({
                 initialIndex={modalImageIndex}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
+                postId={post.id}
             />
 
             {/* PDF Viewer Modal */}
-            <PDFViewer file={pdfViewerFile} isOpen={isPdfViewerOpen} onClose={closePdfViewer} />
+            <PDFViewer 
+                file={pdfViewerFile} 
+                isOpen={isPdfViewerOpen} 
+                onClose={closePdfViewer} 
+                postId={post.id}
+            />
         </>
     );
 };

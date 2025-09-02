@@ -15,8 +15,14 @@ export class Files {
     @Column()
     newsId: number;
 
-    @Column("text")
-    file: string; // Теперь хранит base64 данные
+    @Column("text", { nullable: true })
+    file: string; // Для обратной совместимости - base64 данные (deprecated)
+
+    @Column({ nullable: true, length: 500 })
+    s3Key: string; // S3 ключ файла (новый способ хранения)
+
+    @Column({ nullable: true, length: 1000 })
+    s3Url: string; // Полный URL файла в S3
 
     @Column({ nullable: true, length: 100 })
     mimeType: string; // MIME тип файла (image/jpeg, image/png, etc.)

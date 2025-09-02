@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { DealsModule } from "./DealsModule/deal.module";
 import { AuthModule } from "./AuthModule/auth.module";
 import { NewsModule } from "./NewsModule/news.module";
@@ -8,6 +9,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            isGlobal: true, // Делаем ConfigModule глобальным
+            envFilePath: '.env', // Путь к .env файлу
+        }),
         TypeOrmModule.forRoot({
             type: "postgres",
             host: process.env.NODE_ENV == "dev" ? "127.0.0.1" : "db",

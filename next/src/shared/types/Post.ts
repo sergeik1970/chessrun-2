@@ -5,7 +5,7 @@
 // Изображение поста
 export interface PostImage {
     id: string;
-    url: string; // URL изображения или base64 данные
+    url: string; // URL изображения в S3
     alt?: string; // альтернативный текст для изображения
     width?: number; // ширина изображения
     height?: number; // высота изображения
@@ -14,8 +14,8 @@ export interface PostImage {
 
 // Файл поста (PDF, документы и т.д.)
 export interface PostFile {
-    id: string;
-    file: string; // base64 данные файла
+    id: string | number;
+    url: string; // URL файла в S3
     mimeType: string; // MIME тип файла
     originalName: string; // оригинальное имя файла
     title?: string; // название файла для отображения пользователю
@@ -61,7 +61,7 @@ export interface PostComponentProps {
     maxTextLines?: number; // количество строк для обрезки текста (по умолчанию 3-4)
     showFullText?: boolean; // развернут ли текст полностью
     onImageClick?: (images: PostImage[], index: number) => void; // обработчик клика по изображению
-    onPdfClick?: (pdf: PostFile) => void; // обработчик клика по PDF файлу
+    onPdfClick?: (pdf: PostFile, postId: string) => void; // обработчик клика по PDF файлу
 }
 
 // Данные для создания поста
