@@ -10,11 +10,11 @@
     width: 100%;
     height: auto;
     border-radius: 12px;
-    
+
     // Кастомизация пагинации
     :global(.swiper-pagination) {
         bottom: 16px;
-        
+
         :global(.swiper-pagination-bullet) {
             background: rgba(255, 255, 255, 0.7);
             opacity: 1;
@@ -22,7 +22,7 @@
             height: 8px;
             margin: 0 4px;
             transition: all 0.3s ease;
-            
+
             &:global(.swiper-pagination-bullet-active) {
                 background: #ffffff;
                 transform: scale(1.2);
@@ -45,7 +45,7 @@
     cursor: pointer;
     overflow: hidden;
     border-radius: 12px;
-    
+
     // Fallback для браузеров, не поддерживающих aspect-ratio
     @supports not (aspect-ratio: 4/3) {
         height: 0;
@@ -58,7 +58,7 @@
     height: 100% !important;
     object-fit: cover;
     transition: transform 0.3s ease;
-    
+
     &:hover {
         transform: scale(1.02);
     }
@@ -83,21 +83,21 @@
     justify-content: center;
     transition: all 0.3s ease;
     backdrop-filter: blur(4px);
-    
+
     &:hover {
         background: rgba(0, 0, 0, 0.7);
         transform: translateY(-50%) scale(1.1);
     }
-    
+
     &:active {
         transform: translateY(-50%) scale(0.95);
     }
-    
+
     // Скрываем на мобильных устройствах (свайп работает)
     @media (max-width: 768px) {
         display: none;
     }
-    
+
     svg {
         width: 20px;
         height: 20px;
@@ -116,13 +116,13 @@
 .thumbsSwiper {
     margin-top: 12px;
     height: 60px; // Уменьшили высоту для горизонтальных миниатюр
-    
+
     :global(.swiper-slide) {
         opacity: 0.6;
         cursor: pointer;
         transition: opacity 0.3s ease;
         aspect-ratio: 4/3; // Те же пропорции для миниатюр
-        
+
         &:global(.swiper-slide-thumb-active) {
             opacity: 1;
         }
@@ -142,7 +142,7 @@
     height: 100% !important;
     object-fit: cover;
     transition: transform 0.2s ease;
-    
+
     &:hover {
         transform: scale(1.05);
     }
@@ -153,32 +153,32 @@
     .swiperContainer {
         border-radius: 8px;
     }
-    
+
     .mainSwiper {
         border-radius: 8px;
     }
-    
+
     .imageWrapper {
         border-radius: 8px;
         // Оставляем те же пропорции что и на больших экранах
         aspect-ratio: 4/3;
-        
+
         @supports not (aspect-ratio: 4/3) {
             padding-bottom: 75%; // 3/4 = 0.75 = 75%
         }
     }
-    
+
     // Увеличиваем размер точек пагинации на мобильных
     .mainSwiper :global(.swiper-pagination) {
         bottom: 12px;
-        
+
         :global(.swiper-pagination-bullet) {
             width: 10px;
             height: 10px;
             margin: 0 6px;
         }
     }
-    
+
     .thumbsSwiper {
         height: 50px; // Еще меньше на мобильных
     }
@@ -193,7 +193,7 @@
 // Анимации загрузки
 .swiperContainer {
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;

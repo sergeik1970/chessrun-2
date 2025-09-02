@@ -1,12 +1,9 @@
-import React, { ButtonHTMLAttributes, ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styles from "./index.module.scss";
 import clsx from "clsx";
+import { ButtonProps } from "../../types/components";
 
-interface IButton extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    types?: "primary";
-}
-
-const Button = (props: IButton): ReactElement => {
+const Button = (props: ButtonProps): ReactElement => {
     const { children, types = "primary", onClick = () => null } = props;
     return (
         <button

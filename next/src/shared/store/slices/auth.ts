@@ -1,23 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createApiUrl, API_ENDPOINTS } from "../../config/api";
-
-// Интерфейс пользователя
-export interface User {
-    id: number;
-    email: string;
-    name: string;
-    isAdmin?: boolean;
-    createdAt: string;
-    updatedAt: string;
-}
-
-// Интерфейс состояния авторизации
-interface AuthState {
-    user: User | null;
-    isAuthenticated: boolean;
-    loading: boolean;
-    error: string | null;
-}
+import { User, AuthState, RegisterUserData, LoginUserData } from "../../types/auth";
 // Инициализация состояния
 const initialState: AuthState = {
     user: null,
@@ -30,7 +13,7 @@ const initialState: AuthState = {
 export const registerUser = createAsyncThunk(
     "auth/register",
     // Передаем данные пользователя
-    async (userData: { email: string; password: string; name: string }, { rejectWithValue }) => {
+    async (userData: RegisterUserData, { rejectWithValue }) => {
         try {
             const response = await fetch(createApiUrl(API_ENDPOINTS.auth.register), {
                 method: "POST",
@@ -60,7 +43,7 @@ export const registerUser = createAsyncThunk(
 export const loginUser = createAsyncThunk(
     "auth/login",
     // Передаем данные пользователя
-    async (userData: { email: string; password: string }, { rejectWithValue }) => {
+    async (userData: LoginUserData, { rejectWithValue }) => {
         try {
             // Отправляем POST запрос на логин
             const response = await fetch(createApiUrl(API_ENDPOINTS.auth.login), {
@@ -83,7 +66,7 @@ export const loginUser = createAsyncThunk(
 
             // Сохраняем токен в localStorage
             if (data.token) {
-                localStorage.setItem('token', data.token);
+                localStorage.setItem("token", data.token);
             }
 
             return data.user;
@@ -107,7 +90,7 @@ export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWith
         }
 
         // Удаляем токен из localStorage
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
 
         return null;
     } catch (error) {
@@ -121,8 +104,8 @@ export const getCurrentUser = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             // Получаем токен из localStorage
-            const token = localStorage.getItem('token');
-            
+            const token = localStorage.getItem("token");
+
             if (!token) {
                 return rejectWithValue("Токен не найден");
             }
@@ -131,7 +114,7 @@ export const getCurrentUser = createAsyncThunk(
             const response = await fetch(createApiUrl(API_ENDPOINTS.auth.me), {
                 method: "GET",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 credentials: "include",
             });

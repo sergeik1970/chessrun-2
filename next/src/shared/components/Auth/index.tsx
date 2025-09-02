@@ -3,13 +3,7 @@ import { useRouter } from "next/router";
 import styles from "./index.module.scss";
 import { useDispatch, useSelector } from "../../store/store";
 import { registerUser, loginUser, clearError } from "../../store/slices/auth";
-
-// Локальное состояние
-interface AuthFormData {
-    email: string;
-    password: string;
-    name?: string;
-}
+import { AuthFormData } from "../../types/auth";
 
 const Auth = (): ReactElement => {
     const dispatch = useDispatch();

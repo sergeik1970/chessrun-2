@@ -16,7 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { PostImage } from "../../store/slices/posts";
+import { PostImage } from "../../types";
 import { getImageUrlFromPost } from "../../utils/imageUtils";
 import styles from "./index.module.scss";
 
@@ -25,7 +25,7 @@ interface DraggableImageItemProps {
     image: PostImage | File;
     index: number;
     isExisting: boolean;
-    postId?: number;
+    postId?: string;
     previewUrl?: string;
     onRemove: () => void;
     isMain: boolean;
@@ -54,15 +54,15 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
     };
 
     const getImageSrc = () => {
-        if (isExisting && postId) {
-            return getImageUrlFromPost(postId, image as PostImage);
+        if (isExisting) {
+            return (image as PostImage).url;
         }
         return previewUrl || "";
     };
 
     const getImageName = () => {
         if (isExisting) {
-            return (image as PostImage).originalName || `Изображение ${index + 1}`;
+            return (image as PostImage).alt || `Изображение ${index + 1}`;
         }
         return (image as File).name;
     };
@@ -137,10 +137,10 @@ interface DraggableImageListProps {
     existingImages: PostImage[];
     newImages: File[];
     newImagePreviews: string[];
-    postId?: number;
+    postId?: string;
     onReorderExisting: (newOrder: PostImage[]) => void;
     onReorderNew: (newOrder: File[], newPreviews: string[]) => void;
-    onRemoveExisting: (imageId: number) => void;
+    onRemoveExisting: (imageId: string) => void;
     onRemoveNew: (index: number) => void;
 }
 

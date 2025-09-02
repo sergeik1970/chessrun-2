@@ -2,11 +2,9 @@ import React from "react";
 import Link from "next/link";
 import styles from "./index.module.scss";
 import clsx from "clsx";
-interface NavigationProps {
-    className?: string;
-}
+import { NavigationProps } from "../../types/components";
 
-const Navigation: React.FC<NavigationProps> = () => {
+const Navigation: React.FC<NavigationProps> = ({ currentPath, isAdmin }) => {
     const openNavList = () => {
         const navList = document.querySelector(`.${styles["nav-list"]}`);
         navList?.classList.add(styles["open-nav-list"]);

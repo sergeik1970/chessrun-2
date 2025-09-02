@@ -48,27 +48,27 @@
     justify-content: center;
     transition: all 0.3s ease;
     backdrop-filter: blur(4px);
-    
+
     &:hover {
         background: rgba(0, 0, 0, 0.9);
         transform: scale(1.1);
     }
-    
+
     &:active {
         transform: scale(0.95);
     }
-    
+
     svg {
         width: 24px;
         height: 24px;
     }
-    
+
     @media (max-width: 768px) {
         top: 16px;
         right: 16px;
         width: 44px;
         height: 44px;
-        
+
         svg {
             width: 20px;
             height: 20px;
@@ -79,19 +79,19 @@
 .modalSwiper {
     width: 100%;
     height: 100%;
-    
+
     // Кастомизация пагинации для модального окна
     :global(.swiper-pagination) {
         bottom: 90px;
-        
+
         @media (max-width: 768px) {
             bottom: 70px;
         }
-        
+
         @media (max-width: 480px) {
             bottom: 60px;
         }
-        
+
         :global(.swiper-pagination-bullet) {
             background: rgba(255, 255, 255, 0.7);
             opacity: 1;
@@ -99,12 +99,12 @@
             height: 12px;
             margin: 0 6px;
             transition: all 0.3s ease;
-            
+
             &:global(.swiper-pagination-bullet-active) {
                 background: #ffffff;
                 transform: scale(1.2);
             }
-            
+
             @media (max-width: 768px) {
                 width: 10px;
                 height: 10px;
@@ -121,11 +121,11 @@
     padding: 80px 20px 100px 20px; // Увеличили отступы сверху и снизу
     height: 100vh;
     box-sizing: border-box;
-    
+
     @media (max-width: 768px) {
         padding: 60px 16px 80px 16px;
     }
-    
+
     @media (max-width: 480px) {
         padding: 50px 12px 70px 12px;
     }
@@ -150,7 +150,7 @@
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    
+
     // Убеждаемся, что изображение не выходит за границы контейнера
     position: relative;
     z-index: 1;
@@ -175,35 +175,35 @@
     justify-content: center;
     transition: all 0.3s ease;
     backdrop-filter: blur(4px);
-    
+
     &:hover {
         background: rgba(0, 0, 0, 0.9);
         transform: translateY(-50%) scale(1.1);
     }
-    
+
     &:active {
         transform: translateY(-50%) scale(0.95);
     }
-    
+
     svg {
         width: 32px;
         height: 32px;
     }
-    
+
     @media (max-width: 768px) {
         width: 48px;
         height: 48px;
-        
+
         svg {
             width: 24px;
             height: 24px;
         }
     }
-    
+
     @media (max-width: 480px) {
         width: 44px;
         height: 44px;
-        
+
         svg {
             width: 20px;
             height: 20px;
@@ -213,11 +213,11 @@
 
 .modalButtonPrev {
     left: 20px;
-    
+
     @media (max-width: 768px) {
         left: 16px;
     }
-    
+
     @media (max-width: 480px) {
         left: 12px;
     }
@@ -225,11 +225,11 @@
 
 .modalButtonNext {
     right: 20px;
-    
+
     @media (max-width: 768px) {
         right: 16px;
     }
-    
+
     @media (max-width: 480px) {
         right: 12px;
     }
@@ -246,11 +246,11 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    
+
     @media (max-width: 768px) {
         bottom: 24px;
     }
-    
+
     @media (max-width: 480px) {
         bottom: 20px;
     }
@@ -264,7 +264,7 @@
     font-size: 14px;
     font-weight: 500;
     backdrop-filter: blur(4px);
-    
+
     @media (max-width: 768px) {
         font-size: 13px;
         padding: 6px 12px;
@@ -275,11 +275,11 @@
     color: rgba(255, 255, 255, 0.7);
     font-size: 12px;
     text-align: center;
-    
+
     @media (max-width: 768px) {
         font-size: 11px;
     }
-    
+
     @media (max-width: 480px) {
         display: none;
     }
@@ -293,11 +293,11 @@
     width: 100%;
     height: 100%;
     max-height: calc(100vh - 160px); // Учитываем отступы сверху и снизу
-    
+
     @media (max-width: 768px) {
         max-height: calc(100vh - 140px);
     }
-    
+
     @media (max-width: 480px) {
         max-height: calc(100vh - 120px);
     }
@@ -308,7 +308,7 @@
 .modalButtonNext,
 .closeButton {
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         left: 50%;
@@ -319,7 +319,7 @@
         border-radius: 50%;
         transition: all 0.3s ease;
     }
-    
+
     &:active::before {
         width: 100%;
         height: 100%;
@@ -331,24 +331,24 @@
     .modalSlide {
         padding: 30px 12px;
     }
-    
+
     .modalButtonPrev,
     .modalButtonNext {
         width: 40px;
         height: 40px;
-        
+
         svg {
             width: 18px;
             height: 18px;
         }
     }
-    
+
     .closeButton {
         width: 40px;
         height: 40px;
         top: 12px;
         right: 12px;
-        
+
         svg {
             width: 18px;
             height: 18px;

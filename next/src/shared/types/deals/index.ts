@@ -1,9 +1,15 @@
-export interface IDeals {
-    deals: Array<IDeal>;
+/**
+ * Типы для системы сделок (deals)
+ */
+
+// Интерфейс для одной сделки
+export interface IDeal {
+    id: number;
+    name: string;
+    done: boolean; // статус выполнения сделки
 }
 
-export interface IDeal {
-    name: string;
-    id: number;
-    done: boolean;
+// Интерфейс для списка сделок
+export interface IDeals {
+    deals: Array<IDeal>;
 }

@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PostCard from "../PostCard";
-import { Post } from "../../types/Post";
+import { Post, PostsListProps } from "../../types";
 import styles from "./index.module.scss";
 import postsStyles from "../../styles/posts.module.scss";
 
-interface PostsListProps {
-    posts: Post[];
-    isAdmin?: boolean;
-    onEdit?: (postId: string) => void;
-    onDelete?: (postId: string) => void;
-    onLoadMore?: () => void;
-    hasMore?: boolean;
-    loading?: boolean;
-}
+/**
+ * Компонент списка постов с поддержкой бесконечной прокрутки
+ * Отображает посты в виде карточек с возможностью развернуть/свернуть текст
+ */
 
 const PostsList: React.FC<PostsListProps> = ({
     posts,
@@ -23,8 +18,12 @@ const PostsList: React.FC<PostsListProps> = ({
     hasMore = false,
     loading = false,
 }) => {
+    // Состояние для отслеживания развернутых постов
     const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
 
+    /**
+     * Обработчик для разворачивания/сворачивания текста поста
+     */
     const handleReadMore = useCallback((postId: string) => {
         setExpandedPosts((prev) => {
             const newSet = new Set(prev);
@@ -37,7 +36,10 @@ const PostsList: React.FC<PostsListProps> = ({
         });
     }, []);
 
-    // Infinite scroll logic
+    /**
+     * Логика бесконечной прокрутки
+     * Загружает новые посты при приближении к концу страницы
+     */
     useEffect(() => {
         if (!hasMore || loading || !onLoadMore) return;
 
@@ -46,6 +48,7 @@ const PostsList: React.FC<PostsListProps> = ({
             const scrollHeight = document.documentElement.scrollHeight;
             const clientHeight = document.documentElement.clientHeight;
 
+            // Загружаем новые посты за 1000px до конца страницы
             if (scrollTop + clientHeight >= scrollHeight - 1000) {
                 onLoadMore();
             }

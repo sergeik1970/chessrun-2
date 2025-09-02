@@ -35,11 +35,11 @@
     height: 100%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     overflow: hidden;
-    
+
     // Плавный переход для изображений
     img {
         transition: transform 0.3s ease;
-        
+
         &:hover {
             transform: scale(1.02);
         }
@@ -69,10 +69,10 @@
     justify-content: center;
     z-index: 10;
     pointer-events: none; // Позволяем кликать через оверлей на пагинацию
-    
+
     // Добавляем темный оверлей для лучшей читаемости текста
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -81,10 +81,10 @@
         background: rgba(0, 0, 0, 0.4);
         z-index: -1;
     }
-    
+
     // Добавляем легкий цветовой оверлей
     &::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -114,18 +114,20 @@
     margin: 0 0 1.5rem 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     letter-spacing: -0.02em;
-    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        text-shadow 0.3s ease;
     cursor: default;
-    
+
     &:hover {
         transform: scale(1.05);
         text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
     }
-    
+
     @media (max-width: 768px) {
         font-size: 2.5rem;
     }
-    
+
     @media (max-width: 480px) {
         font-size: 2rem;
     }
@@ -139,11 +141,11 @@
     margin: 0;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     opacity: 0.95;
-    
+
     @media (max-width: 768px) {
         font-size: 1.1rem;
     }
-    
+
     @media (max-width: 480px) {
         font-size: 1rem;
     }
@@ -158,7 +160,7 @@
     display: flex;
     gap: 8px;
     z-index: 15;
-    
+
     @media (max-width: 480px) {
         bottom: 20px;
         gap: 6px;
@@ -173,22 +175,22 @@
     border: none;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     &:hover {
         background: rgba(255, 255, 255, 0.8);
     }
-    
+
     &.active {
         width: 24px;
         height: 10px;
         border-radius: 5px;
         background: rgba(255, 255, 255, 1);
     }
-    
+
     @media (max-width: 480px) {
         width: 8px;
         height: 8px;
-        
+
         &.active {
             width: 20px;
             height: 8px;
@@ -220,7 +222,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    
+
     @media (max-width: 768px) {
         font-size: 2rem;
         flex-direction: column;
@@ -232,17 +234,11 @@
     font-size: 1.5rem;
     font-weight: 400;
     color: #7f8c8d;
-    
+
     @media (max-width: 768px) {
         font-size: 1.25rem;
     }
 }
-
-
-
-
-
-
 
 /* Анимации */
 .hero {

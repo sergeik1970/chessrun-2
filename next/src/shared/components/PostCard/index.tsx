@@ -3,10 +3,16 @@ import ImageSwiper from "../ImageSwiper";
 import ImageModal from "../ImageModal";
 import FilesList from "../FilesList";
 import PDFViewer from "../PDFViewer";
-import { PostComponentProps, PostFile } from "../../types/Post";
+import { PostComponentProps, PostFile } from "../../types";
 import { sanitizeAndFormatText, truncateText } from "../../utils/textUtils";
+import { formatDate } from "../../utils/textUtils";
 import styles from "./index.module.scss";
 import clsx from "clsx";
+
+/**
+ * Компонент карточки поста
+ * Отображает пост с изображениями, файлами и возможностью редактирования для админов
+ */
 
 const PostCard: React.FC<PostComponentProps> = ({
     post,
@@ -19,6 +25,7 @@ const PostCard: React.FC<PostComponentProps> = ({
     onImageClick,
     onPdfClick,
 }) => {
+    // Состояния компонента
     const [isTextExpanded, setIsTextExpanded] = useState(showFullText);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalImageIndex, setModalImageIndex] = useState(0);
@@ -29,12 +36,15 @@ const PostCard: React.FC<PostComponentProps> = ({
     const images = post.images || [];
     const files = post.files || [];
 
-    // Обрезка текста с использованием утилит
-    const { text: truncatedText, isTruncated } = truncateText(post.text, 300);
+    // Обработка текста поста
+    const { text: truncatedText, isTruncated } = truncateText(post.text, { maxLength: 300 });
     const shouldTruncateText = !isTextExpanded && isTruncated;
     const displayText = isTextExpanded ? post.text : truncatedText;
     const formattedText = sanitizeAndFormatText(displayText);
 
+    /**
+     * Обработчик для разворачивания/сворачивания текста поста
+     */
     const handleReadMore = () => {
         setIsTextExpanded(!isTextExpanded);
         if (onReadMore) {

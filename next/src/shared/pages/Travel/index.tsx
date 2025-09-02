@@ -25,37 +25,37 @@ const TravelPage = (): ReactElement => {
     const dispatch = useDispatch();
     const { posts, loading, error } = useSelector((state) => state.posts);
     const [travelPosts, setTravelPosts] = useState<Post[]>([]);
-    
+
     // Состояния для модальных окон
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [pdfModalOpen, setPdfModalOpen] = useState(false);
     const [selectedImages, setSelectedImages] = useState<PostImage[]>([]);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedPdf, setSelectedPdf] = useState<PostFile | null>(null);
-    
+
     // Состояние для Swiper
     const [heroSwiper, setHeroSwiper] = useState<any>(null);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
-    
+
     // Массив фоновых изображений для hero секции
     const heroImages = [
         {
             src: "/images/travel/travel-1.jpg",
-            alt: "Кемпинг в лесу"
+            alt: "Кемпинг в лесу",
         },
         {
             src: "/images/travel/travel-2.jpg",
-            alt: "Рафтинг по реке"
+            alt: "Рафтинг по реке",
         },
         {
-            src: "/images/travel/travel-3.jpg", 
-            alt: "Геленджик"
+            src: "/images/travel/travel-3.jpg",
+            alt: "Геленджик",
         },
         {
             src: "/images/travel/travel-4.jpg",
-            alt: "Железнодорожное путешествие"
-        }
+            alt: "Железнодорожное путешествие",
+        },
     ];
 
     useEffect(() => {
@@ -69,12 +69,10 @@ const TravelPage = (): ReactElement => {
         setTravelPosts(filtered);
     }, [posts]);
 
-
-
     // Управление автопрокруткой при наведении мыши
     useEffect(() => {
         if (!heroSwiper) return;
-        
+
         if (isHovered) {
             heroSwiper.autoplay.stop();
         } else {
@@ -151,7 +149,7 @@ const TravelPage = (): ReactElement => {
     return (
         <div className={styles.travelPage}>
             {/* Hero секция с изображением и заголовком */}
-            <section 
+            <section
                 className={styles.hero}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
@@ -187,7 +185,7 @@ const TravelPage = (): ReactElement => {
                                     src={image.src}
                                     alt={image.alt}
                                     fill
-                                    style={{ objectFit: 'cover' }}
+                                    style={{ objectFit: "cover" }}
                                     priority={index === 0}
                                     quality={90}
                                 />
@@ -195,24 +193,22 @@ const TravelPage = (): ReactElement => {
                         </SwiperSlide>
                     ))}
                 </Swiper>
-                
+
                 {/* Статичный оверлей с заголовком и цитатой */}
                 <div className={styles.heroOverlay}>
                     <div className={styles.heroContent}>
                         <h1 className={styles.heroTitle}>Путешествия</h1>
-                        <p className={styles.heroQuote}>
-                            На пути к новым вершинам.
-                        </p>
+                        <p className={styles.heroQuote}>На пути к новым вершинам.</p>
                     </div>
                 </div>
-                
+
                 {/* Кастомная пагинация с точками */}
                 <div className={styles.heroCustomPagination}>
                     {heroImages.map((_, index) => (
                         <button
                             key={index}
                             className={`${styles.heroPaginationDot} ${
-                                index === currentSlide ? styles.active : ''
+                                index === currentSlide ? styles.active : ""
                             }`}
                             onClick={() => {
                                 if (heroSwiper) {
@@ -245,7 +241,6 @@ const TravelPage = (): ReactElement => {
                         </div>
                     ) : (
                         <>
-
                             <div className={postsStyles.postsList}>
                                 {adaptedPosts.map((post) => (
                                     <div key={post.id} className={postsStyles.postItem}>
@@ -267,8 +262,14 @@ const TravelPage = (): ReactElement => {
             {/* Модальное окно для изображений */}
             {imageModalOpen && selectedImages.length > 0 && (
                 <div className={postsStyles.imageModal} onClick={closeImageModal}>
-                    <div className={postsStyles.imageModalContent} onClick={(e) => e.stopPropagation()}>
-                        <button className={postsStyles.imageModalCloseButton} onClick={closeImageModal}>
+                    <div
+                        className={postsStyles.imageModalContent}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            className={postsStyles.imageModalCloseButton}
+                            onClick={closeImageModal}
+                        >
                             ×
                         </button>
                         <Swiper
@@ -277,14 +278,22 @@ const TravelPage = (): ReactElement => {
                             spaceBetween={0}
                             slidesPerView={1}
                             initialSlide={selectedImageIndex}
-                            navigation={selectedImages.length > 1 ? {
-                                prevEl: `.${postsStyles.imageModalButtonPrev}`,
-                                nextEl: `.${postsStyles.imageModalButtonNext}`,
-                            } : false}
-                            pagination={selectedImages.length > 1 ? {
-                                clickable: true,
-                                dynamicBullets: true,
-                            } : false}
+                            navigation={
+                                selectedImages.length > 1
+                                    ? {
+                                          prevEl: `.${postsStyles.imageModalButtonPrev}`,
+                                          nextEl: `.${postsStyles.imageModalButtonNext}`,
+                                      }
+                                    : false
+                            }
+                            pagination={
+                                selectedImages.length > 1
+                                    ? {
+                                          clickable: true,
+                                          dynamicBullets: true,
+                                      }
+                                    : false
+                            }
                             zoom={true}
                             keyboard={{
                                 enabled: true,
@@ -301,7 +310,7 @@ const TravelPage = (): ReactElement => {
                                                 alt={image.alt || `Изображение ${index + 1}`}
                                                 className={postsStyles.imageModalImage}
                                                 fill
-                                                style={{ objectFit: 'contain' }}
+                                                style={{ objectFit: "contain" }}
                                             />
                                         </div>
                                     </div>
@@ -310,12 +319,8 @@ const TravelPage = (): ReactElement => {
                             {/* Показываем кнопки навигации только если изображений больше одного */}
                             {selectedImages.length > 1 && (
                                 <>
-                                    <button className={postsStyles.imageModalButtonPrev}>
-                                        ←
-                                    </button>
-                                    <button className={postsStyles.imageModalButtonNext}>
-                                        →
-                                    </button>
+                                    <button className={postsStyles.imageModalButtonPrev}>←</button>
+                                    <button className={postsStyles.imageModalButtonNext}>→</button>
                                 </>
                             )}
                         </Swiper>
@@ -337,10 +342,13 @@ const TravelPage = (): ReactElement => {
             {/* Модальное окно для PDF */}
             {pdfModalOpen && selectedPdf && (
                 <div className={postsStyles.pdfModal} onClick={closePdfModal}>
-                    <div className={postsStyles.pdfModalContent} onClick={(e) => e.stopPropagation()}>
+                    <div
+                        className={postsStyles.pdfModalContent}
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className={postsStyles.pdfModalHeader}>
                             <h3 className={postsStyles.pdfModalTitle}>
-                                {selectedPdf.title || selectedPdf.originalName || 'Документ'}
+                                {selectedPdf.title || selectedPdf.originalName || "Документ"}
                             </h3>
                             <div className={postsStyles.pdfModalActions}>
                                 <a
@@ -364,13 +372,15 @@ const TravelPage = (): ReactElement => {
                             <iframe
                                 src={`data:${selectedPdf.mimeType};base64,${selectedPdf.file}`}
                                 className={postsStyles.pdfFrame}
-                                title={selectedPdf.title || selectedPdf.originalName || 'PDF документ'}
+                                title={
+                                    selectedPdf.title || selectedPdf.originalName || "PDF документ"
+                                }
                             />
                         </div>
                     </div>
                 </div>
             )}
-            
+
             {/* Футер */}
             <Footer />
         </div>

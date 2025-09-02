@@ -1,55 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createApiUrl, API_ENDPOINTS } from "../../config/api";
-
-export interface PostImage {
-    id: number;
-    file: string; // base64 данные
-    mimeType?: string; // MIME тип изображения
-    originalName?: string; // оригинальное имя файла
-    alt?: string;
-    isMain: boolean;
-}
-
-export interface PostFile {
-    id: number;
-    file: string; // base64 данные
-    mimeType: string;
-    originalName: string;
-    title?: string; // Название файла для отображения
-    size: number;
-}
-
-export interface PostAuthor {
-    id: number;
-    name: string;
-    email: string;
-}
-
-export interface Post {
-    id: number;
-    title: string;
-    body: string;
-    category: 'travel' | 'competition' | 'training' | 'news' | 'events';
-    author?: PostAuthor;
-    images?: PostImage[];
-    files?: PostFile[];
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface PostCategory {
-    id: string;
-    name: string;
-    icon: string;
-    color: string;
-}
-
-interface PostsState {
-    posts: Post[];
-    categories: PostCategory[];
-    loading: boolean;
-    error: string | null;
-}
+import {
+    Post,
+    PostImage,
+    PostFile,
+    PostCategory,
+    PostsState,
+    CreatePostData,
+    UpdatePostData,
+} from "../../types/Post";
 
 const initialState: PostsState = {
     posts: [],
@@ -59,41 +18,35 @@ const initialState: PostsState = {
 };
 
 // Async thunks
-export const fetchPosts = createAsyncThunk(
-    "posts/fetchPosts",
-    async (category?: string) => {
-        const url = category 
-            ? createApiUrl(`${API_ENDPOINTS.news.list}?category=${category}`)
-            : createApiUrl(API_ENDPOINTS.news.list);
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Ошибка при загрузке постов");
-        }
-        return response.json();
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async (category?: string) => {
+    const url = category
+        ? createApiUrl(`${API_ENDPOINTS.news.list}?category=${category}`)
+        : createApiUrl(API_ENDPOINTS.news.list);
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error("Ошибка при загрузке постов");
     }
-);
+    return response.json();
+});
 
-export const fetchCategories = createAsyncThunk(
-    "posts/fetchCategories",
-    async () => {
-        const response = await fetch(createApiUrl(API_ENDPOINTS.news.categories));
-        if (!response.ok) {
-            throw new Error("Ошибка при загрузке категорий");
-        }
-        return response.json();
+export const fetchCategories = createAsyncThunk("posts/fetchCategories", async () => {
+    const response = await fetch(createApiUrl(API_ENDPOINTS.news.categories));
+    if (!response.ok) {
+        throw new Error("Ошибка при загрузке категорий");
     }
-);
+    return response.json();
+});
 
 export const createPost = createAsyncThunk(
     "posts/createPost",
-    async (postData: { title: string; body: string; category: string; link?: string }, { rejectWithValue }) => {
+    async (postData: CreatePostData, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.create), {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(postData),
             });
@@ -107,21 +60,22 @@ export const createPost = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 export const updatePost = createAsyncThunk(
     "posts/updatePost",
-    async ({ id, ...postData }: { id: number; title: string; body: string; category: string; link?: string }, { rejectWithValue }) => {
+    async (postData: UpdatePostData, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
+            const { id, ...updateData } = postData;
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.update(id)), {
-                method: 'PATCH',
+                method: "PATCH",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(postData),
+                body: JSON.stringify(updateData),
             });
 
             if (!response.ok) {
@@ -133,18 +87,18 @@ export const updatePost = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 export const deletePost = createAsyncThunk(
     "posts/deletePost",
     async (id: number, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.delete(id)), {
-                method: 'DELETE',
+                method: "DELETE",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -157,26 +111,30 @@ export const deletePost = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 export const uploadPostImages = createAsyncThunk(
     "posts/uploadImages",
     async ({ postId, files }: { postId: number; files: File[] }, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const formData = new FormData();
-            
-            console.log('Uploading files:', files.length, files.map(f => f.name));
+
+            console.log(
+                "Uploading files:",
+                files.length,
+                files.map((f) => f.name),
+            );
             files.forEach((file, index) => {
                 console.log(`Appending file ${index}:`, file.name, file.size);
-                formData.append('files', file);
+                formData.append("files", file);
             });
 
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.uploadImages(postId)), {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: formData,
             });
@@ -190,18 +148,18 @@ export const uploadPostImages = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 export const deletePostImage = createAsyncThunk(
     "posts/deleteImage",
     async ({ postId, imageId }: { postId: number; imageId: number }, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.deleteImage(imageId)), {
-                method: 'DELETE',
+                method: "DELETE",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -214,19 +172,19 @@ export const deletePostImage = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 export const reorderPostImages = createAsyncThunk(
     "posts/reorderImages",
     async ({ postId, imageIds }: { postId: number; imageIds: number[] }, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.reorderImages(postId)), {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ imageIds }),
             });
@@ -240,7 +198,7 @@ export const reorderPostImages = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 // Функции для работы с файлами
@@ -248,8 +206,8 @@ export const uploadPostFiles = createAsyncThunk(
     "posts/uploadFiles",
     async ({ postId, files }: { postId: number; files: File[] }, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
-            
+            const token = localStorage.getItem("token");
+
             // Конвертируем файлы в base64
             const filePromises = files.map(async (file) => {
                 return new Promise<PostFile>((resolve, reject) => {
@@ -272,10 +230,10 @@ export const uploadPostFiles = createAsyncThunk(
             const fileData = await Promise.all(filePromises);
 
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.uploadFiles(postId)), {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ files: fileData }),
             });
@@ -289,18 +247,18 @@ export const uploadPostFiles = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 export const deletePostFile = createAsyncThunk(
     "posts/deleteFile",
     async ({ postId, fileId }: { postId: number; fileId: number }, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.deleteFile(fileId)), {
-                method: 'DELETE',
+                method: "DELETE",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -313,7 +271,7 @@ export const deletePostFile = createAsyncThunk(
         } catch (error) {
             return rejectWithValue("Ошибка сети");
         }
-    }
+    },
 );
 
 const postsSlice = createSlice({
@@ -358,14 +316,14 @@ const postsSlice = createSlice({
             })
             // Update post
             .addCase(updatePost.fulfilled, (state, action) => {
-                const index = state.posts.findIndex(post => post.id === action.payload.id);
+                const index = state.posts.findIndex((post) => post.id === action.payload.id);
                 if (index !== -1) {
                     state.posts[index] = action.payload;
                 }
             })
             // Delete post
             .addCase(deletePost.fulfilled, (state, action) => {
-                state.posts = state.posts.filter(post => post.id !== action.payload);
+                state.posts = state.posts.filter((post) => post.id !== action.payload);
             })
             // Upload images
             .addCase(uploadPostImages.pending, (state) => {
@@ -384,9 +342,9 @@ const postsSlice = createSlice({
             // Delete image
             .addCase(deletePostImage.fulfilled, (state, action) => {
                 const { postId, imageId } = action.payload;
-                const post = state.posts.find(p => p.id === postId);
+                const post = state.posts.find((p) => p.id === postId);
                 if (post && post.images) {
-                    post.images = post.images.filter(img => img.id !== imageId);
+                    post.images = post.images.filter((img) => img.id !== imageId);
                 }
             })
             .addCase(deletePostImage.rejected, (state, action) => {
@@ -395,18 +353,18 @@ const postsSlice = createSlice({
             // Reorder images
             .addCase(reorderPostImages.fulfilled, (state, action) => {
                 const { postId, imageIds } = action.payload;
-                const post = state.posts.find(p => p.id === postId);
+                const post = state.posts.find((p) => p.id === postId);
                 if (post && post.images) {
                     // Переупорядочиваем изображения согласно новому порядку
-                    const reorderedImages = imageIds.map(id => 
-                        post.images!.find(img => img.id === id)
-                    ).filter(Boolean) as PostImage[];
-                    
+                    const reorderedImages = imageIds
+                        .map((id) => post.images!.find((img) => img.id === id))
+                        .filter(Boolean) as PostImage[];
+
                     // Обновляем isMain флаг - первое изображение становится главным
                     reorderedImages.forEach((img, index) => {
                         img.isMain = index === 0;
                     });
-                    
+
                     post.images = reorderedImages;
                 }
             })
@@ -430,9 +388,9 @@ const postsSlice = createSlice({
             // Delete file
             .addCase(deletePostFile.fulfilled, (state, action) => {
                 const { postId, fileId } = action.payload;
-                const post = state.posts.find(p => p.id === postId);
+                const post = state.posts.find((p) => p.id === postId);
                 if (post && post.files) {
-                    post.files = post.files.filter(file => file.id !== fileId);
+                    post.files = post.files.filter((file) => file.id !== fileId);
                 }
             })
             .addCase(deletePostFile.rejected, (state, action) => {

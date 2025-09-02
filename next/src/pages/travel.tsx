@@ -8,15 +8,15 @@ const Travel: NextPage = () => {
         <>
             <Head>
                 <title>Путешествия | Ваш сайт</title>
-                <meta 
-                    name="description" 
-                    content="Увлекательные истории о путешествиях, приключениях и открытиях новых мест" 
+                <meta
+                    name="description"
+                    content="Увлекательные истории о путешествиях, приключениях и открытиях новых мест"
                 />
                 <meta name="keywords" content="путешествия, туризм, приключения, отдых" />
                 <meta property="og:title" content="Путешествия | Ваш сайт" />
-                <meta 
-                    property="og:description" 
-                    content="Увлекательные истории о путешествиях, приключениях и открытиях новых мест" 
+                <meta
+                    property="og:description"
+                    content="Увлекательные истории о путешествиях, приключениях и открытиях новых мест"
                 />
                 <meta property="og:type" content="website" />
             </Head>

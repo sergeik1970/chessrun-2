@@ -10,7 +10,15 @@ interface ApiImageProps {
     onClick?: () => void;
 }
 
-const ApiImage: React.FC<ApiImageProps> = ({ src, alt, width, height, sizes, className, onClick }) => {
+const ApiImage: React.FC<ApiImageProps> = ({
+    src,
+    alt,
+    width,
+    height,
+    sizes,
+    className,
+    onClick,
+}) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
@@ -72,7 +80,7 @@ const ApiImage: React.FC<ApiImageProps> = ({ src, alt, width, height, sizes, cla
                 onLoad={handleLoad}
                 onError={handleError}
                 style={{ display: isLoading ? "none" : "block" }}
-                {...(sizes && { 'data-sizes': sizes })}
+                {...(sizes && { "data-sizes": sizes })}
             />
         </>
     );

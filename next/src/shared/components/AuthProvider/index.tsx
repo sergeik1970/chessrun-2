@@ -1,11 +1,12 @@
-import React, { useEffect, ReactNode } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "../../store/store";
 import { getCurrentUser } from "../../store/slices/auth";
+import { AuthProviderProps } from "../../types/components";
 
-interface AuthProviderProps {
-    children: ReactNode;
-}
-// Компонент провайдера авторизации для обеспечения доступа к данным пользователя в дочерних компонентах
+/**
+ * Компонент провайдера авторизации для обеспечения доступа к данным пользователя в дочерних компонентах
+ * Автоматически проверяет аутентификацию при загрузке приложения
+ */
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Достаем диспетчер и состояние из хранилища
     const dispatch = useDispatch();
