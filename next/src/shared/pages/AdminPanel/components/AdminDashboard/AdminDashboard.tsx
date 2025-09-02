@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from "react";
 import { useRouter } from "next/router";
 import { useDispatch } from "../../../../store/store";
 import { logoutUser } from "../../../../store/slices/auth";
-import { User } from "../../../../store/slices/auth";
+import { User } from "../../../../types/auth";
 import PostsManager from "../../PostsManager";
 import styles from "./AdminDashboard.module.scss";
 

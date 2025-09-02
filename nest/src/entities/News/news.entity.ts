@@ -29,7 +29,7 @@ export class News {
     link: string;
 
     @Column("text")
-    body: string;
+    text: string;
 
     @Column({
         type: "enum",

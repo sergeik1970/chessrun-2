@@ -7,6 +7,3 @@ export * from "./imageUtils";
 
 // Утилиты для работы с текстом
 export * from "./textUtils";
-
-// Утилиты для валидации
-export * from "./validation";

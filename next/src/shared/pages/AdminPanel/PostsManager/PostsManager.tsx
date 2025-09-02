@@ -1,6 +1,7 @@
 import React, { ReactElement, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "../../../store/store";
-import { fetchPosts, fetchCategories, deletePost, Post } from "../../../store/slices/posts";
+import { fetchPosts, fetchCategories, deletePost } from "../../../store/slices/posts";
+import { Post } from "../../../types/Post";
 import PostCard from "../../../components/PostCard";
 import PostEditor from "../PostEditor";
 import { getImageUrlFromPost } from "../../../utils/imageUtils";
@@ -27,7 +28,7 @@ const PostsManager = (): ReactElement => {
     };
 
     const handleEditPost = (postId: string) => {
-        const post = posts.find((p) => p.id === parseInt(postId));
+        const post = posts.find((p) => p.id === postId);
         if (post) {
             setEditingPost(post);
             setIsEditorOpen(true);

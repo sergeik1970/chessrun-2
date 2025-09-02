@@ -60,7 +60,7 @@ const PostsList: React.FC<PostsListProps> = ({
 
     return (
         <div className={postsStyles.postsList}>
-            {posts.map((post) => (
+            {posts && posts.map((post) => (
                 <div key={post.id} className={postsStyles.postItem}>
                     <PostCard
                         post={post}
@@ -80,7 +80,7 @@ const PostsList: React.FC<PostsListProps> = ({
                 </div>
             )}
 
-            {!hasMore && posts.length > 0 && (
+            {!hasMore && posts && posts.length > 0 && (
                 <div className={styles.endMessage}>
                     <p>Все посты загружены</p>
                 </div>

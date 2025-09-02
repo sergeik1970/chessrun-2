@@ -22,7 +22,13 @@ interface ImageModalProps {
     postId: string;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, onClose, postId }) => {
+const ImageModal: React.FC<ImageModalProps> = ({
+    images,
+    initialIndex,
+    isOpen,
+    onClose,
+    postId,
+}) => {
     useEffect(() => {
         if (isOpen) {
             // Блокируем прокрутку страницы
@@ -106,7 +112,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ images, initialIndex, isOpen, o
                             <div className="swiper-zoom-container">
                                 <div className={styles.modalImageWrapper}>
                                     <ApiImage
-                                        src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/images/${image.id}`}
+                                        src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
                                         alt={
                                             image.alt ||
                                             `Изображение ${index + 1} из ${images.length}`

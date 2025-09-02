@@ -78,7 +78,7 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
                             onClick={() => handleSlideClick(image.url, index)}
                         >
                             <ApiImage
-                                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/images/${image.id}`}
+                                src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
                                 alt={image.alt || `${postTitle} - изображение ${index + 1}`}
                                 width={0}
                                 height={0}
@@ -146,7 +146,7 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
                             className={styles.thumbSlide}
                         >
                             <ApiImage
-                                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/images/${image.id}`}
+                                src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
                                 alt={`Миниатюра ${index + 1}`}
                                 width={0}
                                 height={0}

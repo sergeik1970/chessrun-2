@@ -184,10 +184,10 @@ const PostCard: React.FC<PostComponentProps> = ({
             />
 
             {/* PDF Viewer Modal */}
-            <PDFViewer 
-                file={pdfViewerFile} 
-                isOpen={isPdfViewerOpen} 
-                onClose={closePdfViewer} 
+            <PDFViewer
+                file={pdfViewerFile}
+                isOpen={isPdfViewerOpen}
+                onClose={closePdfViewer}
                 postId={post.id}
             />
         </>

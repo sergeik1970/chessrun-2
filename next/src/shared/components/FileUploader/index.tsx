@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { PostFile } from "../../store/slices/posts";
+import { PostFile } from "../../types/Post";
 import styles from "./index.module.scss";
 
 interface FileUploaderProps {
@@ -7,7 +7,7 @@ interface FileUploaderProps {
     existingFiles: PostFile[];
     onFilesChange: (files: File[]) => void;
     onRemoveFile: (index: number) => void;
-    onRemoveExistingFile: (fileId: number) => void;
+    onRemoveExistingFile: (fileId: string) => void;
     onPreviewFile: (file: File | PostFile) => void;
 }
 
@@ -147,7 +147,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                                 </div>
                                 <button
                                     type="button"
-                                    onClick={() => onRemoveExistingFile(file.id)}
+                                    onClick={() => onRemoveExistingFile(String(file.id))}
                                     className={styles.removeButton}
                                     title="Удалить файл"
                                 >

@@ -49,23 +49,23 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose, postId }) 
                     return;
                 }
 
-                const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/files/${file.id}`;
-                
+                const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/files/${file.id}`;
+
                 // Загружаем файл как blob для обхода CORS
                 fetch(apiUrl)
-                    .then(response => {
+                    .then((response) => {
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}`);
                         }
                         return response.blob();
                     })
-                    .then(blob => {
+                    .then((blob) => {
                         const blobUrl = URL.createObjectURL(blob);
                         setPdfUrl(blobUrl);
                         setLoading(false);
                     })
-                    .catch(error => {
-                        console.error('Error loading file:', error);
+                    .catch((error) => {
+                        console.error("Error loading file:", error);
                         setError("Ошибка при загрузке файла");
                         setLoading(false);
                     });
@@ -126,13 +126,13 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose, postId }) 
         } else {
             // Для существующих файлов - только через API
             if (!postId || !file.id) {
-                console.error('Cannot download: missing postId or file.id');
+                console.error("Cannot download: missing postId or file.id");
                 return;
             }
 
             const a = document.createElement("a");
-            a.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/files/${file.id}?download=true`;
-            a.download = file.originalName || file.title || 'document.pdf';
+            a.href = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/files/${file.id}?download=true`;
+            a.download = file.originalName || file.title || "document.pdf";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -145,12 +145,14 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file, isOpen, onClose, postId }) 
                 <div className={styles.modalHeader}>
                     <h3 className={styles.modalTitle}>{getFileName()}</h3>
                     <div className={styles.modalActions}>
-                        <button 
+                        <button
                             onClick={() => {
-                                const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/news/${postId}/files/${file.id}`;
-                                window.open(apiUrl, '_blank');
-                            }} 
-                            className={styles.openButton} 
+                                if (postId && "id" in file) {
+                                    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/files/${file.id}`;
+                                    window.open(apiUrl, "_blank");
+                                }
+                            }}
+                            className={styles.openButton}
                             title="Открыть в новой вкладке"
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">

@@ -10,11 +10,8 @@ import {
     deletePostFile,
     fetchCategories,
     fetchPosts,
-    PostCategory,
-    PostImage,
-    PostFile,
 } from "../../../store/slices/posts";
-import { Post } from "../../../store/slices/posts";
+import { Post, PostCategory, PostImage, PostFile } from "../../../types/Post";
 import { getImageUrlFromPost } from "../../../utils/imageUtils";
 import DraggableImageList from "../../../components/DraggableImageList";
 import FileUploader from "../../../components/FileUploader";
@@ -42,9 +39,9 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
     const [existingImages, setExistingImages] = useState<PostImage[]>([]); // Существующие изображения
-    const [imagesToDelete, setImagesToDelete] = useState<number[]>([]); // ID изображений для удаления
+    const [imagesToDelete, setImagesToDelete] = useState<string[]>([]); // ID изображений для удаления
     const [existingFiles, setExistingFiles] = useState<PostFile[]>([]); // Существующие файлы
-    const [filesToDelete, setFilesToDelete] = useState<number[]>([]); // ID файлов для удаления
+    const [filesToDelete, setFilesToDelete] = useState<string[]>([]); // ID файлов для удаления
     const [showFileInput, setShowFileInput] = useState(false);
     const [pdfViewerFile, setPdfViewerFile] = useState<File | PostFile | null>(null);
     const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
@@ -70,8 +67,8 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         if (post) {
             setFormData({
                 title: post.title,
-                body: post.body,
-                category: post.category,
+                body: post.text,
+                category: typeof post.category === "string" ? post.category : post.category.id,
                 images: [], // Новые изображения
                 files: [], // Новые файлы
             });
@@ -118,11 +115,6 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
-        console.log(
-            "Selected files:",
-            files.length,
-            files.map((f) => f.name),
-        );
 
         setFormData((prev) => ({
             ...prev,
@@ -132,8 +124,6 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         // Создаем preview URLs
         const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
         setImagePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
-
-        console.log("Total images after selection:", formData.images.length + files.length);
     };
 
     const removeNewImage = (index: number) => {
@@ -147,7 +137,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const removeExistingImage = (imageId: number) => {
+    const removeExistingImage = (imageId: string) => {
         // Добавляем ID изображения в список для удаления
         setImagesToDelete((prev) => [...prev, imageId]);
         // Удаляем изображение из списка существующих
@@ -185,7 +175,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         }));
     };
 
-    const removeExistingFile = (fileId: number) => {
+    const removeExistingFile = (fileId: string) => {
         // Добавляем ID файла в список для удаления
         setFilesToDelete((prev) => [...prev, fileId]);
         // Удаляем файл из списка существующих
@@ -231,7 +221,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         try {
             const postData = {
                 title: formData.title.trim(),
-                body: formData.body.trim(),
+                text: formData.body.trim(),
                 category: formData.category as
                     | "travel"
                     | "competition"
@@ -257,34 +247,25 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
 
                 // Удаляем изображения, которые были помечены для удаления
                 if (imagesToDelete.length > 0 && post) {
-                    console.log("Deleting images:", imagesToDelete);
                     for (const imageId of imagesToDelete) {
-                        await dispatch(deletePostImage({ postId: post.id, imageId }));
+                        await dispatch(deletePostImage({ postId: Number(post.id), imageId: Number(imageId) }));
                     }
                 }
 
                 // Удаляем файлы, которые были помечены для удаления
                 if (filesToDelete.length > 0 && post) {
-                    console.log("Deleting files:", filesToDelete);
                     for (const fileId of filesToDelete) {
-                        await dispatch(deletePostFile({ postId: post.id, fileId }));
+                        await dispatch(deletePostFile({ postId: Number(post.id), fileId: Number(fileId) }));
                     }
                 }
 
                 // Если есть новые изображения, загружаем их
                 if (formData.images.length > 0) {
-                    console.log(
-                        "About to upload images:",
-                        formData.images.length,
-                        "files for post",
-                        postId,
-                    );
                     const uploadResult = await dispatch(
                         uploadPostImages({ postId, files: formData.images }),
                     );
 
                     if (uploadPostImages.fulfilled.match(uploadResult)) {
-                        console.log("Images uploaded successfully:", uploadResult.payload);
                     } else {
                         console.error("Failed to upload images:", uploadResult);
                     }
@@ -292,18 +273,11 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
 
                 // Если есть новые файлы, загружаем их
                 if (formData.files.length > 0) {
-                    console.log(
-                        "About to upload files:",
-                        formData.files.length,
-                        "files for post",
-                        postId,
-                    );
                     const uploadResult = await dispatch(
                         uploadPostFiles({ postId, files: formData.files }),
                     );
 
                     if (uploadPostFiles.fulfilled.match(uploadResult)) {
-                        console.log("Files uploaded successfully:", uploadResult.payload);
                     } else {
                         console.error("Failed to upload files:", uploadResult);
                     }
@@ -312,7 +286,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 // Если есть существующие изображения и их порядок мог измениться, обновляем порядок
                 if (existingImages.length > 0 && post) {
                     const imageIds = existingImages.map((img) => img.id);
-                    await dispatch(reorderPostImages({ postId: post.id, imageIds }));
+                    await dispatch(reorderPostImages({ postId: Number(post.id), imageIds: imageIds.map(id => Number(id)) }));
                 }
 
                 // После всех операций обновляем список постов
@@ -506,10 +480,10 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             </div>
 
             {/* PDF Viewer Modal */}
-            <PDFViewer 
-                file={pdfViewerFile} 
-                isOpen={isPdfViewerOpen} 
-                onClose={closePdfViewer} 
+            <PDFViewer
+                file={pdfViewerFile}
+                isOpen={isPdfViewerOpen}
+                onClose={closePdfViewer}
                 postId={post?.id}
             />
         </div>

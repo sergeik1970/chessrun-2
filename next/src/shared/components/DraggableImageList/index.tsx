@@ -168,7 +168,7 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
 
         const alt =
             item.type === "existing"
-                ? (item.data as PostImage).originalName || `Изображение ${globalIndex + 1}`
+                ? (item.data as PostImage).alt || `Изображение ${globalIndex + 1}`
                 : (item.data as File).name;
 
         setPreviewImage({

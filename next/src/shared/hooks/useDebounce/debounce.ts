@@ -1,5 +1,3 @@
-import { DebouncedFunc } from "../../types/utils";
-
 /**
  * Функция debounce для задержки выполнения функции
  * @param func - функция для выполнения с задержкой
@@ -9,7 +7,7 @@ import { DebouncedFunc } from "../../types/utils";
 export default function debounce<T extends (...args: any) => any>(
     func: T,
     timeout = 100,
-): DebouncedFunc<T> {
+): (...args: Parameters<T>) => void {
     let timer: any;
 
     return function (...args) {

@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import styles from "./index.module.scss";
 
 const Footer: React.FC = () => {
@@ -25,24 +26,24 @@ const Footer: React.FC = () => {
                         <h4 className={styles.linkTitle}>Разделы</h4>
                         <ul className={styles.linkList}>
                             <li>
-                                <a href="/travel" className={styles.link}>
+                                <Link href="/travel" className={styles.link}>
                                     Путешествия
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/competitions" className={styles.link}>
+                                <Link href="/competitions" className={styles.link}>
                                     Соревнования
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/training" className={styles.link}>
+                                <Link href="/training" className={styles.link}>
                                     Тренировки
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/contact" className={styles.link}>
+                                <Link href="/contact" className={styles.link}>
                                     Контакты
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>

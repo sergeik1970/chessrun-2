@@ -61,8 +61,6 @@ const AdminAuth = (): ReactElement => {
                 }),
             );
 
-            console.log("Register result:", result);
-
             if (registerUser.fulfilled.match(result)) {
                 setFormData({ email: "", password: "", name: "" });
                 setSuccess(
