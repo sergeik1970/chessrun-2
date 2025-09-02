@@ -162,7 +162,7 @@ const TravelPage = (): ReactElement => {
                     navigation={false}
                     pagination={false}
                     autoplay={{
-                        delay: 6000,
+                        delay: 4000,
                         disableOnInteraction: false,
                         pauseOnMouseEnter: true,
                     }}
