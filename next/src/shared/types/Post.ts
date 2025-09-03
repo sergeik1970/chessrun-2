@@ -30,7 +30,20 @@ export interface PostCategory {
     color?: string; // цвет для бейджа категории
 }
 
-// Основной интерфейс поста
+// Серверный интерфейс поста (как приходит с сервера)
+export interface ServerPost {
+    id: number;
+    title: string;
+    text: string; // содержимое поста
+    createdAt: string; // дата события
+    updatedAt: string; // дата публикации
+    author?: { name: string }; // автор с сервера
+    images?: any[];
+    files?: any[];
+    category: string; // строка enum с сервера
+}
+
+// Основной интерфейс поста (для использования в компонентах)
 export interface Post {
     id: string;
     title: string;
@@ -45,7 +58,7 @@ export interface Post {
 
 // Состояние для Redux store постов
 export interface PostsState {
-    posts: Post[];
+    posts: ServerPost[]; // храним серверные данные
     categories: PostCategory[];
     loading: boolean;
     error: string | null;

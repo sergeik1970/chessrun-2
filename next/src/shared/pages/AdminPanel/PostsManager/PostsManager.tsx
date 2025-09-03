@@ -1,7 +1,7 @@
 import React, { ReactElement, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "../../../store/store";
 import { fetchPosts, fetchCategories, deletePost } from "../../../store/slices/posts";
-import { Post } from "../../../types/Post";
+import { Post, ServerPost } from "../../../types/Post";
 import PostCard from "../../../components/PostCard";
 import PostEditor from "../PostEditor";
 import { getImageUrlFromPost } from "../../../utils/imageUtils";
@@ -12,7 +12,7 @@ const PostsManager = (): ReactElement => {
     const { posts, categories, loading, error } = useSelector((state) => state.posts);
 
     const [isEditorOpen, setIsEditorOpen] = useState(false);
-    const [editingPost, setEditingPost] = useState<Post | null>(null);
+    const [editingPost, setEditingPost] = useState<ServerPost | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
@@ -28,7 +28,7 @@ const PostsManager = (): ReactElement => {
     };
 
     const handleEditPost = (postId: string) => {
-        const post = posts.find((p) => p.id === postId);
+        const post = posts.find((p) => p.id.toString() === postId);
         if (post) {
             setEditingPost(post);
             setIsEditorOpen(true);
@@ -68,7 +68,7 @@ const PostsManager = (): ReactElement => {
         if (searchTerm) {
             return (
                 post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                post.body.toLowerCase().includes(searchTerm.toLowerCase())
+                post.text.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
@@ -79,23 +79,23 @@ const PostsManager = (): ReactElement => {
     const adaptedPosts = filteredPosts.map((post) => ({
         id: post.id.toString(),
         title: post.title,
-        text: post.body,
+        text: post.text,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
         author: post.author?.name || "Неизвестный автор",
         images: (post.images || []).map((img) => ({
             id: img.id.toString(),
-            url: getImageUrlFromPost(post.id, img),
+            url: getImageUrlFromPost(post.id.toString(), img),
             alt: img.alt || "",
             isMain: img.isMain,
         })),
         files: (post.files || []).map((file) => ({
             id: file.id.toString(),
-            file: file.file,
             mimeType: file.mimeType,
             originalName: file.originalName,
             title: file.title || file.originalName,
             size: file.size,
+            url: file.url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
         })),
         category: {
             id: post.category,

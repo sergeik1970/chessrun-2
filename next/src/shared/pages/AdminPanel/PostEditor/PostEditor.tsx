@@ -11,7 +11,7 @@ import {
     fetchCategories,
     fetchPosts,
 } from "../../../store/slices/posts";
-import { Post, PostCategory, PostImage, PostFile } from "../../../types/Post";
+import { Post, ServerPost, PostCategory, PostImage, PostFile } from "../../../types/Post";
 import { getImageUrlFromPost } from "../../../utils/imageUtils";
 import DraggableImageList from "../../../components/DraggableImageList";
 import FileUploader from "../../../components/FileUploader";
@@ -19,7 +19,7 @@ import PDFViewer from "../../../components/PDFViewer";
 import styles from "./PostEditor.module.scss";
 
 interface PostEditorProps {
-    post: Post | null;
+    post: ServerPost | null;
     onSave: () => void;
     onClose: () => void;
 }
@@ -68,7 +68,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             setFormData({
                 title: post.title,
                 body: post.text,
-                category: typeof post.category === "string" ? post.category : post.category.id,
+                category: post.category, // теперь это всегда строка
                 images: [], // Новые изображения
                 files: [], // Новые файлы
             });
@@ -233,7 +233,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
             let resultAction;
             if (post) {
                 // Обновляем существующий пост
-                resultAction = await dispatch(updatePost({ id: post.id, ...postData }));
+                resultAction = await dispatch(updatePost({ id: post.id.toString(), ...postData }));
             } else {
                 // Создаем новый пост
                 resultAction = await dispatch(createPost(postData));
@@ -248,14 +248,18 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 // Удаляем изображения, которые были помечены для удаления
                 if (imagesToDelete.length > 0 && post) {
                     for (const imageId of imagesToDelete) {
-                        await dispatch(deletePostImage({ postId: Number(post.id), imageId: Number(imageId) }));
+                        await dispatch(
+                            deletePostImage({ postId: Number(post.id), imageId: Number(imageId) }),
+                        );
                     }
                 }
 
                 // Удаляем файлы, которые были помечены для удаления
                 if (filesToDelete.length > 0 && post) {
                     for (const fileId of filesToDelete) {
-                        await dispatch(deletePostFile({ postId: Number(post.id), fileId: Number(fileId) }));
+                        await dispatch(
+                            deletePostFile({ postId: Number(post.id), fileId: Number(fileId) }),
+                        );
                     }
                 }
 
@@ -286,7 +290,12 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                 // Если есть существующие изображения и их порядок мог измениться, обновляем порядок
                 if (existingImages.length > 0 && post) {
                     const imageIds = existingImages.map((img) => img.id);
-                    await dispatch(reorderPostImages({ postId: Number(post.id), imageIds: imageIds.map(id => Number(id)) }));
+                    await dispatch(
+                        reorderPostImages({
+                            postId: Number(post.id),
+                            imageIds: imageIds.map((id) => Number(id)),
+                        }),
+                    );
                 }
 
                 // После всех операций обновляем список постов
@@ -417,7 +426,7 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                                 existingImages={existingImages}
                                 newImages={formData.images}
                                 newImagePreviews={imagePreviewUrls}
-                                postId={post?.id}
+                                postId={post?.id.toString()}
                                 onReorderExisting={handleReorderExistingImages}
                                 onReorderNew={handleReorderNewImages}
                                 onRemoveExisting={removeExistingImage}

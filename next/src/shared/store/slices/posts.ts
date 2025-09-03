@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createApiUrl, API_ENDPOINTS } from "../../config/api";
 import {
     Post,
+    ServerPost,
     PostImage,
     PostFile,
     PostCategory,
@@ -69,7 +70,7 @@ export const updatePost = createAsyncThunk(
         try {
             const token = localStorage.getItem("token");
             const { id, ...updateData } = postData;
-            const response = await fetch(createApiUrl(API_ENDPOINTS.news.update(id)), {
+            const response = await fetch(createApiUrl(API_ENDPOINTS.news.update(Number(id))), {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -215,7 +216,7 @@ export const uploadPostFiles = createAsyncThunk(
                     reader.onload = () => {
                         resolve({
                             id: Date.now() + Math.random(), // Временный ID
-                            file: reader.result as string,
+                            url: reader.result as string,
                             mimeType: file.type,
                             originalName: file.name,
                             title: file.name,

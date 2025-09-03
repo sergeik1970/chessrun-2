@@ -60,18 +60,19 @@ const PostsList: React.FC<PostsListProps> = ({
 
     return (
         <div className={postsStyles.postsList}>
-            {posts && posts.map((post) => (
-                <div key={post.id} className={postsStyles.postItem}>
-                    <PostCard
-                        post={post}
-                        isAdmin={isAdmin}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onReadMore={handleReadMore}
-                        showFullText={expandedPosts.has(post.id)}
-                    />
-                </div>
-            ))}
+            {posts &&
+                posts.map((post) => (
+                    <div key={post.id} className={postsStyles.postItem}>
+                        <PostCard
+                            post={post}
+                            isAdmin={isAdmin}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onReadMore={handleReadMore}
+                            showFullText={expandedPosts.has(post.id)}
+                        />
+                    </div>
+                ))}
 
             {loading && (
                 <div className={postsStyles.loading}>

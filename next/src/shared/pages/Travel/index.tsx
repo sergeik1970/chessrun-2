@@ -3,13 +3,13 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Zoom, Keyboard, Autoplay, EffectFade } from "swiper/modules";
 import { useDispatch, useSelector } from "../../store/store";
-import { fetchPosts, Post } from "../../store/slices/posts";
+import { fetchPosts } from "../../store/slices/posts";
 import PostCard from "../../components/PostCard";
 import { getImageUrlFromPost } from "../../utils/imageUtils";
 import ApiImage from "../../components/ApiImage";
 import Footer from "../../components/Footer";
 import PDFViewer from "../../components/PDFViewer";
-import { PostImage, PostFile } from "../../types/Post";
+import { Post, ServerPost, PostImage, PostFile } from "../../types/Post";
 
 // Import Swiper styles
 import "swiper/css";
@@ -25,7 +25,7 @@ import postsStyles from "../../styles/posts.module.scss";
 const TravelPage = (): ReactElement => {
     const dispatch = useDispatch();
     const { posts, loading, error } = useSelector((state) => state.posts);
-    const [travelPosts, setTravelPosts] = useState<Post[]>([]);
+    const [travelPosts, setTravelPosts] = useState<ServerPost[]>([]);
 
     // Состояния для модальных окон
     const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -124,23 +124,23 @@ const TravelPage = (): ReactElement => {
     const adaptedPosts = travelPosts.map((post) => ({
         id: post.id.toString(),
         title: post.title,
-        text: post.body,
+        text: post.text,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
         author: post.author?.name || "Неизвестный автор",
         images: (post.images || []).map((img) => ({
             id: img.id.toString(),
-            url: getImageUrlFromPost(post.id, img),
+            url: getImageUrlFromPost(post.id.toString(), img),
             alt: img.alt || "",
             isMain: img.isMain,
         })),
         files: (post.files || []).map((file) => ({
             id: file.id.toString(),
-            file: file.file,
             mimeType: file.mimeType,
             originalName: file.originalName,
             title: file.title || file.originalName,
             size: file.size,
+            url: file.url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
         })),
         category: {
             id: "travel",
@@ -313,8 +313,6 @@ const TravelPage = (): ReactElement => {
                                                 src={image.url}
                                                 alt={image.alt || `Изображение ${index + 1}`}
                                                 className={postsStyles.imageModalImage}
-                                                fill
-                                                style={{ objectFit: "contain" }}
                                             />
                                         </div>
                                     </div>
