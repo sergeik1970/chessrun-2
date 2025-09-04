@@ -10,7 +10,9 @@ const DealsList = (): ReactElement => {
 
     return (
         <ul className={styles["list"]}>
-            {deals?.map((el) => <DealsListItem item={el} key={el.id} />)}
+            {deals?.map((el) => (
+                <DealsListItem item={el} key={el.id} />
+            ))}
         </ul>
     );
 };

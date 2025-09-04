@@ -208,35 +208,24 @@ export const uploadPostFiles = createAsyncThunk(
     async ({ postId, files }: { postId: number; files: File[] }, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem("token");
+            const formData = new FormData();
 
-            // Конвертируем файлы в base64
-            const filePromises = files.map(async (file) => {
-                return new Promise<PostFile>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        resolve({
-                            id: Date.now() + Math.random(), // Временный ID
-                            url: reader.result as string,
-                            mimeType: file.type,
-                            originalName: file.name,
-                            title: file.name,
-                            size: file.size,
-                        });
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
+            console.log(
+                "Uploading PDF files:",
+                files.length,
+                files.map((f) => f.name),
+            );
+            files.forEach((file, index) => {
+                console.log(`Appending PDF file ${index}:`, file.name, file.size);
+                formData.append("files", file);
             });
-
-            const fileData = await Promise.all(filePromises);
 
             const response = await fetch(createApiUrl(API_ENDPOINTS.news.uploadFiles(postId)), {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ files: fileData }),
+                body: formData,
             });
 
             if (!response.ok) {

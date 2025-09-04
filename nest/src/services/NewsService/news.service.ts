@@ -299,8 +299,8 @@ export class NewsService {
         };
 
         console.log('Uploading to S3...');
-        // Загружаем в S3
-        const s3Result = await this.s3Service.uploadPostPdf(fileObj, newsId);
+        // Загружаем в S3 (используем универсальный метод)
+        const s3Result = await this.s3Service.uploadPostFile(fileObj, newsId);
         console.log('S3 upload result:', s3Result);
 
         // Сохраняем информацию в БД
@@ -312,7 +312,7 @@ export class NewsService {
             originalName,
             title,
             size,
-            type: 'file',
+            type: s3Result.type === 'pdf' ? 'file' : 'image', // Используем тип из S3Service
         });
 
         const savedFile = await this.filesRepository.save(file);

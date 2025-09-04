@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
+    typescript: {
+        ignoreBuildErrors: false,
+    },
     images: {
         domains: ["images.unsplash.com", "localhost"],
         remotePatterns: [
