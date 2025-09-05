@@ -1,0 +1,279 @@
+.newsPage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow-x: hidden;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hero секция */
+.hero {
+    position: relative;
+    height: 75vh;
+    min-height: 500px;
+    max-height: 800px; /* Ограничиваем максимальную высоту для больших экранов */
+    overflow: hidden;
+
+    /* Для очень больших экранов делаем hero секцию больше */
+    @media (min-width: 2000px) {
+        height: 90vh;
+        max-height: 1200px;
+    }
+}
+
+.heroSwiper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.heroSlide {
+    width: 100%;
+    height: 100%;
+}
+
+.heroImage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+
+    // Плавный переход для изображений
+    img {
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+}
+
+// Анимация для hero контента
+@keyframes heroContentFade {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    pointer-events: none; // Позволяем кликать через оверлей на пагинацию
+
+    // Добавляем темный оверлей для лучшей читаемости текста
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: -1;
+    }
+
+    // Добавляем легкий цветовой оверлей для новостей
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(52, 152, 219, 0.1) 0%,
+            rgba(155, 89, 182, 0.1) 50%,
+            rgba(241, 196, 15, 0.1) 100%
+        );
+        z-index: -1;
+    }
+}
+
+.heroContent {
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 0 20px;
+    animation: heroContentFade 1.2s ease-out 0.5s both;
+}
+
+.heroTitle {
+    font-size: 4rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: -0.02em;
+    transition:
+        transform 0.3s ease,
+        text-shadow 0.3s ease;
+    cursor: default;
+
+    &:hover {
+        transform: scale(1.05);
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (max-width: 768px) {
+        font-size: 2.5rem;
+    }
+
+    @media (max-width: 480px) {
+        font-size: 2rem;
+    }
+}
+
+.heroQuote {
+    font-size: 1.25rem;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.6;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    opacity: 0.95;
+
+    @media (max-width: 768px) {
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 480px) {
+        font-size: 1rem;
+    }
+}
+
+/* Кастомная пагинация с прогресс-баром */
+.heroCustomPagination {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 15;
+
+    @media (max-width: 480px) {
+        bottom: 20px;
+        gap: 6px;
+    }
+}
+
+.heroPaginationDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    &.active {
+        width: 24px;
+        height: 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 1);
+    }
+
+    @media (max-width: 480px) {
+        width: 8px;
+        height: 8px;
+
+        &.active {
+            width: 20px;
+            height: 8px;
+            border-radius: 4px;
+        }
+    }
+}
+
+/* Секция с постами */
+.postsSection {
+    padding: 4rem 0;
+    background: white;
+    width: 100%;
+    overflow-x: hidden;
+    flex: 1;
+}
+
+.postsHeader {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.postsTitle {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    @media (max-width: 768px) {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+
+.postsCount {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #7f8c8d;
+
+    @media (max-width: 768px) {
+        font-size: 1.25rem;
+    }
+}
+
+
+
+/* Анимации */
+.hero {
+    animation: fadeIn 1s ease-out;
+}
+
+.postsSection {
+    animation: slideUp 0.8s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

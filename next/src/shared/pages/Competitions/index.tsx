@@ -326,6 +326,17 @@ const CompetitionsPage = (): ReactElement => {
                                 </>
                             )}
                         </Swiper>
+                        <div className={postsStyles.imageModalInfoPanel}>
+                            {/* Показываем счетчик только если изображений больше одного */}
+                            {selectedImages.length > 1 && (
+                                <div className={postsStyles.imageModalCounter}>
+                                    {selectedImageIndex + 1} из {selectedImages.length}
+                                </div>
+                            )}
+                            <div className={postsStyles.imageModalZoomHint}>
+                                Двойной клик для увеличения
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

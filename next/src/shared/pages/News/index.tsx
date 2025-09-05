@@ -22,10 +22,9 @@ import "swiper/css/effect-fade";
 import styles from "./index.module.scss";
 import postsStyles from "../../styles/posts.module.scss";
 
-const TravelPage = (): ReactElement => {
+const NewsPage = (): ReactElement => {
     const dispatch = useDispatch();
     const { posts, loading, error } = useSelector((state) => state.posts);
-    const [travelPosts, setTravelPosts] = useState<ServerPost[]>([]);
 
     // Состояния для модальных окон
     const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -43,20 +42,20 @@ const TravelPage = (): ReactElement => {
     // Массив фоновых изображений для hero секции
     const heroImages = [
         {
-            src: "/images/travel/travel-1.jpg",
-            alt: "Кемпинг в лесу",
+            src: "/images/news/news-1.jpg",
+            alt: "Последние новости",
         },
         {
-            src: "/images/travel/travel-2.jpg",
-            alt: "Рафтинг по реке",
+            src: "/images/news/news-2.jpg",
+            alt: "Спортивные события",
         },
         {
-            src: "/images/travel/travel-3.jpg",
-            alt: "Геленджик",
+            src: "/images/news/news-3.jpg",
+            alt: "Тренировки и достижения",
         },
         {
-            src: "/images/travel/travel-4.jpg",
-            alt: "Железнодорожное путешествие",
+            src: "/images/news/news-4.jpg",
+            alt: "Путешествия и приключения",
         },
     ];
 
@@ -64,12 +63,6 @@ const TravelPage = (): ReactElement => {
         // Загружаем посты при монтировании компонента
         dispatch(fetchPosts());
     }, [dispatch]);
-
-    useEffect(() => {
-        // Фильтруем посты по категории "travel"
-        const filtered = posts.filter((post) => post.category === "travel");
-        setTravelPosts(filtered);
-    }, [posts]);
 
     // Управление автопрокруткой при наведении мыши
     useEffect(() => {
@@ -121,37 +114,39 @@ const TravelPage = (): ReactElement => {
     }, [imageModalOpen, pdfModalOpen]);
 
     // Преобразуем посты для PostCard (адаптируем типы)
-    const adaptedPosts = travelPosts.map((post) => ({
-        id: post.id.toString(),
-        title: post.title,
-        text: post.text,
-        createdAt: post.createdAt,
-        updatedAt: post.updatedAt,
-        author: post.author?.name || "Неизвестный автор",
-        images: (post.images || []).map((img) => ({
-            id: img.id.toString(),
-            url: getImageUrlFromPost(post.id.toString(), img),
-            alt: img.alt || "",
-            isMain: img.isMain,
-        })),
-        files: (post.files || []).map((file) => ({
-            id: file.id.toString(),
-            mimeType: file.mimeType,
-            originalName: file.originalName,
-            title: file.title || file.originalName,
-            size: file.size,
-            url: file.url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
-        })),
-        category: {
-            id: "travel",
-            name: "Путешествия",
-            icon: "✈️",
-            color: "#4A90E2",
-        },
-    }));
+    const adaptedPosts = posts.map((post) => {
+        return {
+            id: post.id.toString(),
+            title: post.title,
+            text: post.text,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+            author: post.author?.name || "Неизвестный автор",
+            images: (post.images || []).map((img) => ({
+                id: img.id.toString(),
+                url: getImageUrlFromPost(post.id.toString(), img),
+                alt: img.alt || "",
+                isMain: img.isMain,
+            })),
+            files: (post.files || []).map((file) => ({
+                id: file.id.toString(),
+                mimeType: file.mimeType,
+                originalName: file.originalName,
+                title: file.title || file.originalName,
+                size: file.size,
+                url: file.url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+            })),
+            category: {
+                id: post.category,
+                name: post.category,
+                icon: "📰",
+                color: "#3498db",
+            },
+        };
+    });
 
     return (
-        <div className={styles.travelPage}>
+        <div className={styles.newsPage}>
             {/* Hero секция с изображением и заголовком */}
             <section
                 className={styles.hero}
@@ -201,8 +196,10 @@ const TravelPage = (): ReactElement => {
                 {/* Статичный оверлей с заголовком и цитатой */}
                 <div className={styles.heroOverlay}>
                     <div className={styles.heroContent}>
-                        <h1 className={styles.heroTitle}>Путешествия</h1>
-                        <p className={styles.heroQuote}>На пути к новым вершинам.</p>
+                        <h1 className={styles.heroTitle}>Новости</h1>
+                        <p className={styles.heroQuote}>
+                            Будьте в курсе всех событий и достижений.
+                        </p>
                     </div>
                 </div>
 
@@ -228,10 +225,10 @@ const TravelPage = (): ReactElement => {
             {/* Секция с постами */}
             <section className={styles.postsSection}>
                 <div className={postsStyles.postsContainer}>
-                    {loading && travelPosts.length === 0 ? (
+                    {loading && posts.length === 0 ? (
                         <div className={postsStyles.loading}>
                             <div className={postsStyles.spinner}></div>
-                            <p>Загрузка путешествий...</p>
+                            <p>Загрузка новостей...</p>
                         </div>
                     ) : error ? (
                         <div className={postsStyles.error}>
@@ -239,26 +236,24 @@ const TravelPage = (): ReactElement => {
                         </div>
                     ) : adaptedPosts.length === 0 ? (
                         <div className={postsStyles.emptyState}>
-                            <div className={postsStyles.emptyIcon}>✈️</div>
-                            <h3>Пока нет путешествий</h3>
-                            <p>Скоро здесь появятся увлекательные истории о путешествиях!</p>
+                            <div className={postsStyles.emptyIcon}>📰</div>
+                            <h3>Пока нет новостей</h3>
+                            <p>Скоро здесь появятся интересные новости и события!</p>
                         </div>
                     ) : (
-                        <>
-                            <div className={postsStyles.postsList}>
-                                {adaptedPosts.map((post) => (
-                                    <div key={post.id} className={postsStyles.postItem}>
-                                        <PostCard
-                                            post={post}
-                                            maxTextLines={3}
-                                            showFullText={false}
-                                            onImageClick={handleImageClick}
-                                            onPdfClick={handlePdfClick}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </>
+                        <div className={postsStyles.postsList}>
+                            {adaptedPosts.map((post) => (
+                                <div key={post.id} className={postsStyles.postItem}>
+                                    <PostCard
+                                        post={post}
+                                        maxTextLines={3}
+                                        showFullText={false}
+                                        onImageClick={handleImageClick}
+                                        onPdfClick={handlePdfClick}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     )}
                 </div>
             </section>
@@ -357,4 +352,4 @@ const TravelPage = (): ReactElement => {
     );
 };
 
-export default TravelPage;
+export default NewsPage;
