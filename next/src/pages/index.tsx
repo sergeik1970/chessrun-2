@@ -1,17 +1,21 @@
 import React from "react";
 import Head from "next/head";
 import Footer from "../shared/components/Footer";
-import PostsContainer from "../shared/components/PostsContainer";
+import HomePage from "../shared/pages/Home";
 
 const Main = () => {
     return (
         <>
             <Head>
-                <title>Главная - Спортивный клуб</title>
-                <meta name="description" content="Добро пожаловать в наш спортивный клуб" />
+                <title>Шахматы на бегу | Спортивное ориентирование Костромской области</title>
+                <meta name="description" content="Открывай новые горизонты вместе с нами! Спортивное ориентирование, тренировки, соревнования, путешествия и походы в Костромской области." />
+                <meta name="keywords" content="спортивное ориентирование, Кострома, тренировки, соревнования, путешествия, походы, активный отдых" />
+                <meta property="og:title" content="Шахматы на бегу | Спортивное ориентирование Костромской области" />
+                <meta property="og:description" content="Открывай новые горизонты вместе с нами! Спортивное ориентирование, тренировки, соревнования, путешествия и походы в Костромской области." />
+                <meta property="og:type" content="website" />
             </Head>
             <main>
-                <PostsContainer />
+                <HomePage />
             </main>
             <Footer />
         </>

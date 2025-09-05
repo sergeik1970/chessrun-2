@@ -1,0 +1,281 @@
+.homePage {
+    min-height: 100vh;
+}
+
+/* Hero секция */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.heroContent {
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 0 2rem;
+    z-index: 3;
+}
+
+.heroTitle {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    line-height: 1.1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.heroTitleLine {
+    display: block;
+}
+
+.heroSubtitle {
+    font-size: 0.5em;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+
+
+/* Адаптивные изображения */
+.desktopImage {
+    display: block;
+}
+
+.mobileImage {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktopImage {
+        display: none;
+    }
+    
+    .mobileImage {
+        display: block;
+    }
+}
+
+/* Секции */
+.sectionsContainer {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.sectionsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.sectionCard {
+    position: relative;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.sectionCardLarge {
+    height: 400px;
+}
+
+.sectionImage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.sectionOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.3) 50%,
+        rgba(0, 0, 0, 0.7) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    transition: background 0.3s ease;
+}
+
+.sectionCard:hover .sectionOverlay {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+}
+
+.sectionContent {
+    text-align: center;
+    color: white;
+    max-width: 400px;
+}
+
+.sectionTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.sectionButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-shadow: none;
+
+    svg {
+        transition: transform 0.3s ease;
+    }
+}
+
+.sectionCard:hover .sectionButton {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+
+    svg {
+        transform: translateX(4px);
+    }
+}
+
+/* Адаптивность */
+@media (min-width: 768px) {
+    .sectionsGrid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+            "news news"
+            "travel competitions"
+            "training contacts";
+    }
+
+    .sectionCard:nth-child(1) {
+        grid-area: news;
+    }
+
+    .sectionCard:nth-child(2) {
+        grid-area: travel;
+    }
+
+    .sectionCard:nth-child(3) {
+        grid-area: competitions;
+    }
+
+    .sectionCard:nth-child(4) {
+        grid-area: training;
+    }
+
+    .sectionCard:nth-child(5) {
+        grid-area: contacts;
+    }
+}
+
+@media (min-width: 1024px) {
+    .heroTitle {
+        font-size: 5rem;
+    }
+
+    .sectionTitle {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        height: 80vh;
+    }
+
+    .heroTitle {
+        font-size: 2.5rem;
+        margin-bottom: 0;
+    }
+
+    .sectionsContainer {
+        padding: 2rem 0;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    .sectionCard {
+        height: 450px;
+    }
+
+    .sectionCardLarge {
+        height: 500px;
+    }
+
+    .sectionTitle {
+        font-size: 2rem;
+    }
+
+    .sectionButton {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .sectionContent {
+        padding: 1rem;
+    }
+}

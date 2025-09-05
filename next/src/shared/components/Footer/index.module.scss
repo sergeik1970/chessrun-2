@@ -31,9 +31,14 @@
     margin-bottom: 40px;
 
     @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-        gap: 40px;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
         padding: 40px 0 30px;
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
 }
 

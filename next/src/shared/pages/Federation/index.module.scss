@@ -1,0 +1,635 @@
+.federationPage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hero секция */
+.hero {
+    position: relative;
+    height: 75vh;
+    min-height: 500px;
+    max-height: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    /* Для очень больших экранов делаем hero секцию больше */
+    @media (min-width: 2000px) {
+        height: 90vh;
+        max-height: 1200px;
+    }
+
+    @media (max-width: 768px) {
+        height: 60vh;
+        min-height: 400px;
+    }
+
+    @media (max-width: 480px) {
+        height: 50vh;
+        min-height: 350px;
+    }
+}
+
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(44, 62, 80, 0.8) 0%,
+        rgba(52, 152, 219, 0.7) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.heroContent {
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 0 2rem;
+}
+
+.heroTitle {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    @media (max-width: 768px) {
+        font-size: 2.2rem;
+    }
+
+    @media (max-width: 480px) {
+        font-size: 1.8rem;
+    }
+}
+
+.heroTitleLine {
+    display: block;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1.2;
+    margin: 0;
+    
+    &:first-child {
+        margin-bottom: 0.3rem;
+    }
+}
+
+.heroDescription {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin: 0;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+
+    @media (max-width: 768px) {
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 480px) {
+        font-size: 1rem;
+    }
+}
+
+/* Общие стили для секций */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+
+    @media (max-width: 768px) {
+        padding: 0 1rem;
+    }
+}
+
+.sectionTitle {
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-align: center;
+    color: #2c3e50;
+    margin: 0 0 3rem 0;
+
+    @media (max-width: 768px) {
+        font-size: 2rem;
+        margin: 0 0 2rem 0;
+    }
+}
+
+
+
+/* Секция документов */
+.documentsSection {
+    padding: 5rem 0;
+    background: #f8f9fa;
+}
+
+.documentsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.documentCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border-color: #3498db;
+    }
+}
+
+.documentIcon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.documentInfo {
+    flex: 1;
+}
+
+.documentTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+}
+
+.documentDescription {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+    margin: 0 0 0.5rem 0;
+}
+
+.documentMeta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+}
+
+.documentType {
+    background: #3498db;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.documentSize {
+    color: #666;
+}
+
+.documentDownload {
+    display: none; /* Скрываем, так как убрали эмодзи */
+}
+
+/* Секция контактов */
+.contactSection {
+    padding: 2rem 0;
+    background: white;
+}
+
+.contactGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 500px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+        max-width: 350px;
+        gap: 1rem;
+    }
+}
+
+.contactCard {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: #f8f9fa;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0.8rem 0 0.4rem 0;
+    }
+
+    p {
+        color: #666;
+        margin: 0;
+        word-break: break-word;
+        font-size: 0.9rem;
+
+        a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: #2c3e50;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        padding: 1.2rem;
+
+        h4 {
+            font-size: 0.9rem;
+        }
+
+        p {
+            font-size: 0.8rem;
+        }
+    }
+}
+
+.contactIcon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+
+    @media (max-width: 768px) {
+        font-size: 1.8rem;
+    }
+}
+
+/* Анимации */
+.hero {
+    animation: fadeIn 1s ease-out;
+}
+
+.documentsSection {
+    animation: slideUp 0.8s ease-out 0.2s both;
+}
+
+.contactSection {
+    animation: slideUp 0.8s ease-out 0.4s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Модальное окно */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    width: 70vw;
+    height: 90vh;
+    max-width: 750px;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 16px;
+}
+
+.modalActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.openButton,
+.downloadButton,
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.openButton {
+    background: #007bff;
+    color: white;
+
+    &:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+    }
+}
+
+.downloadButton {
+    background: #28a745;
+    color: white;
+
+    &:hover {
+        background: #218838;
+        transform: scale(1.05);
+    }
+}
+
+.closeButton {
+    background: #dc3545;
+    color: white;
+
+    &:hover {
+        background: #c82333;
+        transform: scale(1.05);
+    }
+}
+
+.modalBody {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.documentPreview {
+    text-align: center;
+    max-width: 100%;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+    img {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.pdfContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.pdfFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+    flex: 1;
+}
+
+.documentIcon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+    opacity: 0.7;
+
+    @media (max-width: 768px) {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.documentDetails {
+    margin-bottom: 2rem;
+
+    h3 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0 0 1rem 0;
+
+        @media (max-width: 768px) {
+            font-size: 1.5rem;
+        }
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #666;
+        line-height: 1.6;
+        margin: 0 0 1rem 0;
+
+        @media (max-width: 768px) {
+            font-size: 1rem;
+        }
+    }
+}
+
+.documentMeta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    @media (max-width: 480px) {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+.documentType {
+    background: #3498db;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.documentSize {
+    background: #95a5a6;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.documentActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    @media (max-width: 480px) {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+}
+
+/* Удалили конфликтующие стили для кнопок модального окна */
+
+.noPreview {
+    color: #666;
+    font-style: italic;
+    margin-top: 1rem;
+}
+
+// Адаптивность для модального окна
+@media (max-width: 768px) {
+    .modal {
+        padding: 10px;
+    }
+
+    .modalContent {
+        width: 95vw;
+        height: 95vh;
+        border-radius: 8px;
+    }
+
+    .modalHeader {
+        padding: 16px 20px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .modalTitle {
+        font-size: 16px;
+    }
+
+    .openButton,
+    .downloadButton,
+    .closeButton {
+        width: 36px;
+        height: 36px;
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: 5px;
+    }
+
+    .modalContent {
+        width: 98vw;
+        height: 98vh;
+        border-radius: 6px;
+    }
+
+    .modalHeader {
+        padding: 12px 16px;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .modalTitle {
+        font-size: 14px;
+    }
+
+    .openButton,
+    .downloadButton,
+    .closeButton {
+        width: 32px;
+        height: 32px;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

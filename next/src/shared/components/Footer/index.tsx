@@ -26,6 +26,16 @@ const Footer: React.FC = () => {
                         <h4 className={styles.linkTitle}>Разделы</h4>
                         <ul className={styles.linkList}>
                             <li>
+                                <Link href="/" className={styles.link}>
+                                    Главная
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/news" className={styles.link}>
+                                    Новости
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/travel" className={styles.link}>
                                     Путешествия
                                 </Link>
