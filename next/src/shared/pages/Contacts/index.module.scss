@@ -150,8 +150,9 @@
 }
 
 .contactCards {
-    display: grid;
-    gap: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
     margin-bottom: 50px;
 }
 
@@ -159,7 +160,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 20px;
+    padding: 25px;
     background: #f8f9fa;
     border-radius: 15px;
     transition: all 0.3s ease;
@@ -168,6 +169,11 @@
         background: #e9ecef;
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        padding: 20px;
+        gap: 15px;
     }
 }
 
@@ -181,6 +187,11 @@
     background: linear-gradient(135deg, #3498db, #2980b9);
     border-radius: 50%;
     flex-shrink: 0;
+}
+
+// Специальный стиль для иконки технической поддержки
+.contactCard:nth-child(3) .contactIcon {
+    background: linear-gradient(135deg, #e67e22, #d35400);
 }
 
 .contactDetails {

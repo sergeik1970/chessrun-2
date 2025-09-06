@@ -9,6 +9,8 @@ const ContactsPage = (): ReactElement => {
         vk: "https://vk.ru/public143799052",
         vkDisplay: "vk.ru/public143799052",
         federationEmail: "nvizotova44@mail.ru",
+        telegram: "https://t.me/sergey_kdsv",
+        telegramDisplay: "@sergey_kdsv"
     };
 
 
@@ -75,6 +77,25 @@ const ContactsPage = (): ReactElement => {
                                         </p>
                                         <span className={styles.contactDescription}>
                                             По вопросам федерации и официальным запросам
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className={styles.contactCard}>
+                                    <div className={styles.contactIcon}>🛠️</div>
+                                    <div className={styles.contactDetails}>
+                                        <h4>Техническая поддержка</h4>
+                                        <p>
+                                            <a
+                                                href={contactInfo.telegram}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {contactInfo.telegramDisplay}
+                                            </a>
+                                        </p>
+                                        <span className={styles.contactDescription}>
+                                            Сообщения об ошибках сайта и предложения по разработке
                                         </span>
                                     </div>
                                 </div>

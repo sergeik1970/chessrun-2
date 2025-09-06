@@ -262,10 +262,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    gap: 20px;
 
-    @media (max-width: 480px) {
+    @media (max-width: 947px) {
         flex-direction: column;
         gap: 16px;
         text-align: center;
@@ -285,7 +284,11 @@
 .bottomLinks {
     display: flex;
     gap: 24px;
-    flex-wrap: wrap;
+
+    @media (max-width: 947px) {
+        justify-content: center;
+        gap: 16px;
+    }
 
     @media (max-width: 480px) {
         flex-direction: column;
@@ -305,6 +308,46 @@
 
     @media (max-width: 480px) {
         font-size: 13px;
+    }
+}
+
+.developer {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    font-weight: 300;
+    white-space: nowrap;
+
+    @media (max-width: 947px) {
+        font-size: 13px;
+    }
+}
+
+.developerLink {
+    color: #64b5f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+        color: #90caf9;
+        text-shadow: 0 0 8px rgba(100, 181, 246, 0.4);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: linear-gradient(90deg, #64b5f6, #90caf9);
+        transition: width 0.3s ease;
+    }
+
+    &:hover::after {
+        width: 100%;
     }
 }
 

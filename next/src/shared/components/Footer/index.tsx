@@ -95,6 +95,17 @@ const Footer: React.FC = () => {
                         <p className={styles.copyright}>
                             © {currentYear} Шахматы на бегу. Все права защищены.
                         </p>
+                        <p className={styles.developer}>
+                            Создано{" "}
+                            <a
+                                href="https://kdsv.dev"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.developerLink}
+                            >
+                                KDSV
+                            </a>
+                        </p>
                         <div className={styles.bottomLinks}>
                             <Link href="/privacy" className={styles.bottomLink}>
                                 Политика конфиденциальности
