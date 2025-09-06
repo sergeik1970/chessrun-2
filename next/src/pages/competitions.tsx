@@ -12,7 +12,10 @@ const Competitions: NextPage = () => {
                     name="description"
                     content="Спортивные соревнования, турниры и состязания. Результаты, новости и анонсы предстоящих событий"
                 />
-                <meta name="keywords" content="соревнования, спорт, турниры, состязания, результаты" />
+                <meta
+                    name="keywords"
+                    content="соревнования, спорт, турниры, состязания, результаты"
+                />
                 <meta property="og:title" content="Соревнования | Ваш сайт" />
                 <meta
                     property="og:description"

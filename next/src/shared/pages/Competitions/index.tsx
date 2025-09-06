@@ -346,7 +346,7 @@ const CompetitionsPage = (): ReactElement => {
                 file={selectedPdf}
                 isOpen={pdfModalOpen}
                 onClose={closePdfModal}
-                postId={selectedPostId}
+                postId={`${selectedPostId}`}
             />
 
             <Footer />

@@ -12,7 +12,10 @@ const Training: NextPage = () => {
                     name="description"
                     content="Тренировочные программы, методики и советы для спортивного ориентирования и активного образа жизни"
                 />
-                <meta name="keywords" content="тренировки, спорт, ориентирование, фитнес, подготовка" />
+                <meta
+                    name="keywords"
+                    content="тренировки, спорт, ориентирование, фитнес, подготовка"
+                />
                 <meta property="og:title" content="Тренировки | Ваш сайт" />
                 <meta
                     property="og:description"

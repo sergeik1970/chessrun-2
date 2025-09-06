@@ -10,7 +10,7 @@ const FederationPage = (): ReactElement => {
     const federationInfo = {
         vk: "https://vk.com/chessrun",
         vkDisplay: "vk.com/chessrun",
-        email: "nvizotova44@mail.ru"
+        email: "nvizotova44@mail.ru",
     };
 
     // Документы федерации
@@ -21,15 +21,16 @@ const FederationPage = (): ReactElement => {
             description: "Устав Федерации спортивного ориентирования Костромской области",
             type: "PDF",
             size: "1.2 МБ",
-            url: "/documents/federation/charter.pdf"
+            url: "/documents/federation/charter.pdf",
         },
         {
             id: "calendar",
             title: "Единый календарный план 2025",
-            description: "Единый календарный план физкультурных и спортивных мероприятий на 2025 год",
+            description:
+                "Единый календарный план физкультурных и спортивных мероприятий на 2025 год",
             type: "PDF",
             size: "650 КБ",
-            url: "/documents/federation/Ediniy-kalendarniy-plan-2025.pdf"
+            url: "/documents/federation/Ediniy-kalendarniy-plan-2025.pdf",
         },
         {
             id: "statement",
@@ -37,7 +38,7 @@ const FederationPage = (): ReactElement => {
             description: "Заявление о приеме в члены Федерации спортивного ориентирования",
             type: "PDF",
             size: "320 КБ",
-            url: "/documents/federation/statement.pdf"
+            url: "/documents/federation/statement.pdf",
         },
         {
             id: "accreditation",
@@ -46,7 +47,7 @@ const FederationPage = (): ReactElement => {
             type: "JPG",
             size: "480 КБ",
             url: "/images/federation/accreditation.jpg",
-            isImage: true
+            isImage: true,
         },
         {
             id: "svidetelstvo",
@@ -55,29 +56,29 @@ const FederationPage = (): ReactElement => {
             type: "JPG",
             size: "520 КБ",
             url: "/images/federation/svidetelstvo.jpg",
-            isImage: true
-        }
+            isImage: true,
+        },
     ];
 
     const handleDocumentClick = (documentId: string) => {
         setSelectedDocument(documentId);
         // Блокируем скролл страницы при открытии модального окна
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
     };
 
     const handleCloseModal = () => {
         setSelectedDocument(null);
         // Восстанавливаем скролл страницы
-        document.body.style.overflow = 'unset';
+        document.body.style.overflow = "unset";
     };
 
     const handleDownloadDocument = (url: string, title: string, isImage?: boolean) => {
         if (isImage) {
             // Для изображений открываем в новой вкладке
-            window.open(url, '_blank');
+            window.open(url, "_blank");
         } else {
             // Для PDF создаем ссылку для скачивания
-            const link = document.createElement('a');
+            const link = document.createElement("a");
             link.href = url;
             link.download = title;
             document.body.appendChild(link);
@@ -89,21 +90,21 @@ const FederationPage = (): ReactElement => {
     // Закрытие модального окна по Escape
     useEffect(() => {
         const handleEscapeKey = (event: KeyboardEvent) => {
-            if (event.key === 'Escape' && selectedDocument) {
+            if (event.key === "Escape" && selectedDocument) {
                 handleCloseModal();
             }
         };
 
-        document.addEventListener('keydown', handleEscapeKey);
+        document.addEventListener("keydown", handleEscapeKey);
         return () => {
-            document.removeEventListener('keydown', handleEscapeKey);
+            document.removeEventListener("keydown", handleEscapeKey);
             // Восстанавливаем скролл при размонтировании компонента
-            document.body.style.overflow = 'unset';
+            document.body.style.overflow = "unset";
         };
     }, [selectedDocument]);
 
     // Получаем выбранный документ
-    const selectedDoc = documents.find(doc => doc.id === selectedDocument);
+    const selectedDoc = documents.find((doc) => doc.id === selectedDocument);
 
     return (
         <div className={styles.federationPage}>
@@ -121,14 +122,14 @@ const FederationPage = (): ReactElement => {
                 <div className={styles.heroOverlay}>
                     <div className={styles.heroContent}>
                         <h1 className={styles.heroTitle}>
-                            <span className={styles.heroTitleLine}>Федерация спортивного ориентирования</span>
+                            <span className={styles.heroTitleLine}>
+                                Федерация спортивного ориентирования
+                            </span>
                             <span className={styles.heroTitleLine}>Костромской области</span>
                         </h1>
                     </div>
                 </div>
             </section>
-
-
 
             {/* Документы */}
             <section className={styles.documentsSection}>
@@ -136,13 +137,13 @@ const FederationPage = (): ReactElement => {
                     <h2 className={styles.sectionTitle}>Документы федерации</h2>
                     <div className={styles.documentsGrid}>
                         {documents.map((doc) => (
-                            <div 
-                                key={doc.id} 
+                            <div
+                                key={doc.id}
                                 className={styles.documentCard}
                                 onClick={() => handleDocumentClick(doc.id)}
                             >
                                 <div className={styles.documentIcon}>
-                                    {doc.isImage ? '🖼️' : '📄'}
+                                    {doc.isImage ? "🖼️" : "📄"}
                                 </div>
                                 <div className={styles.documentInfo}>
                                     <h4 className={styles.documentTitle}>{doc.title}</h4>
@@ -170,24 +171,24 @@ const FederationPage = (): ReactElement => {
                             <div className={styles.contactIcon}>📱</div>
                             <h4>ВКонтакте</h4>
                             <p>
-                                <a 
-                                    href={federationInfo.vk} 
-                                    target="_blank" 
+                                <a
+                                    href={federationInfo.vk}
+                                    target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{ color: '#666', textDecoration: 'none' }}
+                                    style={{ color: "#666", textDecoration: "none" }}
                                 >
                                     {federationInfo.vkDisplay}
                                 </a>
                             </p>
                         </div>
-                        
+
                         <div className={styles.contactCard}>
                             <div className={styles.contactIcon}>✉️</div>
                             <h4>Email</h4>
                             <p>
-                                <a 
+                                <a
                                     href={`mailto:${federationInfo.email}`}
-                                    style={{ color: '#666', textDecoration: 'none' }}
+                                    style={{ color: "#666", textDecoration: "none" }}
                                 >
                                     {federationInfo.email}
                                 </a>
@@ -204,9 +205,9 @@ const FederationPage = (): ReactElement => {
                         <div className={styles.modalHeader}>
                             <h3 className={styles.modalTitle}>{selectedDoc.title}</h3>
                             <div className={styles.modalActions}>
-                                {selectedDoc.type === 'PDF' && (
+                                {selectedDoc.type === "PDF" && (
                                     <button
-                                        onClick={() => window.open(selectedDoc.url, '_blank')}
+                                        onClick={() => window.open(selectedDoc.url, "_blank")}
                                         className={styles.openButton}
                                         title="Открыть в новой вкладке"
                                     >
@@ -222,9 +223,19 @@ const FederationPage = (): ReactElement => {
                                     </button>
                                 )}
                                 <button
-                                    onClick={() => handleDownloadDocument(selectedDoc.url, selectedDoc.title, selectedDoc.isImage)}
+                                    onClick={() =>
+                                        handleDownloadDocument(
+                                            selectedDoc.url,
+                                            selectedDoc.title,
+                                            selectedDoc.isImage,
+                                        )
+                                    }
                                     className={styles.downloadButton}
-                                    title={selectedDoc.isImage ? 'Открыть в полном размере' : 'Скачать файл'}
+                                    title={
+                                        selectedDoc.isImage
+                                            ? "Открыть в полном размере"
+                                            : "Скачать файл"
+                                    }
                                 >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                         <path
@@ -250,7 +261,11 @@ const FederationPage = (): ReactElement => {
                                         />
                                     </svg>
                                 </button>
-                                <button onClick={handleCloseModal} className={styles.closeButton} title="Закрыть">
+                                <button
+                                    onClick={handleCloseModal}
+                                    className={styles.closeButton}
+                                    title="Закрыть"
+                                >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                         <path
                                             d="M18 6L6 18M6 6L18 18"
@@ -271,12 +286,12 @@ const FederationPage = (): ReactElement => {
                                         src={selectedDoc.url}
                                         alt={selectedDoc.title}
                                         fill
-                                        style={{ 
-                                            objectFit: "contain"
+                                        style={{
+                                            objectFit: "contain",
                                         }}
                                     />
                                 </div>
-                            ) : selectedDoc.type === 'PDF' ? (
+                            ) : selectedDoc.type === "PDF" ? (
                                 <div className={styles.pdfContainer}>
                                     <iframe
                                         src={`${selectedDoc.url}#toolbar=0&navpanes=0&scrollbar=1&page=1&view=FitH&zoom=page-fit`}
