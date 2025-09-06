@@ -142,6 +142,11 @@ const SitemapPage = (): ReactElement => {
                                 </ul>
                             </div>
                         </div>
+
+                        {/* Небольшая ссылка для администраторов */}
+                        <div className={styles.adminLink}>
+                            <Link href="/admin">Для администраторов</Link>
+                        </div>
                     </div>
                 </div>
             </section>

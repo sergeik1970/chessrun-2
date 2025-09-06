@@ -140,7 +140,26 @@
     }
 }
 
-
+.adminLink {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    
+    a {
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+    }
+}
 
 @media (max-width: 768px) {
     .mainContent {
