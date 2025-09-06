@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className={styles.link}>
+                                <Link href="/contacts" className={styles.link}>
                                     Контакты
                                 </Link>
                             </li>
@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
                             </li>
                             <li>
                                 <a
-                                    href="https://vk.com/chessrun"
+                                    href="https://vk.ru/public143799052"
                                     className={styles.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -96,12 +96,12 @@ const Footer: React.FC = () => {
                             © {currentYear} Шахматы на бегу. Все права защищены.
                         </p>
                         <div className={styles.bottomLinks}>
-                            <a href="/privacy" className={styles.bottomLink}>
+                            <Link href="/privacy" className={styles.bottomLink}>
                                 Политика конфиденциальности
-                            </a>
-                            <a href="/terms" className={styles.bottomLink}>
+                            </Link>
+                            <Link href="/terms" className={styles.bottomLink}>
                                 Условия использования
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

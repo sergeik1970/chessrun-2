@@ -8,8 +8,8 @@ const FederationPage = (): ReactElement => {
 
     // Информация о федерации
     const federationInfo = {
-        vk: "https://vk.com/chessrun",
-        vkDisplay: "vk.com/chessrun",
+        vk: "https://vk.ru/public143799052",
+        vkDisplay: "vk.ru/public143799052",
         email: "nvizotova44@mail.ru",
     };
 
