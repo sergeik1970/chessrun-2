@@ -68,6 +68,11 @@ const Footer: React.FC = () => {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/sitemap" className={styles.link}>
+                                    Карта сайта
+                                </Link>
+                            </li>
+                            <li>
                                 <a
                                     href="https://vk.ru/public143799052"
                                     className={styles.link}

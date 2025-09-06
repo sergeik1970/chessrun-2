@@ -11,8 +11,5 @@ export * from "./Post";
 // Типы компонентов
 export * from "./components";
 
-// Типы сделок
-export * from "./deals";
-
 // Типы утилит
 export * from "./utils";

@@ -6,12 +6,10 @@ import {
     useDispatch as useAppDispatch,
     useSelector as useAppSelector,
 } from "react-redux";
-import deals from "./slices/deals";
 import auth from "./slices/auth";
 import posts from "./slices/posts";
 
 const rootReducer = combineReducers({
-    deals,
     auth,
     posts,
 });

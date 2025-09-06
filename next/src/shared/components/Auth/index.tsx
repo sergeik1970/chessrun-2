@@ -24,7 +24,7 @@ const Auth = (): ReactElement => {
         if (isAuthenticated && user) {
             setSuccess(`Добро пожаловать, ${user.name}!`);
             setTimeout(() => {
-                router.push("/deals"); // Перенаправляем на страницу deals
+                router.push("/"); // Перенаправляем на главную страницу
             }, 1500);
         }
     }, [isAuthenticated, user, router]);

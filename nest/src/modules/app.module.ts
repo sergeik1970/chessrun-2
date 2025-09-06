@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { DealsModule } from "./DealsModule/deal.module";
 import { AuthModule } from "./AuthModule/auth.module";
 import { NewsModule } from "./NewsModule/news.module";
 import { SliderModule } from "./SliderModule/slider.module";
@@ -23,7 +22,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             autoLoadEntities: true,
             synchronize: false, // Временно включаем для создания таблиц
         }),
-        DealsModule,
         AuthModule,
         NewsModule,
         SliderModule,

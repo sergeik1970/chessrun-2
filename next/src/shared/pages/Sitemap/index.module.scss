@@ -1,0 +1,158 @@
+.sitemapPage {
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+.mainContent {
+    background: #f8f9fa;
+    padding: 40px 0 80px;
+}
+
+.pageHeader {
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 40px 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.pageTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+
+    @media (max-width: 768px) {
+        font-size: 2rem;
+    }
+}
+
+.pageSubtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin: 0;
+
+    @media (max-width: 768px) {
+        font-size: 1rem;
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.content {
+    max-width: 100%;
+}
+
+.sitemapGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 60px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+.section {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #667eea;
+}
+
+.linkList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.linkList li {
+    margin-bottom: 15px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.link {
+    display: block;
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    color: inherit;
+
+    &:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+}
+
+.linkTitle {
+    display: block;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #2c3e50;
+    transition: color 0.3s ease;
+
+    .link:hover & {
+        color: white;
+    }
+}
+
+.linkDescription {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+
+    .link:hover & {
+        color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    .mainContent {
+        padding: 30px 0 60px;
+    }
+
+    .section {
+        padding: 25px;
+    }
+
+    .pageHeader {
+        margin-bottom: 40px;
+        padding: 30px 20px;
+    }
+}
