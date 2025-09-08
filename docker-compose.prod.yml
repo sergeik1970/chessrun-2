@@ -43,7 +43,7 @@ services:
             - db
         image: nginx:latest
         ports:
-            - '127.0.0.2:80:80'
+            - '127.0.0.1:81:80'
         volumes:
             - ./nginx:/etc/nginx/conf.d
             - ./static:/var/www/static
