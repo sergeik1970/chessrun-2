@@ -5,6 +5,7 @@ const nextConfig = {
         ignoreBuildErrors: false,
     },
     images: {
+        unoptimized: true,
         domains: ["images.unsplash.com", "localhost"],
         remotePatterns: [
             {
