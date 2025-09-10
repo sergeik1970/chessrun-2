@@ -18,7 +18,10 @@ import {
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { NewsService } from "../../services/NewsService/news.service";
 import { News, PostCategory } from "../../entities/News/news.entity";
-import { multerConfig, multerUniversalConfig } from "../../config/multer.config";
+import {
+    multerConfig,
+    multerUniversalConfig,
+} from "../../config/multer.config";
 // import { JwtAuthGuard } from "../AuthModule/jwt-auth.guard";
 // import { AdminGuard } from "../AuthModule/admin.guard";
 
@@ -39,12 +42,12 @@ export class NewsController {
         const newsData: any = {
             ...createNewsDto,
         };
-        
+
         // Добавляем authorId только если пользователь аутентифицирован
         if (req.user?.id) {
             newsData.authorId = req.user.id;
         }
-        
+
         return this.newsService.create(newsData);
     }
 
@@ -186,39 +189,38 @@ export class NewsController {
         @UploadedFiles() files: Express.Multer.File[],
         @Body() body: { title?: string; files?: any[] },
     ) {
-        console.log('=== addFiles method called ===');
-        console.log('Post ID:', id);
-        console.log('Files parameter:', files);
-        console.log('Files type:', typeof files);
-        console.log('Files is array:', Array.isArray(files));
+        console.log("=== addFiles method called ===");
+        console.log("Post ID:", id);
+        console.log("Files parameter:", files);
+        console.log("Files type:", typeof files);
+        console.log("Files is array:", Array.isArray(files));
         console.log(`Received ${files?.length || 0} files for post ${id}`);
-        console.log('Body:', body);
-        
+        console.log("Body:", body);
+
         // Проверяем, есть ли файлы в multipart/form-data
         if (files && files.length > 0) {
-            console.log('Processing multipart files');
+            console.log("Processing multipart files");
         }
         // Проверяем, есть ли файлы в JSON body (base64)
         else if (body.files && body.files.length > 0) {
-            console.log('Processing JSON base64 files');
+            console.log("Processing JSON base64 files");
             // Конвертируем base64 файлы в формат multer
-            files = body.files.map(fileData => {
-                const base64Data = fileData.file.split(',')[1]; // Убираем "data:application/pdf;base64,"
-                const buffer = Buffer.from(base64Data, 'base64');
-                
+            files = body.files.map((fileData) => {
+                const base64Data = fileData.file.split(",")[1]; // Убираем "data:application/pdf;base64,"
+                const buffer = Buffer.from(base64Data, "base64");
+
                 return {
                     buffer: buffer,
-                    mimetype: fileData.file.split(';')[0].split(':')[1], // Извлекаем mime type
-                    originalname: fileData.originalName || 'file.pdf',
-                    size: buffer.length
+                    mimetype: fileData.file.split(";")[0].split(":")[1], // Извлекаем mime type
+                    originalname: fileData.originalName || "file.pdf",
+                    size: buffer.length,
                 } as Express.Multer.File;
             });
-        }
-        else {
-            console.log('No files received');
+        } else {
+            console.log("No files received");
             return [];
         }
-        
+
         const results = [];
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
@@ -226,9 +228,9 @@ export class NewsController {
                 originalname: file.originalname,
                 mimetype: file.mimetype,
                 size: file.size,
-                bufferLength: file.buffer?.length
+                bufferLength: file.buffer?.length,
             });
-            
+
             try {
                 // Определяем title для файла
                 let fileTitle = file.originalname;
@@ -237,7 +239,7 @@ export class NewsController {
                 } else if (body.title) {
                     fileTitle = body.title;
                 }
-                
+
                 const result = await this.newsService.addFile(
                     id,
                     file.buffer,
@@ -279,18 +281,21 @@ export class NewsController {
         // Если есть S3 URL, проксируем файл для правильных заголовков
         if (file.s3Url) {
             try {
-                const fetch = (await import('node-fetch')).default;
+                const fetch = (await import("node-fetch")).default;
                 const response = await fetch(file.s3Url);
-                
+
                 if (!response.ok) {
-                    return res.status(404).json({ message: "File not found in storage" });
+                    return res
+                        .status(404)
+                        .json({ message: "File not found in storage" });
                 }
 
                 const fileBuffer = await response.buffer();
-                
+
                 // Устанавливаем правильные заголовки для просмотра в браузере
-                const disposition = download === 'true' ? 'attachment' : 'inline';
-                
+                const disposition =
+                    download === "true" ? "attachment" : "inline";
+
                 res.set({
                     "Content-Type": file.mimeType || "application/pdf",
                     "Content-Length": fileBuffer.length.toString(),
@@ -303,8 +308,10 @@ export class NewsController {
 
                 return res.send(fileBuffer);
             } catch (error) {
-                console.error('Error proxying file from S3:', error);
-                return res.status(500).json({ message: "Error retrieving file" });
+                console.error("Error proxying file from S3:", error);
+                return res
+                    .status(500)
+                    .json({ message: "Error retrieving file" });
             }
         }
 

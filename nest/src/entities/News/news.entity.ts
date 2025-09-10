@@ -45,13 +45,13 @@ export class News {
     @Column({ nullable: true })
     authorId: number;
 
-    @OneToMany(() => Files, (file) => file.news, { 
-        createForeignKeyConstraints: false 
+    @OneToMany(() => Files, (file) => file.news, {
+        createForeignKeyConstraints: false,
     })
     images: Files[];
 
-    @OneToMany(() => Files, (file) => file.news, { 
-        createForeignKeyConstraints: false 
+    @OneToMany(() => Files, (file) => file.news, {
+        createForeignKeyConstraints: false,
     })
     files: Files[];
 

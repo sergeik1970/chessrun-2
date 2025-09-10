@@ -74,7 +74,9 @@ export class AuthService {
 
         // Проверяем, что пользователь - админ
         if (!user.isAdmin) {
-            throw new UnauthorizedException("Доступ запрещен. Только для администраторов");
+            throw new UnauthorizedException(
+                "Доступ запрещен. Только для администраторов",
+            );
         }
 
         // Проверяем пароль
@@ -94,10 +96,10 @@ export class AuthService {
 
     // Генерируем JWT токен для пользователя
     generateToken(user: User): string {
-        const payload = { 
-            sub: user.id, 
-            email: user.email, 
-            isAdmin: user.isAdmin 
+        const payload = {
+            sub: user.id,
+            email: user.email,
+            isAdmin: user.isAdmin,
         };
         return this.jwtService.sign(payload);
     }

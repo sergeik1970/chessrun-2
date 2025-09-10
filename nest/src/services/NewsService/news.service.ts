@@ -24,12 +24,12 @@ export class NewsService {
         // Загружаем изображения и файлы отдельно
         for (const post of posts) {
             post.images = await this.filesRepository.find({
-                where: { newsId: post.id, type: 'image' },
-                order: { order: 'ASC' },
+                where: { newsId: post.id, type: "image" },
+                order: { order: "ASC" },
             });
             post.files = await this.filesRepository.find({
-                where: { newsId: post.id, type: 'file' },
-                order: { id: 'ASC' },
+                where: { newsId: post.id, type: "file" },
+                order: { id: "ASC" },
             });
         }
 
@@ -45,7 +45,9 @@ export class NewsService {
                     mimeType: image.mimeType,
                     originalName: image.originalName,
                     // Приоритет S3 URL, fallback на локальный endpoint
-                    url: image.s3Url || `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
+                    url:
+                        image.s3Url ||
+                        `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
                 })),
             files: (post.files || []).map((file) => ({
                 id: file.id,
@@ -54,7 +56,9 @@ export class NewsService {
                 mimeType: file.mimeType,
                 size: file.size,
                 // Приоритет S3 URL, fallback на локальный endpoint для файлов
-                url: file.s3Url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+                url:
+                    file.s3Url ||
+                    `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
                 file: file.s3Url ? null : file.file, // base64 данные только если нет S3
             })),
         }));
@@ -70,12 +74,12 @@ export class NewsService {
 
         // Загружаем изображения и файлы отдельно
         post.images = await this.filesRepository.find({
-            where: { newsId: post.id, type: 'image' },
-            order: { order: 'ASC' },
+            where: { newsId: post.id, type: "image" },
+            order: { order: "ASC" },
         });
         post.files = await this.filesRepository.find({
-            where: { newsId: post.id, type: 'file' },
-            order: { id: 'ASC' },
+            where: { newsId: post.id, type: "file" },
+            order: { id: "ASC" },
         });
 
         // Добавляем URL для изображений и файлов, сортируем по порядку
@@ -90,7 +94,9 @@ export class NewsService {
                     mimeType: image.mimeType,
                     originalName: image.originalName,
                     // Приоритет S3 URL, fallback на локальный endpoint
-                    url: image.s3Url || `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
+                    url:
+                        image.s3Url ||
+                        `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
                 })),
             files: (post.files || []).map((file) => ({
                 id: file.id,
@@ -99,7 +105,9 @@ export class NewsService {
                 mimeType: file.mimeType,
                 size: file.size,
                 // Приоритет S3 URL, fallback на локальный endpoint для файлов
-                url: file.s3Url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+                url:
+                    file.s3Url ||
+                    `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
                 file: file.s3Url ? null : file.file, // base64 данные только если нет S3
             })),
         };
@@ -115,12 +123,12 @@ export class NewsService {
         // Загружаем изображения и файлы отдельно
         for (const post of posts) {
             post.images = await this.filesRepository.find({
-                where: { newsId: post.id, type: 'image' },
-                order: { order: 'ASC' },
+                where: { newsId: post.id, type: "image" },
+                order: { order: "ASC" },
             });
             post.files = await this.filesRepository.find({
-                where: { newsId: post.id, type: 'file' },
-                order: { id: 'ASC' },
+                where: { newsId: post.id, type: "file" },
+                order: { id: "ASC" },
             });
         }
 
@@ -136,7 +144,9 @@ export class NewsService {
                     mimeType: image.mimeType,
                     originalName: image.originalName,
                     // Приоритет S3 URL, fallback на локальный endpoint
-                    url: image.s3Url || `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
+                    url:
+                        image.s3Url ||
+                        `http://localhost:3001/api/news/${post.id}/images/${image.id}`,
                 })),
             files: (post.files || []).map((file) => ({
                 id: file.id,
@@ -145,7 +155,9 @@ export class NewsService {
                 mimeType: file.mimeType,
                 size: file.size,
                 // Приоритет S3 URL, fallback на локальный endpoint для файлов
-                url: file.s3Url || `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
+                url:
+                    file.s3Url ||
+                    `http://localhost:3001/api/news/${post.id}/files/${file.id}`,
                 file: file.s3Url ? null : file.file, // base64 данные только если нет S3
             })),
         }));
@@ -164,10 +176,10 @@ export class NewsService {
     async remove(id: number): Promise<void> {
         // Сначала удаляем файлы из S3
         await this.s3Service.deletePostImages(id);
-        
+
         // Затем удаляем связанные записи в БД
         await this.filesRepository.delete({ newsId: id });
-        
+
         // И наконец удаляем новость
         await this.newsRepository.delete(id);
     }
@@ -182,7 +194,7 @@ export class NewsService {
     ): Promise<Files> {
         // Получаем текущее количество изображений для определения порядка
         const existingImagesCount = await this.filesRepository.count({
-            where: { newsId, type: 'image' },
+            where: { newsId, type: "image" },
         });
 
         // Создаем объект файла для S3
@@ -205,24 +217,33 @@ export class NewsService {
             alt,
             isMain: isMain || false,
             order: existingImagesCount,
-            type: 'image',
+            type: "image",
         });
-        
+
         return this.filesRepository.save(image);
     }
 
     async getPostImages(postId: number): Promise<any[]> {
         const images = await this.filesRepository.find({
-            where: { newsId: postId, type: 'image' },
-            select: ["id", "alt", "isMain", "mimeType", "originalName", "s3Url"],
-            order: { order: 'ASC' },
+            where: { newsId: postId, type: "image" },
+            select: [
+                "id",
+                "alt",
+                "isMain",
+                "mimeType",
+                "originalName",
+                "s3Url",
+            ],
+            order: { order: "ASC" },
         });
 
         // Добавляем URL для каждого изображения
         return images.map((image) => ({
             ...image,
             // Приоритет S3 URL, fallback на локальный endpoint
-            url: image.s3Url || `http://localhost:3001/api/news/${postId}/images/${image.id}`,
+            url:
+                image.s3Url ||
+                `http://localhost:3001/api/news/${postId}/images/${image.id}`,
         }));
     }
 
@@ -257,17 +278,17 @@ export class NewsService {
         });
 
         // Проверяем, что все переданные ID принадлежат этому посту
-        const validImageIds = images.map(img => img.id);
-        const invalidIds = imageIds.filter(id => !validImageIds.includes(id));
-        
+        const validImageIds = images.map((img) => img.id);
+        const invalidIds = imageIds.filter((id) => !validImageIds.includes(id));
+
         if (invalidIds.length > 0) {
-            throw new Error(`Invalid image IDs: ${invalidIds.join(', ')}`);
+            throw new Error(`Invalid image IDs: ${invalidIds.join(", ")}`);
         }
 
         // Сначала сбрасываем isMain для всех изображений
         await this.filesRepository.update(
             { newsId: postId },
-            { isMain: false }
+            { isMain: false },
         );
 
         // Обновляем порядок и isMain флаг
@@ -289,8 +310,10 @@ export class NewsService {
         title: string,
         size: number,
     ): Promise<Files> {
-        console.log(`Adding file: ${originalName}, size: ${size}, mimeType: ${mimeType}`);
-        
+        console.log(
+            `Adding file: ${originalName}, size: ${size}, mimeType: ${mimeType}`,
+        );
+
         // Создаем объект файла для S3
         const fileObj = {
             buffer: fileBuffer,
@@ -298,10 +321,10 @@ export class NewsService {
             originalname: originalName,
         };
 
-        console.log('Uploading to S3...');
+        console.log("Uploading to S3...");
         // Загружаем в S3 (используем универсальный метод)
         const s3Result = await this.s3Service.uploadPostFile(fileObj, newsId);
-        console.log('S3 upload result:', s3Result);
+        console.log("S3 upload result:", s3Result);
 
         // Сохраняем информацию в БД
         const file = this.filesRepository.create({
@@ -312,25 +335,25 @@ export class NewsService {
             originalName,
             title,
             size,
-            type: s3Result.type === 'pdf' ? 'file' : 'image', // Используем тип из S3Service
+            type: s3Result.type === "pdf" ? "file" : "image", // Используем тип из S3Service
         });
 
         const savedFile = await this.filesRepository.save(file);
-        console.log('File saved to DB with ID:', savedFile.id);
-        
+        console.log("File saved to DB with ID:", savedFile.id);
+
         return savedFile;
     }
 
     async getPostFiles(postId: number): Promise<Files[]> {
         return this.filesRepository.find({
-            where: { newsId: postId, type: 'file' },
-            order: { id: 'ASC' },
+            where: { newsId: postId, type: "file" },
+            order: { id: "ASC" },
         });
     }
 
     async getFile(postId: number, fileId: number): Promise<Files | null> {
         return this.filesRepository.findOne({
-            where: { id: fileId, newsId: postId, type: 'file' },
+            where: { id: fileId, newsId: postId, type: "file" },
         });
     }
 
