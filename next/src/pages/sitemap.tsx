@@ -8,7 +8,7 @@ const Sitemap: React.FC = () => {
     return (
         <>
             <Head>
-                <title>Карта сайта - Шахматы на бегу</title>
+                <title>Карта сайта | Шахматы на бегу</title>
                 <meta
                     name="description"
                     content="Карта сайта - навигация по всем разделам сайта любителей спортивного ориентирования"

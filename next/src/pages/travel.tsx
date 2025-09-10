@@ -7,7 +7,7 @@ const Travel: NextPage = () => {
     return (
         <>
             <Head>
-                <title>Путешествия | Ваш сайт</title>
+                <title>Путешествия | Шахматы на бегу</title>
                 <meta
                     name="description"
                     content="Увлекательные истории о путешествиях, приключениях и открытиях новых мест"

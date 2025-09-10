@@ -7,7 +7,7 @@ const Competitions: NextPage = () => {
     return (
         <>
             <Head>
-                <title>Соревнования | Ваш сайт</title>
+                <title>Соревнования | Шахматы на бегу</title>
                 <meta
                     name="description"
                     content="Спортивные соревнования, турниры и состязания. Результаты, новости и анонсы предстоящих событий"

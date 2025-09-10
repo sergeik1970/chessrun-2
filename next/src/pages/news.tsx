@@ -7,7 +7,7 @@ const News: NextPage = () => {
     return (
         <>
             <Head>
-                <title>Новости | Ваш сайт</title>
+                <title>Новости | Шахматы на бегу</title>
                 <meta
                     name="description"
                     content="Последние новости, события и достижения. Будьте в курсе всех важных событий"

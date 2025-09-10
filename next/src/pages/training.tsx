@@ -7,7 +7,7 @@ const Training: NextPage = () => {
     return (
         <>
             <Head>
-                <title>Тренировки | Ваш сайт</title>
+                <title>Тренировки | Шахматы на бегу</title>
                 <meta
                     name="description"
                     content="Тренировочные программы, методики и советы для спортивного ориентирования и активного образа жизни"

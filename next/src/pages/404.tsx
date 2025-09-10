@@ -9,7 +9,7 @@ const Custom404: React.FC = () => {
     return (
         <>
             <Head>
-                <title>Страница не найдена - Федерация спортивного ориентирования</title>
+                <title>Страница не найдена - Шахматы на бегу</title>
                 <meta name="description" content="Запрашиваемая страница не найдена" />
             </Head>
 
