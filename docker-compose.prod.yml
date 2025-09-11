@@ -10,6 +10,8 @@ services:
             - '3001'
         depends_on:
             - db
+        env_file:
+            - .env
         # restart: always
 
     next:
