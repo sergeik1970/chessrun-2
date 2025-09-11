@@ -21,6 +21,12 @@ COPY --from=builder --chown=runner ./migrations ./migrations
 COPY --from=builder --chown=runner ./typeOrm.config.ts ./typeOrm.config.ts
 
 ENV DATABASE_PASSWORD mCgXhhU
+ENV AWS_ACCESS_KEY_ID 2W0SI1YF14TL2E29C4XV
+ENV AWS_SECRET_ACCESS_KEY 83yGOfywHFBVI9ZWaVXydPDAdChTBjAdZryTQASK
+ENV AWS_REGION us-east-1
+ENV AWS_S3_BUCKET_NAME chessrun
+ENV AWS_S3_ENDPOINT https://s3.regru.cloud
+
 EXPOSE 3001
 ENV NODE_ENV prod
 
