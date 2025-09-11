@@ -20,6 +20,7 @@ COPY --from=builder --chown=runner ./dist ./dist
 COPY --from=builder --chown=runner ./migrations ./migrations
 COPY --from=builder --chown=runner ./typeOrm.config.ts ./typeOrm.config.ts
 
+ENV DATABASE_PASSWORD mCgXhhU
 EXPOSE 3001
 ENV NODE_ENV prod
 
