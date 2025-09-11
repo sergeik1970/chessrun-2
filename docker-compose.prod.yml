@@ -10,7 +10,7 @@ services:
             - '3001'
         depends_on:
             - db
-        restart: always
+        # restart: always
 
     next:
         build:
@@ -28,7 +28,7 @@ services:
         environment:
             POSTGRES_DB: "postgres"
             POSTGRES_USER: "postgres"
-            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_PASSWORD: "mCgXhhU"
         volumes:
             - database:/var/lib/postgresql/data:delegated
         expose:
