@@ -17,7 +17,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             host: process.env.NODE_ENV == "dev" ? "127.0.0.1" : "db",
             port: 5432,
             username: "postgres",
-            password: "postgres",
+            password: process.env.DATABASE_PASSWORD || "postgres",
             database: "postgres",
             autoLoadEntities: true,
             synchronize: false, // Временно включаем для создания таблиц
