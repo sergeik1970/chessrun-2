@@ -103,7 +103,7 @@ const Footer: React.FC = () => {
                         <p className={styles.developer}>
                             Создано{" "}
                             <a
-                                href="https://kdsv.dev"
+                                href="https://kdsv.ru"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={styles.developerLink}

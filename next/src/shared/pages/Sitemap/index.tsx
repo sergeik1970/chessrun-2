@@ -22,7 +22,7 @@ const SitemapPage = (): ReactElement => {
                                         <Link href="/" className={styles.link}>
                                             <span className={styles.linkTitle}>Главная</span>
                                             <span className={styles.linkDescription}>
-                                                Добро пожаловать на сайт любителей спортивного
+                                                Добро пожаловать на сайт клуба спортивного
                                                 ориентирования
                                             </span>
                                         </Link>
@@ -31,7 +31,7 @@ const SitemapPage = (): ReactElement => {
                                         <Link href="/news" className={styles.link}>
                                             <span className={styles.linkTitle}>Новости</span>
                                             <span className={styles.linkDescription}>
-                                                Актуальные новости мира спортивного ориентирования
+                                                Актуальные новости клуба спортивного ориентирования
                                             </span>
                                         </Link>
                                     </li>
@@ -55,7 +55,7 @@ const SitemapPage = (): ReactElement => {
                                         <Link href="/training" className={styles.link}>
                                             <span className={styles.linkTitle}>Тренировки</span>
                                             <span className={styles.linkDescription}>
-                                                Расписание тренировок и методические материалы
+                                                Расписание и прогресс тренировок
                                             </span>
                                         </Link>
                                     </li>
