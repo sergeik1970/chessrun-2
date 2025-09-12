@@ -3,57 +3,76 @@ import Link from "next/link";
 import styles from "./index.module.scss";
 import clsx from "clsx";
 import { NavigationProps } from "../../types/components";
+import { useYandexMetrika } from "../../hooks/useYandexMetrika";
 
 const Navigation: React.FC<NavigationProps> = ({ currentPath, isAdmin }) => {
+    const { trackButtonClick } = useYandexMetrika();
+
     const openNavList = () => {
         const navList = document.querySelector(`.${styles["nav-list"]}`);
         navList?.classList.add(styles["open-nav-list"]);
+        trackButtonClick("mobile_menu_open", "navigation");
     };
 
     const closeNavList = () => {
         const navList = document.querySelector(`.${styles["nav-list"]}`);
         navList?.classList.remove(styles["open-nav-list"]);
+        trackButtonClick("mobile_menu_close", "navigation");
+    };
+
+    const handleNavClick = (section: string) => {
+        trackButtonClick(`nav_${section}`, "navigation");
     };
     return (
         <>
             <div className={clsx(styles["nav-header"])}>
                 <div className={clsx(styles["nav-header-content"])}>
-                    <Link className={clsx(styles["nav-header-link"], styles["nav-main"])} href="/">
+                    <Link
+                        className={clsx(styles["nav-header-link"], styles["nav-main"])}
+                        href="/"
+                        onClick={() => handleNavClick("home")}
+                    >
                         Шахматы на бегу
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/federation"
+                        onClick={() => handleNavClick("federation")}
                     >
                         Федерация
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/news"
+                        onClick={() => handleNavClick("news")}
                     >
                         Новости
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/training"
+                        onClick={() => handleNavClick("training")}
                     >
                         Тренировки
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/competitions"
+                        onClick={() => handleNavClick("competitions")}
                     >
                         Соревнования
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/travel"
+                        onClick={() => handleNavClick("travel")}
                     >
                         Путешествия
                     </Link>
                     <Link
                         className={clsx(styles["nav-header-link"], styles["nav-section"])}
                         href="/contacts"
+                        onClick={() => handleNavClick("contacts")}
                     >
                         Контакты
                     </Link>
@@ -81,42 +100,90 @@ const Navigation: React.FC<NavigationProps> = ({ currentPath, isAdmin }) => {
                 </svg>
                 <ul>
                     <li>
-                        <Link onClick={closeNavList} href="/">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_home");
+                            }}
+                            href="/"
+                        >
                             Шахматы на бегу
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/federation">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_federation");
+                            }}
+                            href="/federation"
+                        >
                             Федерация
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/news">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_news");
+                            }}
+                            href="/news"
+                        >
                             Новости
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/training">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_training");
+                            }}
+                            href="/training"
+                        >
                             Тренировки
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/competitions">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_competitions");
+                            }}
+                            href="/competitions"
+                        >
                             Соревнования
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/travel">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_travel");
+                            }}
+                            href="/travel"
+                        >
                             Путешествия
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/contacts">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_contacts");
+                            }}
+                            href="/contacts"
+                        >
                             Контакты
                         </Link>
                     </li>
                     <li>
-                        <Link onClick={closeNavList} href="/admin">
+                        <Link
+                            onClick={() => {
+                                closeNavList();
+                                handleNavClick("mobile_admin");
+                            }}
+                            href="/admin"
+                        >
                             Для администраторов
                         </Link>
                     </li>

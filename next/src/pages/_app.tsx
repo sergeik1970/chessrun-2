@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { wrapper } from "@/shared/store/store";
 import { Provider } from "react-redux";
 import Navigation from "@/shared/components/Navigation";
+import YandexMetrika from "@/shared/components/YandexMetrika";
 import "@mantine/core/styles.css";
 import { createTheme, MantineProvider } from "@mantine/core";
 
@@ -33,6 +34,7 @@ const App: FC<AppProps> = ({ Component, ...rest }) => {
     return (
         <Provider store={store}>
             <MantineProvider theme={theme}>
+                <YandexMetrika />
                 <Navigation />
                 <Component {...props.pageProps} />
             </MantineProvider>
