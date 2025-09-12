@@ -307,14 +307,8 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
         }
     };
 
-    const handleBackdropClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget) {
-            onClose();
-        }
-    };
-
     return (
-        <div className={styles.backdrop} onClick={handleBackdropClick}>
+        <div className={styles.backdrop}>
             <div className={styles.modal}>
                 <div className={styles.header}>
                     <h2 className={styles.title}>
