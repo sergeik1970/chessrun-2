@@ -5,22 +5,99 @@
 import { TextTruncateOptions, DateFormatOptions } from "../types/utils";
 
 /**
+ * Создание HTML для ссылки с безопасными атрибутами
+ * @param url - URL для ссылки
+ * @param displayText - текст для отображения
+ * @returns HTML строка ссылки
+ */
+const createLinkHtml = (url: string, displayText: string): string => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline; word-break: break-all;">${displayText}</a>`;
+};
+
+/**
+ * Автоматическое распознавание и превращение URL в ссылки
+ * @param text - исходный текст
+ * @returns текст с преобразованными ссылками
+ */
+const autoLinkUrls = (text: string): string => {
+    // Улучшенное регулярное выражение для поиска URL-адресов
+    // Поддерживает: домены с протоколом и без, www и без www, пути, параметры запроса
+    const urlRegex =
+        /((?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+(?:\/[^\s<>"'\)]*)?(?:\?[^\s<>"'\)]*)?(?:#[^\s<>"'\)]*)?)/gi;
+
+    // Разбиваем текст на части, учитывая существующие HTML-теги
+    const parts: string[] = [];
+    let lastIndex = 0;
+    let insideTag = false;
+
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === "<") {
+            insideTag = true;
+        } else if (text[i] === ">") {
+            insideTag = false;
+        }
+
+        if (!insideTag && i === text.length - 1) {
+            // Обрабатываем последнюю часть
+            const part = text.substring(lastIndex);
+            parts.push(
+                part.replace(urlRegex, (match) => {
+                    // Добавляем протокол, если его нет
+                    const url = match.startsWith("http") ? match : `https://${match}`;
+                    return createLinkHtml(url, match);
+                }),
+            );
+        }
+    }
+
+    // Простой подход: заменяем URL только вне HTML-тегов
+    return text.replace(urlRegex, (match, p1, offset) => {
+        // Проверяем, находится ли URL внутри HTML-тега
+        const beforeMatch = text.substring(0, offset);
+        const afterMatch = text.substring(offset + match.length);
+
+        // Ищем последний открывающий тег перед URL
+        const lastOpenTag = beforeMatch.lastIndexOf("<");
+        const lastCloseTag = beforeMatch.lastIndexOf(">");
+
+        // Если последний открывающий тег идет после последнего закрывающего,
+        // значит мы внутри тега
+        if (lastOpenTag > lastCloseTag) {
+            return match; // Не обрабатываем URL внутри тегов
+        }
+
+        // Проверяем, не является ли это уже частью href атрибута
+        if (
+            beforeMatch.toLowerCase().includes("href=") &&
+            beforeMatch.lastIndexOf("href=") > beforeMatch.lastIndexOf(">")
+        ) {
+            return match;
+        }
+
+        // Добавляем протокол, если его нет
+        const url = match.startsWith("http") ? match : `https://${match}`;
+        return createLinkHtml(url, match);
+    });
+};
+
+/**
  * Безопасная обработка HTML контента в тексте поста
- * Поддерживает: <br>, <a href="...">...</a>
+ * Поддерживает: <br>, <a href="...">...</a>, автоматическое распознавание URL
  * @param text - исходный текст
  * @returns отформатированный HTML текст
  */
 export const sanitizeAndFormatText = (text: string): string => {
-    return (
-        text
-            // Заменяем переносы строк на <br>
-            .replace(/\n/g, "<br>")
-            // Обрабатываем ссылки с безопасными атрибутами
-            .replace(
-                /<a\s+href="([^"]*)"[^>]*>([^<]*)<\/a>/gi,
-                '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">$2</a>',
-            )
-    );
+    let processedText = text
+        // Заменяем переносы строк на <br>
+        .replace(/\n/g, "<br>")
+        // Обрабатываем уже существующие HTML ссылки с безопасными атрибутами
+        .replace(
+            /<a\s+href="([^"]*)"[^>]*>([^<]*)<\/a>/gi,
+            '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">$2</a>',
+        );
+
+    // Автоматически распознаем и превращаем в ссылки URL-адреса
+    return autoLinkUrls(processedText);
 };
 
 /**
