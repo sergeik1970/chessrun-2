@@ -61,6 +61,16 @@ const FederationPage = (): ReactElement => {
     ];
 
     const handleDocumentClick = (documentId: string) => {
+        const doc = documents.find((d) => d.id === documentId);
+        if (!doc) return;
+
+        // Если это PDF документ, открываем в новой вкладке
+        if (doc.type === "PDF") {
+            window.open(doc.url, "_blank");
+            return;
+        }
+
+        // Для изображений показываем модальное окно
         setSelectedDocument(documentId);
         // Блокируем скролл страницы при открытии модального окна
         document.body.style.overflow = "hidden";
@@ -77,13 +87,8 @@ const FederationPage = (): ReactElement => {
             // Для изображений открываем в новой вкладке
             window.open(url, "_blank");
         } else {
-            // Для PDF создаем ссылку для скачивания
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = title;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Для PDF также открываем в новой вкладке (вместо скачивания)
+            window.open(url, "_blank");
         }
     };
 
@@ -234,7 +239,7 @@ const FederationPage = (): ReactElement => {
                                     title={
                                         selectedDoc.isImage
                                             ? "Открыть в полном размере"
-                                            : "Скачать файл"
+                                            : "Открыть в новой вкладке"
                                     }
                                 >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
