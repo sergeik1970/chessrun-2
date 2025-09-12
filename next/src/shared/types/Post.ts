@@ -75,6 +75,7 @@ export interface PostComponentProps {
     showFullText?: boolean; // развернут ли текст полностью
     onImageClick?: (images: PostImage[], index: number) => void; // обработчик клика по изображению
     onPdfClick?: (pdf: PostFile, postId: string) => void; // обработчик клика по PDF файлу
+    isDeleting?: boolean; // показывать ли индикатор загрузки при удалении
 }
 
 // Данные для создания поста

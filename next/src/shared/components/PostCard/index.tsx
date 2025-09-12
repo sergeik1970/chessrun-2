@@ -24,6 +24,7 @@ const PostCard: React.FC<PostComponentProps> = ({
     showFullText = false,
     onImageClick,
     onPdfClick,
+    isDeleting = false,
 }) => {
     // Состояния компонента
     const [isTextExpanded, setIsTextExpanded] = useState(showFullText);
@@ -165,8 +166,16 @@ const PostCard: React.FC<PostComponentProps> = ({
                                 <button
                                     className={styles.deleteButton}
                                     onClick={() => onDelete(post.id)}
+                                    disabled={isDeleting}
                                 >
-                                    Удалить
+                                    {isDeleting ? (
+                                        <>
+                                            <span className={styles.spinner}></span>
+                                            Удаление...
+                                        </>
+                                    ) : (
+                                        "Удалить"
+                                    )}
                                 </button>
                             )}
                         </div>

@@ -15,6 +15,7 @@ const PostsManager = (): ReactElement => {
     const [editingPost, setEditingPost] = useState<ServerPost | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
 
     useEffect(() => {
         // Загружаем все посты и категории при монтировании компонента
@@ -37,7 +38,16 @@ const PostsManager = (): ReactElement => {
 
     const handleDeletePost = async (postId: string) => {
         if (window.confirm("Вы уверены, что хотите удалить этот пост?")) {
-            await dispatch(deletePost(parseInt(postId)));
+            try {
+                setDeletingPostId(postId);
+                await dispatch(deletePost(parseInt(postId)));
+                // Перезагружаем посты после успешного удаления
+                dispatch(fetchPosts());
+            } catch (error) {
+                console.error("Ошибка при удалении поста:", error);
+            } finally {
+                setDeletingPostId(null);
+            }
         }
     };
 
@@ -197,6 +207,7 @@ const PostsManager = (): ReactElement => {
                                 onEdit={handleEditPost}
                                 onDelete={handleDeletePost}
                                 maxTextLines={3}
+                                isDeleting={deletingPostId === post.id}
                             />
                         </div>
                     ))
