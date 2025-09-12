@@ -195,14 +195,23 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
+        // Проверка заголовка
         if (!formData.title.trim()) {
             newErrors.title = "Заголовок обязателен";
+        } else if (formData.title.trim().length < 3) {
+            newErrors.title = "Заголовок должен содержать минимум 3 символа";
+        } else if (formData.title.trim().length > 200) {
+            newErrors.title = "Заголовок не должен превышать 200 символов";
         }
 
+        // Проверка текста
         if (!formData.body.trim()) {
             newErrors.body = "Текст поста обязателен";
+        } else if (formData.body.trim().length < 10) {
+            newErrors.body = "Текст поста должен содержать минимум 10 символов";
         }
 
+        // Проверка категории
         if (!formData.category) {
             newErrors.category = "Выберите категорию";
         }
@@ -466,6 +475,17 @@ const PostEditor = ({ post, onSave, onClose }: PostEditorProps): ReactElement =>
                     </div>
 
                     {error && <div className={styles.error}>{error}</div>}
+
+                    {/* Ошибки валидации */}
+                    {Object.keys(errors).length > 0 && (
+                        <div className={styles.validationErrors}>
+                            {Object.entries(errors).map(([field, message]) => (
+                                <div key={field} className={styles.validationError}>
+                                    {message}
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     <div className={styles.actions}>
                         <button type="button" onClick={onClose} className={styles.cancelButton}>
