@@ -270,7 +270,15 @@ const TrainingPage = (): ReactElement => {
                             className={postsStyles.imageModalCloseButton}
                             onClick={closeImageModal}
                         >
-                            ×
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M18 6L6 18M6 6L18 18"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
                         </button>
                         <Swiper
                             className={postsStyles.imageModalSwiper}
@@ -317,8 +325,36 @@ const TrainingPage = (): ReactElement => {
                             {/* Показываем кнопки навигации только если изображений больше одного */}
                             {selectedImages.length > 1 && (
                                 <>
-                                    <button className={postsStyles.imageModalButtonPrev}>←</button>
-                                    <button className={postsStyles.imageModalButtonNext}>→</button>
+                                    <button className={postsStyles.imageModalButtonPrev}>
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M15 18L9 12L15 6"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                    </button>
+                                    <button className={postsStyles.imageModalButtonNext}>
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M9 18L15 12L9 6"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                    </button>
                                 </>
                             )}
                         </Swiper>
