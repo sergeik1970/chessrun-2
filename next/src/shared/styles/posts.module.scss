@@ -198,14 +198,14 @@
 
     // Кастомизация пагинации для модального окна
     :global(.swiper-pagination) {
-        bottom: 90px;
+        bottom: 120px;
 
         @media (max-width: 768px) {
-            bottom: 70px;
+            bottom: 100px;
         }
 
         @media (max-width: 480px) {
-            bottom: 60px;
+            bottom: 90px;
         }
 
         :global(.swiper-pagination-bullet) {
