@@ -11,14 +11,6 @@ import Footer from "../../components/Footer";
 import PDFViewer from "../../components/PDFViewer";
 import { Post, ServerPost, PostImage, PostFile } from "../../types/Post";
 
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/zoom";
-import "swiper/css/autoplay";
-import "swiper/css/effect-fade";
-
 import styles from "./index.module.scss";
 import postsStyles from "../../styles/posts.module.scss";
 
@@ -34,6 +26,7 @@ const CompetitionsPage = (): ReactElement => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedPdf, setSelectedPdf] = useState<PostFile | null>(null);
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+    const [isMounted, setIsMounted] = useState(false);
 
     // Состояние для Swiper
     const [heroSwiper, setHeroSwiper] = useState<any>(null);
@@ -63,6 +56,7 @@ const CompetitionsPage = (): ReactElement => {
     useEffect(() => {
         // Загружаем посты при монтировании компонента
         dispatch(fetchPosts());
+        setIsMounted(true);
     }, [dispatch]);
 
     useEffect(() => {
@@ -159,44 +153,46 @@ const CompetitionsPage = (): ReactElement => {
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {/* Фоновый слайдер с изображениями */}
-                <Swiper
-                    modules={[Navigation, Autoplay, EffectFade]}
-                    spaceBetween={0}
-                    slidesPerView={1}
-                    navigation={false}
-                    pagination={false}
-                    autoplay={{
-                        delay: 4000,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: true,
-                    }}
-                    effect="slide"
-                    speed={1000}
-                    loop={true}
-                    className={styles.heroSwiper}
-                    onSwiper={(swiper) => {
-                        setHeroSwiper(swiper);
-                        setCurrentSlide(swiper.realIndex);
-                    }}
-                    onSlideChange={(swiper) => {
-                        setCurrentSlide(swiper.realIndex);
-                    }}
-                >
-                    {heroImages.map((image, index) => (
-                        <SwiperSlide key={index} className={styles.heroSlide}>
-                            <div className={styles.heroImage}>
-                                <Image
-                                    src={image.src}
-                                    alt={image.alt}
-                                    fill
-                                    style={{ objectFit: "cover" }}
-                                    priority={index === 0}
-                                    quality={90}
-                                />
-                            </div>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                {isMounted && (
+                    <Swiper
+                        modules={[Navigation, Autoplay, EffectFade]}
+                        spaceBetween={0}
+                        slidesPerView={1}
+                        navigation={false}
+                        pagination={false}
+                        autoplay={{
+                            delay: 4000,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                        }}
+                        effect="slide"
+                        speed={1000}
+                        loop={true}
+                        className={styles.heroSwiper}
+                        onSwiper={(swiper) => {
+                            setHeroSwiper(swiper);
+                            setCurrentSlide(swiper.realIndex);
+                        }}
+                        onSlideChange={(swiper) => {
+                            setCurrentSlide(swiper.realIndex);
+                        }}
+                    >
+                        {heroImages.map((image, index) => (
+                            <SwiperSlide key={index} className={styles.heroSlide}>
+                                <div className={styles.heroImage}>
+                                    <Image
+                                        src={image.src}
+                                        alt={image.alt}
+                                        fill
+                                        style={{ objectFit: "cover" }}
+                                        priority={index === 0}
+                                        quality={90}
+                                    />
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                )}
 
                 {/* Статичный оверлей с заголовком и цитатой */}
                 <div className={styles.heroOverlay}>

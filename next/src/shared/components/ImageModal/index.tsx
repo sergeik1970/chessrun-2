@@ -1,15 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Zoom, Keyboard } from "swiper/modules";
 import Image from "next/image";
 import ApiImage from "../ApiImage";
 import { PostImage } from "../../types/Post";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/zoom";
 
 import styles from "./index.module.scss";
 import postsStyles from "../../styles/posts.module.scss";
@@ -29,6 +23,14 @@ const ImageModal: React.FC<ImageModalProps> = ({
     onClose,
     postId,
 }) => {
+    const [isMounted, setIsMounted] = useState(false);
+    const prevRef = useRef<HTMLDivElement>(null);
+    const nextRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     useEffect(() => {
         if (isOpen) {
             // Блокируем прокрутку страницы
@@ -75,63 +77,71 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 </button>
 
                 {/* Swiper для модального окна */}
-                <Swiper
-                    modules={[Navigation, Pagination, Zoom, Keyboard]}
-                    spaceBetween={20}
-                    slidesPerView={1}
-                    initialSlide={initialIndex}
-                    navigation={
-                        images.length > 1
-                            ? {
-                                  nextEl: `.${styles.modalButtonNext}`,
-                                  prevEl: `.${styles.modalButtonPrev}`,
-                              }
-                            : false
-                    }
-                    pagination={
-                        images.length > 1
-                            ? {
-                                  clickable: true,
-                                  dynamicBullets: true,
-                              }
-                            : false
-                    }
-                    zoom={{
-                        maxRatio: 3,
-                        minRatio: 1,
-                    }}
-                    keyboard={{
-                        enabled: true,
-                        onlyInViewport: false,
-                    }}
-                    className={styles.modalSwiper}
-                    loop={images.length > 1}
-                >
-                    {images.map((image, index) => (
-                        <SwiperSlide key={image.id || index} className={styles.modalSlide}>
-                            <div className="swiper-zoom-container">
-                                <div className={styles.modalImageWrapper}>
-                                    <ApiImage
-                                        src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
-                                        alt={
-                                            image.alt ||
-                                            `Изображение ${index + 1} из ${images.length}`
-                                        }
-                                        width={0}
-                                        height={0}
-                                        sizes="100vw"
-                                        className={styles.modalImage}
-                                    />
+                {isMounted && (
+                    <Swiper
+                        modules={[Navigation, Pagination, Zoom, Keyboard]}
+                        spaceBetween={20}
+                        slidesPerView={1}
+                        initialSlide={initialIndex}
+                        navigation={
+                            images.length > 1
+                                ? {
+                                      prevEl: prevRef.current,
+                                      nextEl: nextRef.current,
+                                  }
+                                : false
+                        }
+                        onBeforeInit={(swiper) => {
+                            // @ts-ignore
+                            swiper.params.navigation.prevEl = prevRef.current;
+                            // @ts-ignore
+                            swiper.params.navigation.nextEl = nextRef.current;
+                        }}
+                        pagination={
+                            images.length > 1
+                                ? {
+                                      clickable: true,
+                                      dynamicBullets: true,
+                                  }
+                                : false
+                        }
+                        zoom={{
+                            maxRatio: 3,
+                            minRatio: 1,
+                        }}
+                        keyboard={{
+                            enabled: true,
+                            onlyInViewport: false,
+                        }}
+                        className={styles.modalSwiper}
+                        loop={images.length > 1}
+                    >
+                        {images.map((image, index) => (
+                            <SwiperSlide key={image.id || index} className={styles.modalSlide}>
+                                <div className="swiper-zoom-container">
+                                    <div className={styles.modalImageWrapper}>
+                                        <ApiImage
+                                            src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
+                                            alt={
+                                                image.alt ||
+                                                `Изображение ${index + 1} из ${images.length}`
+                                            }
+                                            width={0}
+                                            height={0}
+                                            sizes="100vw"
+                                            className={styles.modalImage}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                )}
 
                 {/* Кастомные кнопки навигации для модального окна */}
                 {images.length > 1 && (
                     <>
-                        <div className={styles.modalButtonPrev}>
+                        <div ref={prevRef} className={styles.modalButtonPrev}>
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
                                 <path
                                     d="M15 18L9 12L15 6"
@@ -142,7 +152,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                                 />
                             </svg>
                         </div>
-                        <div className={styles.modalButtonNext}>
+                        <div ref={nextRef} className={styles.modalButtonNext}>
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
                                 <path
                                     d="M9 18L15 12L9 6"

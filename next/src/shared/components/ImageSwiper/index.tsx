@@ -1,16 +1,9 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Thumbs, FreeMode } from "swiper/modules";
 import Image from "next/image";
 import ApiImage from "../ApiImage";
 import { PostImage } from "../../types/Post";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/thumbs";
-import "swiper/css/free-mode";
 
 import styles from "./index.module.scss";
 import postsStyles from "../../styles/posts.module.scss";
@@ -32,7 +25,14 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
     showThumbs = false,
     className = "",
 }) => {
-    const [thumbsSwiper, setThumbsSwiper] = React.useState<any>(null);
+    const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+    const [isMounted, setIsMounted] = useState(false);
+    const prevRef = useRef<HTMLDivElement>(null);
+    const nextRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     if (!images || images.length === 0) {
         return null;
@@ -47,53 +47,61 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
     return (
         <div className={`${styles.swiperContainer} ${className}`}>
             {/* Основной слайдер */}
-            <Swiper
-                modules={[Navigation, Pagination, Thumbs, FreeMode]}
-                spaceBetween={10}
-                slidesPerView={1}
-                navigation={
-                    images.length > 1
-                        ? {
-                              nextEl: `.${styles.swiperButtonNext}`,
-                              prevEl: `.${styles.swiperButtonPrev}`,
-                          }
-                        : false
-                }
-                pagination={
-                    images.length > 1
-                        ? {
-                              clickable: true,
-                              dynamicBullets: true,
-                          }
-                        : false
-                }
-                thumbs={showThumbs ? { swiper: thumbsSwiper } : undefined}
-                className={styles.mainSwiper}
-                loop={images.length > 1}
-            >
-                {images.map((image, index) => (
-                    <SwiperSlide key={image.id || index} className={styles.slide}>
-                        <div
-                            className={styles.imageWrapper}
-                            onClick={() => handleSlideClick(image.url, index)}
-                        >
-                            <ApiImage
-                                src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
-                                alt={image.alt || `${postTitle} - изображение ${index + 1}`}
-                                width={0}
-                                height={0}
-                                sizes="(max-width: 768px) 100vw, 800px"
-                                className={styles.image}
-                            />
-                        </div>
-                    </SwiperSlide>
-                ))}
-            </Swiper>
+            {isMounted && (
+                <Swiper
+                    modules={[Navigation, Pagination, Thumbs, FreeMode]}
+                    spaceBetween={10}
+                    slidesPerView={1}
+                    navigation={
+                        images.length > 1
+                            ? {
+                                  prevEl: prevRef.current,
+                                  nextEl: nextRef.current,
+                              }
+                            : false
+                    }
+                    onBeforeInit={(swiper) => {
+                        // @ts-ignore
+                        swiper.params.navigation.prevEl = prevRef.current;
+                        // @ts-ignore
+                        swiper.params.navigation.nextEl = nextRef.current;
+                    }}
+                    pagination={
+                        images.length > 1
+                            ? {
+                                  clickable: true,
+                                  dynamicBullets: true,
+                              }
+                            : false
+                    }
+                    thumbs={showThumbs ? { swiper: thumbsSwiper } : undefined}
+                    className={styles.mainSwiper}
+                    loop={images.length > 1}
+                >
+                    {images.map((image, index) => (
+                        <SwiperSlide key={image.id || index} className={styles.slide}>
+                            <div
+                                className={styles.imageWrapper}
+                                onClick={() => handleSlideClick(image.url, index)}
+                            >
+                                <ApiImage
+                                    src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/news/${postId}/images/${image.id}`}
+                                    alt={image.alt || `${postTitle} - изображение ${index + 1}`}
+                                    width={0}
+                                    height={0}
+                                    sizes="(max-width: 768px) 100vw, 800px"
+                                    className={styles.image}
+                                />
+                            </div>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            )}
 
             {/* Кастомные кнопки навигации */}
             {images.length > 1 && (
                 <>
-                    <div className={styles.swiperButtonPrev}>
+                    <div ref={prevRef} className={styles.swiperButtonPrev}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M15 18L9 12L15 6"
@@ -104,7 +112,7 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
                             />
                         </svg>
                     </div>
-                    <div className={styles.swiperButtonNext}>
+                    <div ref={nextRef} className={styles.swiperButtonNext}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M9 18L15 12L9 6"
@@ -119,7 +127,7 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({
             )}
 
             {/* Миниатюры (если включены) */}
-            {showThumbs && images.length > 1 && (
+            {isMounted && showThumbs && images.length > 1 && (
                 <Swiper
                     onSwiper={setThumbsSwiper}
                     modules={[FreeMode, Thumbs]}
